@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoinMasterAgent;
+﻿using System.Collections.Generic;
 
-namespace CoinmasterClient
+namespace Stratis.CoinmasterClient
 {
     public class MeasureCollection : Dictionary<MeasureType, string>
     {

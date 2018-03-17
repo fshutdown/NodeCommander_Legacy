@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BD0278C9-3FB1-4079-AECB-4E658F97B2DA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CoinmasterClient</RootNamespace>
-    <AssemblyName>CoinmasterClient</AssemblyName>
+    <RootNamespace>Stratis.CoinmasterClient</RootNamespace>
+    <AssemblyName>Stratis.CoinmasterClient</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,7 +46,6 @@
     <Compile Include="Config\ConfigReader.cs" />
     <Compile Include="Messages\ActionRequest.cs" />
     <Compile Include="Messages\AgentConfiguration.cs" />
-    <Compile Include="Messages\AnalysisPackage.cs" />
     <Compile Include="Analysis\NodePerformance.cs" />
     <Compile Include="MeasureCollection.cs" />
     <Compile Include="MeasureType.cs" />

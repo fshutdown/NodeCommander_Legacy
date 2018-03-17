@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
-using CoinmasterClient;
-using CoinmasterClient.Messages;
-using CoinmasterClient.Network;
 using Fleck;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Stratis.CoinmasterClient;
+using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
 
-namespace CoinMasterAgent
+namespace Stratis.CoinMasterAgent
 {
     class Program
     {
@@ -86,16 +86,15 @@ namespace CoinMasterAgent
         {
             while (socket.IsAvailable)
             {
-                AnalysisPackage package = new AnalysisPackage();
-                MeasureCollection measures = new MeasureCollection();
+                NodeNetwork localNodes = new NodeNetwork();
 
-                measures.Add(MeasureType.CPU, rnd.Next().ToString());
-                measures.Add(MeasureType.Memory, rnd.Next().ToString());
-                measures.Add(MeasureType.BlockHeight, "888");
+                SingleNode node = new SingleNode("RelayNode");
+                localNodes.NetworkNodes.Add("RelayNode", node);
+                node.NodeMeasures.Add(MeasureType.CPU, rnd.Next().ToString());
+                node.NodeMeasures.Add(MeasureType.Memory, rnd.Next().ToString());
+                node.NodeMeasures.Add(MeasureType.BlockHeight, "888");
 
-                package.NodeMeasures.Add("RelayNode", measures);
-
-                socket.Send(JsonConvert.SerializeObject(package));
+                socket.Send(JsonConvert.SerializeObject(localNodes));
                 Thread.Sleep(2000);
             }
         }

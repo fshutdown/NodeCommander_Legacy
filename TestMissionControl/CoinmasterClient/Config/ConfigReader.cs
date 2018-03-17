@@ -2,9 +2,9 @@
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Network;
 
-namespace CoinmasterClient.Config
+namespace Stratis.CoinmasterClient.Config
 {
     public class ConfigReader
     {

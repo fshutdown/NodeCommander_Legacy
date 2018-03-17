@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoinMasterAgent
+﻿namespace Stratis.CoinmasterClient
 {
     public enum MeasureType
     {

@@ -3,10 +3,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CoinmasterClient.Messages;
 using Newtonsoft.Json;
+using Stratis.CoinmasterClient.Messages;
 
-namespace TestMissionControl.Agents
+namespace Stratis.TestMissionControl.Agents
 {
     public class AgentConnection
     {
@@ -40,7 +40,6 @@ namespace TestMissionControl.Agents
         {
             Host = host;
             Port = port;
-
 
             _uri = new Uri($"ws://{host}:{port}");
             _cancellationToken = _cancellationTokenSource.Token;

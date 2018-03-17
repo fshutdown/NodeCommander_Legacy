@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using CoinmasterClient;
-using CoinmasterClient.Config;
-using CoinmasterClient.Network;
-using CoinMasterAgent;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TestMissionControl.Agents;
-using TestMissionControl.Workers;
-using TestMissionControl.Workers.DataStreams;
+using Stratis.CoinmasterClient;
+using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
+using Stratis.TestMissionControl.Agents;
 using Timer = System.Timers.Timer;
 
 
-namespace TestMissionControl
+namespace Stratis.TestMissionControl
 {
     public partial class CoinMasterForm : Form
     {
@@ -35,10 +27,7 @@ namespace TestMissionControl
         private DataView dataGridViewNodesDataView;
         private DataView dataGridViewAgentsDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
-
-        private List<BaseWorker> _workers = new List<BaseWorker>();
-        private NodePerformanceWorker nodePerformanceWorker;
-        private Dictionary<string, AgentConnection> agentConnectionList;
+        private AgentConnectionManager agentConnectionManager;
 
         public CoinMasterForm()
         {
@@ -56,110 +45,13 @@ namespace TestMissionControl
                 BringToFront();
             };
 
-            //Create workers
-            nodePerformanceWorker = new NodePerformanceWorker(5000);
-            nodePerformanceWorker.StateChange += DashboardWorkerStateChanged;
-            //nodePerformanceWorker.DataUpdate += (source, args) => InvokeWrapper(NodePerformanceUpdated, source, args);
-            _workers.Add(nodePerformanceWorker);
+            agentConnectionManager = new AgentConnectionManager();
+            agentConnectionManager.CreateListOfAgents(network);
+            agentConnectionManager.ConnectionStatusChanged += connectionAddress => Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
+            agentConnectionManager.MessageReceived += (agentConnection, networkSegment) => Invoke(new Action<object, NodeNetwork>(NodePerformanceUpdated), agentConnection, networkSegment);
 
-            //Start all workers
-            foreach (BaseWorker worker in _workers) worker.Start();
+            agentConnectionManager.ConnectToAgents();
 
-            CreateListOfAgents();
-            ConnectToAgents();
-
-        }
-
-        private void CreateListOfAgents()
-        {
-            agentConnectionList = new Dictionary<string, AgentConnection>();
-
-            foreach (SingleNode node in network.NetworkNodes.Values)
-            {
-                string[] addressParts = node.Agent.Split(':');
-                AgentConnection newAgent = AgentConnection.Create(addressParts[0], addressParts[1]);
-
-                if (!agentConnectionList.ContainsKey(node.Agent))
-                    agentConnectionList.Add(newAgent.Address, newAgent);
-            }
-        }
-
-        private void ConnectToAgents()
-        {
-            foreach (AgentConnection connection in agentConnectionList.Values)
-            {
-                connection.OnConnect(agentConnection =>
-                {
-                    agentConnection.State = AgentState.Connected;
-                    Invoke(new Action<string>(AgentDataTableUpdated), connection.Address);
-
-                    List<SingleNode> nodeList = (from n in network.NetworkNodes.Values
-                        where n.Agent == connection.Address
-                        select n).ToList();
-
-                    agentConnection.SendMessage(JsonConvert.SerializeObject(nodeList));
-                });
-                connection.OnDisconnect(agentConnection =>
-                {
-                    agentConnection.State = AgentState.Disconnected;
-                    Invoke(new Action<string>(AgentDataTableUpdated), connection.Address);
-                });
-                connection.OnMessage((s, agentConnection) =>
-                {
-                    AnalysisPackage package = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisPackage>(s);
-                    DataUpdateEventArgs eventArgs = new DataUpdateEventArgs();
-                    eventArgs.Data = package;
-                    
-                    Invoke(new Action<object, DataUpdateEventArgs>(NodePerformanceUpdated), agentConnection, eventArgs);
-                    Invoke(new Action<string>(AgentDataTableUpdated), connection.Address);
-                });
-
-                Timer reconnectionTimer = new Timer
-                {
-                    AutoReset = true,
-                    Interval = 3000
-                };
-                reconnectionTimer.Elapsed += (sender, args) =>
-                {
-                    if (connection.State == AgentState.Disconnected || connection.State == AgentState.Error)
-                    {
-                        connection.Connect();
-                        connection.State = AgentState.Connecting;
-                        Invoke(new Action<string>(AgentDataTableUpdated), connection.Address);
-                    }
-                };
-                reconnectionTimer.Start();
-            }
-        }
-
-
-
-        private void DashboardWorkerStateChanged(object source, StateChangeHandlerEventArgs args)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action<object, StateChangeHandlerEventArgs>(DashboardWorkerStateChanged), source, args);
-                return;
-            }
-
-            toolStripStatusLabelWorker.Text = args.State.ToString();
-            switch (args.State)
-            {
-                case WorkerState.Idle:
-                    toolStripStatusLabelWorker.BackColor = DefaultBackColor;
-                    toolStripStatusLabelWorker.ForeColor = Color.Black;
-                    break;
-                case WorkerState.Stopped:
-                    toolStripStatusLabelWorker.BackColor = Color.FromArgb(255, 255, 20, 60);
-                    toolStripStatusLabelWorker.ForeColor = Color.White;
-                    break;
-                case WorkerState.Running:
-                    toolStripStatusLabelWorker.BackColor = Color.FromArgb(255, 20, 128, 60);
-                    toolStripStatusLabelWorker.ForeColor = Color.White;
-                    break;
-            }
-
-            Refresh();
         }
 
         private DataTable BuildNodeDataTable()
@@ -188,8 +80,8 @@ namespace TestMissionControl
             agentsData.Columns.Add("Address", typeof(AgentConnection));
             agentsData.Columns.Add("Status");
             agentsData.Columns.Add("Info");
-
-            foreach (AgentConnection connection in agentConnectionList.Values)
+            
+            foreach (AgentConnection connection in agentConnectionManager.AgentConnectionList.Values)
             {
                 agentsData.Rows.Add(connection, string.Empty, string.Empty);
             }
@@ -220,7 +112,7 @@ namespace TestMissionControl
                 dataTable = dataGridViewAgentsDataView.Table;
             }
 
-            AgentConnection connection = agentConnectionList[address];
+            AgentConnection connection = agentConnectionManager.AgentConnectionList[address];
             foreach (DataRow row in dataTable.Rows)
             {
                 AgentConnection tableRecord = (AgentConnection) row["Address"];
@@ -235,7 +127,7 @@ namespace TestMissionControl
             }
         }
 
-        private void NodePerformanceUpdated(object source, DataUpdateEventArgs args)
+        private void NodePerformanceUpdated(object source, NodeNetwork networkSegment)
         {
             int performanceIsues = 0;
             if (dataGridViewNodes.DataSource == null)
@@ -264,7 +156,7 @@ namespace TestMissionControl
                     column.Visible = false;
             }
 
-            MergeMeasuresIntoNode(network, args.Data);
+            MergeMeasuresIntoNode(network, networkSegment);
             MergeMeasuresIntoDataTable(dataGridViewNodes, network);
             //newUploadCount = ((DataView)dataGridViewUploads.DataSource).Table.MergeDataSource(args.Data, "Workflow Id");
 
@@ -275,17 +167,17 @@ namespace TestMissionControl
             }
         }
 
-        private void MergeMeasuresIntoNode(NodeNetwork network, AnalysisPackage package)
+        private void MergeMeasuresIntoNode(NodeNetwork network, NodeNetwork networkSegment)
         {
-            if (package == null) return;
+            if (networkSegment == null) return;
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
-                if (package.NodeMeasures.ContainsKey(nodeName))
+                if (networkSegment.NetworkNodes.ContainsKey(nodeName))
                 {
-                    foreach (MeasureType measureType in package.NodeMeasures[nodeName].Keys)
+                    foreach (MeasureType measureType in networkSegment.NetworkNodes[nodeName].NodeMeasures.Keys)
                     {
-                        network.NetworkNodes[nodeName].NodeMeasures[measureType] = package.NodeMeasures[nodeName][measureType];
+                        network.NetworkNodes[nodeName].NodeMeasures[measureType] = networkSegment.NetworkNodes[nodeName].NodeMeasures[measureType];
                     }
                 }
             }

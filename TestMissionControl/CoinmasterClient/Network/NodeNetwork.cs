@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CoinmasterClient.Network
+namespace Stratis.CoinmasterClient.Network
 {
     public class NodeNetwork
     {

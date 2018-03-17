@@ -1,4 +1,4 @@
-﻿namespace CoinmasterClient.Network
+﻿namespace Stratis.CoinmasterClient.Network
 {
     public class SingleNode
     {
