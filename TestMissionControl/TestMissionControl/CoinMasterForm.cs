@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using StarrtCompass.Workers;
 using Stratis.CoinmasterClient;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.TestMissionControl.Agents;
+using Stratis.TestMissionControl.Workers;
+using Stratis.TestMissionControl.Workers.DataStreams;
 using Timer = System.Timers.Timer;
 
 
@@ -26,8 +30,12 @@ namespace Stratis.TestMissionControl
         private NodeNetwork network;
         private DataView dataGridViewNodesDataView;
         private DataView dataGridViewAgentsDataView;
+        private DataView dataGridViewBlockchainDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
         private AgentConnectionManager agentConnectionManager;
+
+        private List<BaseWorker> _workers = new List<BaseWorker>();
+        private CryptoIdWorker cryptoIdWorker;
 
         public CoinMasterForm()
         {
@@ -35,6 +43,11 @@ namespace Stratis.TestMissionControl
 
             ConfigReader reader = new ConfigReader();
             network = reader.Config;
+
+            foreach (SingleNode node in network.NetworkNodes.Values)
+            {
+                node.Network = CoinNetworkType.StratisTestnet;
+            }
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -45,24 +58,101 @@ namespace Stratis.TestMissionControl
                 BringToFront();
             };
 
+            //Create workers
+            cryptoIdWorker = new CryptoIdWorker(10000, CoinNetworkType.StratisTestnet);
+            cryptoIdWorker.StateChange += DashboardWorkerStateChanged;
+            cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
+            _workers.Add(cryptoIdWorker);
+
+            //Start all workers
+            foreach (BaseWorker worker in _workers) worker.Start();
+
             agentConnectionManager = new AgentConnectionManager();
             agentConnectionManager.CreateListOfAgents(network);
             agentConnectionManager.ConnectionStatusChanged += connectionAddress => Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
             agentConnectionManager.MessageReceived += (agentConnection, networkSegment) => Invoke(new Action<object, NodeNetwork>(NodePerformanceUpdated), agentConnection, networkSegment);
 
             agentConnectionManager.ConnectToAgents();
+        }
 
+        private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
+        {
+            DataTable dataTable;
+            if (dataGridViewBlockchain.DataSource == null)
+            {
+                dataTable = BuildBlockchainDataTable();
+
+                dataGridViewBlockchainDataView = new DataView(dataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
+                dataGridViewBlockchain_Filter();
+
+                dataGridViewBlockchain.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                dataGridViewBlockchain.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                dataGridViewBlockchain.AutoGenerateColumns = false;
+
+                dataGridViewBlockchain.Columns["Measure"].Width = 10;
+                dataGridViewBlockchain.Columns["Value"].Width = 10;
+                dataGridViewBlockchain.Columns["Additional"].Width = 60;
+            }
+            else
+            {
+                dataTable = dataGridViewBlockchainDataView.Table;
+            }
+
+            foreach (PropertyInfo property in arg1.GetType().GetProperties())
+            {
+                bool found = false;
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    if (row["Measure"].Equals(property.Name))
+                    {
+                        row["Value"] = property.GetValue(arg1).ToString();
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) dataTable.Rows.Add(property.Name, property.GetValue(arg1).ToString());
+            }
+        }
+
+        private void DashboardWorkerStateChanged(object source, StateChangeHandlerEventArgs args)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<object, StateChangeHandlerEventArgs>(DashboardWorkerStateChanged), source, args);
+                return;
+            }
+
+            toolStripStatusLabelWorker.Text = args.State.ToString();
+            switch (args.State)
+            {
+                case WorkerState.Idle:
+                    toolStripStatusLabelWorker.BackColor = DefaultBackColor;
+                    toolStripStatusLabelWorker.ForeColor = Color.Black;
+                    break;
+                case WorkerState.Stopped:
+                    toolStripStatusLabelWorker.BackColor = Color.FromArgb(255, 255, 20, 60);
+                    toolStripStatusLabelWorker.ForeColor = Color.White;
+                    break;
+                case WorkerState.Running:
+                    toolStripStatusLabelWorker.BackColor = Color.FromArgb(255, 20, 128, 60);
+                    toolStripStatusLabelWorker.ForeColor = Color.White;
+                    break;
+            }
+
+            //Refresh();
         }
 
         private DataTable BuildNodeDataTable()
         {
             DataTable nodesData = new DataTable();
             nodesData.Columns.Add("Node", typeof(SingleNode));
-            nodesData.Columns.Add(MeasureType.Status.ToString());
-            nodesData.Columns.Add(MeasureType.CPU.ToString());
-            nodesData.Columns.Add(MeasureType.Memory.ToString());
-            nodesData.Columns.Add(MeasureType.BlockHeight.ToString());
-            nodesData.Columns.Add(MeasureType.ExceptionCount.ToString());
+            nodesData.Columns.Add("Status");
+            nodesData.Columns.Add("CPU");
+            nodesData.Columns.Add("Memory");
+            nodesData.Columns.Add("BlockHeight");
+            nodesData.Columns.Add("ExceptionCount");
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
@@ -88,6 +178,18 @@ namespace Stratis.TestMissionControl
             
             return agentsData;
         }
+
+        private DataTable BuildBlockchainDataTable()
+        {
+            DataTable blockchainData = new DataTable();
+            blockchainData.Columns.Add("Measure");
+            blockchainData.Columns.Add("Value");
+            blockchainData.Columns.Add("Additional");
+            
+            return blockchainData;
+        }
+
+
 
         private void AgentDataTableUpdated(string address)
         {
@@ -141,24 +243,17 @@ namespace Stratis.TestMissionControl
                 dataGridViewNodes.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 dataGridViewNodes.AutoGenerateColumns = false;
 
-                foreach (DataGridViewColumn column in dataGridViewNodes.Columns)
-                    column.Width = 1;
+                dataGridViewNodes.Columns["Node"].Width = 200;
+                dataGridViewNodes.Columns["Status"].Width = 200;
+                dataGridViewNodes.Columns["CPU"].Width = 100;
+                dataGridViewNodes.Columns["Memory"].Width = 100;
+                dataGridViewNodes.Columns["BlockHeight"].Width = 100;
+                dataGridViewNodes.Columns["ExceptionCount"].Width = 100;
 
-                dataGridViewNodes.Columns["Node"].Width = 60;
-                dataGridViewNodes.Columns[MeasureType.Status.ToString()].Width = 45;
-                dataGridViewNodes.Columns[MeasureType.CPU.ToString()].Width = 45;
-                dataGridViewNodes.Columns[MeasureType.Memory.ToString()].Width = 45;
-                dataGridViewNodes.Columns[MeasureType.BlockHeight.ToString()].Width = 45;
-                dataGridViewNodes.Columns[MeasureType.ExceptionCount.ToString()].Width = 45;
-
-                foreach (DataGridViewColumn column in dataGridViewNodes.Columns.Cast<DataGridViewColumn>()
-                    .Where(c => c.Width == 1))
-                    column.Visible = false;
             }
 
             MergeMeasuresIntoNode(network, networkSegment);
             MergeMeasuresIntoDataTable(dataGridViewNodes, network);
-            //newUploadCount = ((DataView)dataGridViewUploads.DataSource).Table.MergeDataSource(args.Data, "Workflow Id");
 
             if (notifyAboutPerformanceIssuesToolStripMenuItem.Checked && performanceIsues > 0)
             {
@@ -175,10 +270,10 @@ namespace Stratis.TestMissionControl
             {
                 if (networkSegment.NetworkNodes.ContainsKey(nodeName))
                 {
-                    foreach (MeasureType measureType in networkSegment.NetworkNodes[nodeName].NodeMeasures.Keys)
-                    {
-                        network.NetworkNodes[nodeName].NodeMeasures[measureType] = networkSegment.NetworkNodes[nodeName].NodeMeasures[measureType];
-                    }
+                    network.NetworkNodes[nodeName].NodeDeploymentState = networkSegment.NetworkNodes[nodeName].NodeDeploymentState;
+                    network.NetworkNodes[nodeName].NodeProcessState = networkSegment.NetworkNodes[nodeName].NodeProcessState;
+                    network.NetworkNodes[nodeName].NodeLogState = networkSegment.NetworkNodes[nodeName].NodeLogState;
+                    network.NetworkNodes[nodeName].NodeOperationState = networkSegment.NetworkNodes[nodeName].NodeOperationState;
                 }
             }
         }
@@ -197,20 +292,28 @@ namespace Stratis.TestMissionControl
                     if (((SingleNode)dataRow["Node"]).NodeName.Equals(nodeName))
                     {
                         dataRow["Node"] = network.NetworkNodes[nodeName];
-                        foreach (MeasureType measureType in network.NetworkNodes[nodeName].NodeMeasures.Keys)
-                        {
-                            dataRow[measureType.ToString()] = network.NetworkNodes[nodeName].NodeMeasures[measureType];
-                        }
+                        dataRow["Status"] = network.NetworkNodes[nodeName].NodeProcessState.State;
+                        dataRow["CPU"] = network.NetworkNodes[nodeName].NodeProcessState.Cpu;
+                        dataRow["Memory"] = network.NetworkNodes[nodeName].NodeProcessState.PrivateMemorySize;
+                        dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeOperationState.BlockHeight;
+                        dataRow["ExceptionCount"] = network.NetworkNodes[nodeName].NodeLogState.ExceptionCount;
+
+
+                        dataGridViewNodes.Columns["CPU"].Width = 45;
+                        dataGridViewNodes.Columns["Memory"].Width = 45;
+                        dataGridViewNodes.Columns["BlockHeight"].Width = 45;
+                        dataGridViewNodes.Columns["ExceptionCount"].Width = 45;
                     }
                 }
             }
         }
 
+
         private void dataGridViewNodes_Filter()
         {
             List<string> filterCriteria = new List<string>();
 
-            if (checkBoxRunningNodesOnly.Checked) filterCriteria.Add($"[{MeasureType.Status}] = 'Running'");
+            if (checkBoxRunningNodesOnly.Checked) filterCriteria.Add($"[Status] = 'Running'");
 
             dataGridViewNodesDataView.RowFilter = string.Join(" AND ", filterCriteria);
             dataGridViewNodes.DataSource = dataGridViewNodesDataView;
@@ -219,7 +322,10 @@ namespace Stratis.TestMissionControl
         {
             dataGridViewAgents.DataSource = dataGridViewAgentsDataView;
         }
-
+        private void dataGridViewBlockchain_Filter()
+        {
+            dataGridViewBlockchain.DataSource = dataGridViewBlockchainDataView;
+        }
 
         private async void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {

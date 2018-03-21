@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
+using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.TestMissionControl.Agents
@@ -46,7 +47,11 @@ namespace Stratis.TestMissionControl.Agents
                                                  where n.Agent == connection.Address
                                                  select n).ToList();
 
-                    agentConnection.SendMessage(JsonConvert.SerializeObject(nodeList));
+                    MessageEnvelope envelope = new MessageEnvelope();
+                    envelope.MessageType = MessageType.NodeList;
+                    envelope.PayloadObject = nodeList;
+
+                    agentConnection.SendMessage(JsonConvert.SerializeObject(envelope));
                 });
                 connection.OnDisconnect(agentConnection =>
                 {

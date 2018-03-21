@@ -2,5 +2,6 @@
 {
     public class ActionRequest
     {
+        public string Name { get; set; }
     }
 }

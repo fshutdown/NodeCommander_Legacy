@@ -1,4 +1,5 @@
 ﻿using System;
+using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Messages
 {
@@ -8,11 +9,16 @@ namespace Stratis.CoinmasterClient.Messages
         public string WorkstationName { get; set; }
         public string User { get; set; }
 
-        public ClientRegistration()
+        public int UpdateFrequency { get; set; }
+        public CoinNetworkType Netowrk { get; set; }
+
+        public ClientRegistration(int updateFrequency, CoinNetworkType netowrk)
         {
             Platform = Environment.OSVersion.Platform;
             WorkstationName = Environment.MachineName;
             User = Environment.UserName;
+            UpdateFrequency = updateFrequency;
+            Netowrk = netowrk;
         }
 
     }

@@ -10,10 +10,21 @@
   <ItemGroup>
     <PackageReference Include="Fleck" Version="0.14.0.59" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CoinmasterClient\CoinmasterClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Actions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

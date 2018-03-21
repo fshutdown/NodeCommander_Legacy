@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.TestMissionControl.Agents
 {
@@ -130,9 +131,12 @@ namespace Stratis.TestMissionControl.Agents
             try
             {
                 await _ws.ConnectAsync(_uri, _cancellationToken);
-                ClientRegistration clientRegistration = new ClientRegistration();
+                ClientRegistration clientRegistration = new ClientRegistration(3000, CoinNetworkType.StratisTestnet);
+                MessageEnvelope envelope = new MessageEnvelope();
+                envelope.MessageType = MessageType.ClientRegistration;
+                envelope.PayloadObject = clientRegistration;
 
-                SendMessage(JsonConvert.SerializeObject(clientRegistration));
+                SendMessage(JsonConvert.SerializeObject(envelope));
                 CallOnConnected();
                 StartListen();
                 ConnectionInfo = string.Empty;

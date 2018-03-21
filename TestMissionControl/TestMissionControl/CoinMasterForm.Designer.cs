@@ -37,6 +37,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CoinMasterForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -56,6 +59,8 @@
             this.dataGridViewNodes = new System.Windows.Forms.DataGridView();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dataGridViewNodeExceptions = new System.Windows.Forms.DataGridView();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.textBoxUptime = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -69,7 +74,10 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPageControlPanel = new System.Windows.Forms.TabPage();
+            this.tabPageBlockchain = new System.Windows.Forms.TabPage();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.dataGridViewBlockchain = new System.Windows.Forms.DataGridView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,8 +100,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelDatabase = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelWorker = new System.Windows.Forms.ToolStripStatusLabel();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -115,15 +121,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodes)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodeExceptions)).BeginInit();
+            this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAgents)).BeginInit();
             this.groupBox8.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabPageGit.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabPageControlPanel.SuspendLayout();
+            this.tabPageBlockchain.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBlockchain)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.groupBox9.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAgents)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -201,7 +210,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageNodes);
             this.tabControl1.Controls.Add(this.tabPageGit);
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPageControlPanel);
+            this.tabControl1.Controls.Add(this.tabPageBlockchain);
             this.tabControl1.Location = new System.Drawing.Point(0, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -402,6 +412,57 @@
             this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(782, 208);
             this.dataGridViewNodeExceptions.TabIndex = 7;
             // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.dataGridViewAgents);
+            this.groupBox9.Location = new System.Drawing.Point(5, 544);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(388, 182);
+            this.groupBox9.TabIndex = 2;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Agents";
+            // 
+            // dataGridViewAgents
+            // 
+            this.dataGridViewAgents.AllowUserToAddRows = false;
+            this.dataGridViewAgents.AllowUserToDeleteRows = false;
+            this.dataGridViewAgents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridViewAgents.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewAgents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            this.dataGridViewAgents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewAgents.DefaultCellStyle = dataGridViewCellStyle8;
+            this.dataGridViewAgents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewAgents.Location = new System.Drawing.Point(3, 16);
+            this.dataGridViewAgents.MultiSelect = false;
+            this.dataGridViewAgents.Name = "dataGridViewAgents";
+            this.dataGridViewAgents.ReadOnly = true;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewAgents.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            this.dataGridViewAgents.RowHeadersVisible = false;
+            this.dataGridViewAgents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewAgents.Size = new System.Drawing.Size(382, 163);
+            this.dataGridViewAgents.TabIndex = 8;
+            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.textBoxUptime);
@@ -527,16 +588,78 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "Pull Request Id:";
             // 
-            // tabPage1
+            // tabPageControlPanel
             // 
-            this.tabPage1.Controls.Add(this.groupBox2);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1194, 735);
-            this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "Control Panel";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPageControlPanel.Controls.Add(this.groupBox2);
+            this.tabPageControlPanel.Location = new System.Drawing.Point(4, 22);
+            this.tabPageControlPanel.Name = "tabPageControlPanel";
+            this.tabPageControlPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageControlPanel.Size = new System.Drawing.Size(1194, 735);
+            this.tabPageControlPanel.TabIndex = 2;
+            this.tabPageControlPanel.Text = "Control Panel";
+            this.tabPageControlPanel.UseVisualStyleBackColor = true;
+            // 
+            // tabPageBlockchain
+            // 
+            this.tabPageBlockchain.Controls.Add(this.groupBox10);
+            this.tabPageBlockchain.Location = new System.Drawing.Point(4, 22);
+            this.tabPageBlockchain.Name = "tabPageBlockchain";
+            this.tabPageBlockchain.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageBlockchain.Size = new System.Drawing.Size(1194, 735);
+            this.tabPageBlockchain.TabIndex = 3;
+            this.tabPageBlockchain.Text = "Blockchain";
+            this.tabPageBlockchain.UseVisualStyleBackColor = true;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.dataGridViewBlockchain);
+            this.groupBox10.Location = new System.Drawing.Point(6, 6);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(580, 322);
+            this.groupBox10.TabIndex = 0;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Blocks";
+            // 
+            // dataGridViewBlockchain
+            // 
+            this.dataGridViewBlockchain.AllowUserToAddRows = false;
+            this.dataGridViewBlockchain.AllowUserToDeleteRows = false;
+            this.dataGridViewBlockchain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridViewBlockchain.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewBlockchain.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            this.dataGridViewBlockchain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewBlockchain.DefaultCellStyle = dataGridViewCellStyle11;
+            this.dataGridViewBlockchain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewBlockchain.Location = new System.Drawing.Point(3, 16);
+            this.dataGridViewBlockchain.MultiSelect = false;
+            this.dataGridViewBlockchain.Name = "dataGridViewBlockchain";
+            this.dataGridViewBlockchain.ReadOnly = true;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewBlockchain.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            this.dataGridViewBlockchain.RowHeadersVisible = false;
+            this.dataGridViewBlockchain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewBlockchain.Size = new System.Drawing.Size(574, 303);
+            this.dataGridViewBlockchain.TabIndex = 9;
             // 
             // menuStrip1
             // 
@@ -722,57 +845,6 @@
             this.toolStripStatusLabelWorker.Size = new System.Drawing.Size(75, 17);
             this.toolStripStatusLabelWorker.Text = "Init";
             // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.dataGridViewAgents);
-            this.groupBox9.Location = new System.Drawing.Point(5, 544);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(388, 182);
-            this.groupBox9.TabIndex = 2;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Agents";
-            // 
-            // dataGridViewAgents
-            // 
-            this.dataGridViewAgents.AllowUserToAddRows = false;
-            this.dataGridViewAgents.AllowUserToDeleteRows = false;
-            this.dataGridViewAgents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dataGridViewAgents.BackgroundColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewAgents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
-            this.dataGridViewAgents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewAgents.DefaultCellStyle = dataGridViewCellStyle8;
-            this.dataGridViewAgents.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewAgents.Location = new System.Drawing.Point(3, 16);
-            this.dataGridViewAgents.MultiSelect = false;
-            this.dataGridViewAgents.Name = "dataGridViewAgents";
-            this.dataGridViewAgents.ReadOnly = true;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewAgents.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
-            this.dataGridViewAgents.RowHeadersVisible = false;
-            this.dataGridViewAgents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewAgents.Size = new System.Drawing.Size(382, 163);
-            this.dataGridViewAgents.TabIndex = 8;
-            // 
             // CoinMasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -784,7 +856,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "CoinMasterForm";
-            this.Text = "Coin Master";
+            this.Text = "Node Commander";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -808,19 +880,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodes)).EndInit();
             this.groupBox5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodeExceptions)).EndInit();
+            this.groupBox9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAgents)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.tabPageGit.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
+            this.tabPageControlPanel.ResumeLayout(false);
+            this.tabPageBlockchain.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBlockchain)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAgents)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -852,7 +927,7 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPageControlPanel;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelDatabase;
@@ -884,6 +959,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.DataGridView dataGridViewAgents;
+        private System.Windows.Forms.TabPage tabPageBlockchain;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.DataGridView dataGridViewBlockchain;
     }
 }
 
