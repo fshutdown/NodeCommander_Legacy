@@ -1,4 +1,4 @@
-﻿namespace Stratis.TestMissionControl
+﻿namespace Stratis.NodeCommander
 {
     partial class CoinMasterForm
     {

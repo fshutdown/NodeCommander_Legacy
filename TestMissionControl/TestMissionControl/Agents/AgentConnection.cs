@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.TestMissionControl.Agents
+namespace Stratis.NodeCommander.Agents
 {
     public class AgentConnection
     {

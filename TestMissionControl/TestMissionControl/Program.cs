@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Stratis.TestMissionControl
+namespace Stratis.NodeCommander
 {
     static class Program
     {

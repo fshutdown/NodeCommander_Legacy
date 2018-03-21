@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Stratis.TestMissionControl.Properties {
+namespace Stratis.NodeCommander.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

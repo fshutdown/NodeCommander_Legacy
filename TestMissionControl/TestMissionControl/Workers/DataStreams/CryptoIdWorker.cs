@@ -1,12 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using StarrtCompass.Workers;
 using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.TestMissionControl.Workers.DataStreams
+namespace Stratis.NodeCommander.Workers.DataStreams
 {
     public class CryptoIdWorker : BaseWorker
     {

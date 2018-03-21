@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StarrtCompass.Workers
+﻿namespace Stratis.NodeCommander.Workers
 {
     public enum WorkerState
     {

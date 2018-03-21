@@ -2,22 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using StarrtCompass.Workers;
-using Stratis.CoinmasterClient;
 using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
-using Stratis.TestMissionControl.Agents;
-using Stratis.TestMissionControl.Workers;
-using Stratis.TestMissionControl.Workers.DataStreams;
-using Timer = System.Timers.Timer;
+using Stratis.NodeCommander.Agents;
+using Stratis.NodeCommander.Workers;
+using Stratis.NodeCommander.Workers.DataStreams;
 
 
-namespace Stratis.TestMissionControl
+namespace Stratis.NodeCommander
 {
     public partial class CoinMasterForm : Form
     {

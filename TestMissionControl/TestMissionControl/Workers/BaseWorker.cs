@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Timers;
-using StarrtCompass.Workers;
-using Stratis.TestMissionControl.Workers.DataStreams;
 
-namespace Stratis.TestMissionControl.Workers
+namespace Stratis.NodeCommander.Workers
 {
     public abstract class BaseWorker
     {

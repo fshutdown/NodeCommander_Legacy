@@ -1,4 +1,4 @@
-﻿namespace Stratis.TestMissionControl.Agents
+﻿namespace Stratis.NodeCommander.Agents
 {
     public enum AgentState
     {
