@@ -690,7 +690,7 @@
             this.networkToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mainnetToolStripMenuItem,
             this.testnetToolStripMenuItem});
-            this.networkToolStripMenuItem.Image = global::Stratis.TestMissionControl.Properties.Resources.environment;
+            this.networkToolStripMenuItem.Image = global::Stratis.NodeCommander.Properties.Resources.environment;
             this.networkToolStripMenuItem.Name = "networkToolStripMenuItem";
             this.networkToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.networkToolStripMenuItem.Text = "Network";
@@ -714,7 +714,7 @@
             // 
             // closeToolStripMenuItem
             // 
-            this.closeToolStripMenuItem.Image = global::Stratis.TestMissionControl.Properties.Resources.exit;
+            this.closeToolStripMenuItem.Image = global::Stratis.NodeCommander.Properties.Resources.exit;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.closeToolStripMenuItem.Text = "Close";
@@ -730,7 +730,7 @@
             // 
             // refreshToolStripMenuItem
             // 
-            this.refreshToolStripMenuItem.Image = global::Stratis.TestMissionControl.Properties.Resources.arrow_refresh;
+            this.refreshToolStripMenuItem.Image = global::Stratis.NodeCommander.Properties.Resources.arrow_refresh;
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
             this.refreshToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
@@ -761,14 +761,14 @@
             // 
             // resumeMonitoringToolStripMenuItem
             // 
-            this.resumeMonitoringToolStripMenuItem.Image = global::Stratis.TestMissionControl.Properties.Resources.play;
+            this.resumeMonitoringToolStripMenuItem.Image = global::Stratis.NodeCommander.Properties.Resources.play;
             this.resumeMonitoringToolStripMenuItem.Name = "resumeMonitoringToolStripMenuItem";
             this.resumeMonitoringToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.resumeMonitoringToolStripMenuItem.Text = "Resume Monitoring";
             // 
             // suspendMonitoringToolStripMenuItem
             // 
-            this.suspendMonitoringToolStripMenuItem.Image = global::Stratis.TestMissionControl.Properties.Resources.pause;
+            this.suspendMonitoringToolStripMenuItem.Image = global::Stratis.NodeCommander.Properties.Resources.pause;
             this.suspendMonitoringToolStripMenuItem.Name = "suspendMonitoringToolStripMenuItem";
             this.suspendMonitoringToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.suspendMonitoringToolStripMenuItem.Text = "Suspend Monitoring";

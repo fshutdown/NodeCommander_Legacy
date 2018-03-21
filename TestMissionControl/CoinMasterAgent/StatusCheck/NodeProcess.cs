@@ -27,16 +27,32 @@ namespace Stratis.CoinMasterAgent.StatusCheck
             }
 
             int pid;
-            if (!int.TryParse(pidFile.OpenText().ReadToEnd(), out pid))
+            StreamReader stream = null;
+            try
             {
-                logger.Warn($"PID file contains value which is not an integer number. Please remove the file manually.");
+                stream = pidFile.OpenText();
+                if (!int.TryParse(stream.ReadToEnd(), out pid))
+                {
+                    logger.Warn(
+                        $"PID file \"{pidFilePath}\" contains value which is not an integer number. Please remove the file manually.");
 
+                    state.State = ProcessState.Stopped;
+                    return state;
+                }
+                else
+                {
+                    state.ProcesPid = pid;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Cannot read the content of the PID file \"{pidFilePath}\"", ex);
                 state.State = ProcessState.Stopped;
                 return state;
             }
-            else
+            finally
             {
-                state.ProcesPid = pid;
+                if (stream != null) stream.Close();
             }
 
             Process process;
