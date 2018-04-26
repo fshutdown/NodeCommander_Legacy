@@ -81,14 +81,15 @@ namespace Stratis.CoinMasterAgent
                     }
                     break;
                 case MessageType.NodeList:
-                    List<SingleNode> nodeList;
+                    SingleNode[] nodeList;
                     try
                     {
-                        nodeList = envelope.GetPayload<List<SingleNode>>();
+                        nodeList = envelope.GetPayload<SingleNode[]>();
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize NodeList message", ex);
+                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize NodeList message" + ex.StackTrace, ex);
+                        logger.Error(envelope.PayloadObject.ToString());
                         break;
                     }
 
@@ -134,16 +135,16 @@ namespace Stratis.CoinMasterAgent
             logger.Info($"{socketConnection.ConnectionInfo.Id} Received action {actionRequest.Name}");
         }
 
-        private void ProcessNodes(List<SingleNode> nodes)
+        private void ProcessNodes(SingleNode[] nodes)
         {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {nodes.Count} nodes configuration");
+            logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {nodes.Length} nodes configuration");
 
             connectionNodes = new NodeNetwork();
             foreach (SingleNode node in nodes)
             {
-                connectionNodes.NetworkNodes.Add(node.NodeName, node);
-                if (!localNodes.NetworkNodes.ContainsKey(node.NodeName))
-                    localNodes.NetworkNodes.Add(node.NodeName, node);
+                connectionNodes.NetworkNodes.Add(node.NodeFullName, node);
+                if (!localNodes.NetworkNodes.ContainsKey(node.NodeFullName))
+                    localNodes.NetworkNodes.Add(node.NodeFullName, node);
             }
         }
 

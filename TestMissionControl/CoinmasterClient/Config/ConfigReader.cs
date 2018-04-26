@@ -13,7 +13,7 @@ namespace Stratis.CoinmasterClient.Config
         public NodeNetwork Config;
 
         private FileInfo nodeConfig;
-        private Regex sectionNameRegex = new Regex("^\\[([A-Z0-9 _-]+)\\]\\s*#?.*", RegexOptions.IgnoreCase);
+        private Regex sectionNameRegex = new Regex("^\\[([A-Z0-9 _.-]+)\\]\\s*#?.*", RegexOptions.IgnoreCase);
         private Regex commentRegEx = new Regex("\\s*#.*", RegexOptions.IgnoreCase);
         private Regex parameterRegEx = new Regex("([A-Z0-9]+)=(.*)\\s*#?.*", RegexOptions.IgnoreCase);
 
@@ -49,27 +49,45 @@ namespace Stratis.CoinmasterClient.Config
                     //ignore comments
                 } else if (parameterRegEx.IsMatch(line))
                 {
-                    string key = parameterRegEx.Match(line).Groups[1].Value;
-                    string value = parameterRegEx.Match(line).Groups[2].Value;
+                    try
+                    {
+                        string key = parameterRegEx.Match(line).Groups[1].Value;
+                        string value = parameterRegEx.Match(line).Groups[2].Value;
 
-                    if (sectionName == "Global")
-                    {
-                        SetProperty(Config, key, value);
-                    }
-                    else
-                    {
-                        SingleNode nodeConfig;
-                        if (!Config.NetworkNodes.ContainsKey(sectionName))
+                        if (sectionName == "Global" && key.ToLower() == "deploy")
                         {
-                            nodeConfig = new SingleNode(sectionName);
-                            Config.NetworkNodes.Add(sectionName, nodeConfig);
+                            AddToFileDeploymentList(value);
+                        }
+                        else if (sectionName == "Global" && key.ToLower() != "deploy")
+                        {
+                            SetProperty(nodeConfig, key, value);
                         }
                         else
                         {
-                            nodeConfig = Config.NetworkNodes[sectionName];
-                        }
+                            SingleNode nodeConfig;
+                            if (!Config.NetworkNodes.ContainsKey(sectionName))
+                            {
+                                nodeConfig = new SingleNode(sectionName);
+                                Config.NetworkNodes.Add(sectionName, nodeConfig);
+                            }
+                            else
+                            {
+                                nodeConfig = Config.NetworkNodes[sectionName];
+                            }
 
-                        SetProperty(nodeConfig, key, value);
+                            if (key.ToLower() == "deploy")
+                            {
+                                AddToFileDeploymentList(value);
+                            }
+                            else
+                            {
+                                SetProperty(nodeConfig, key, value);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException($"Error reading node configuration file at line {lineNumber}: {ex.Message}");
                     }
                 }
                 else
@@ -82,9 +100,23 @@ namespace Stratis.CoinmasterClient.Config
 
         }
 
+        private void AddToFileDeploymentList(string value)
+        {
+            string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
+            if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
+            string source = fileDeploymentParts[0];
+            string destination = fileDeploymentParts[1];
+
+            Config.FileDeploy.Add(source, destination);
+        }
 
         private void SetProperty(object target, string propertyName, string value)
         {
+            if (propertyName.ToLower() == "deploy")
+            {
+
+            }
+
             foreach (PropertyInfo property in target.GetType().GetProperties())
             {
                 if (property.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase))
@@ -97,6 +129,7 @@ namespace Stratis.CoinmasterClient.Config
                         property.SetValue(target, decimal.Parse(value));
                     else if (property.PropertyType == typeof(bool))
                         property.SetValue(target, bool.Parse(value));
+                    break;
                 }
             }
 

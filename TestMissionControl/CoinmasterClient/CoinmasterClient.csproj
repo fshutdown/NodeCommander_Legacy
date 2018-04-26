@@ -53,6 +53,7 @@
     <Compile Include="Analysis\NodeProcessState.cs" />
     <Compile Include="Analysis\ProcessState.cs" />
     <Compile Include="Config\ConfigReader.cs" />
+    <Compile Include="Config\NodeConfigFile.cs" />
     <Compile Include="Messages\ActionRequest.cs" />
     <Compile Include="Messages\ClientRegistration.cs" />
     <Compile Include="Messages\MessageEnvelope.cs" />

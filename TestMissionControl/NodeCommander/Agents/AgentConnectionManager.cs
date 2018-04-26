@@ -47,9 +47,13 @@ namespace Stratis.NodeCommander.Agents
 
                     MessageEnvelope envelope = new MessageEnvelope();
                     envelope.MessageType = MessageType.NodeList;
-                    envelope.PayloadObject = nodeList;
-
+                    envelope.PayloadObject = nodeList.ToArray<SingleNode>();
+                    
                     agentConnection.SendMessage(JsonConvert.SerializeObject(envelope));
+
+                    //ToDo: Remove this to increase performance
+                    SingleNode[] test_object = JsonConvert.DeserializeObject<SingleNode[]>(JsonConvert.SerializeObject(envelope.PayloadObject));
+
                 });
                 connection.OnDisconnect(agentConnection =>
                 {

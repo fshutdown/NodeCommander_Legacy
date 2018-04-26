@@ -100,6 +100,12 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelDatabase = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelWorker = new System.Windows.Forms.ToolStripStatusLabel();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -242,6 +248,12 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.button11);
+            this.splitContainer1.Panel2.Controls.Add(this.button10);
+            this.splitContainer1.Panel2.Controls.Add(this.button9);
+            this.splitContainer1.Panel2.Controls.Add(this.button8);
+            this.splitContainer1.Panel2.Controls.Add(this.button7);
+            this.splitContainer1.Panel2.Controls.Add(this.button6);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox9);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox8);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox4);
@@ -845,6 +857,60 @@
             this.toolStripStatusLabelWorker.Size = new System.Drawing.Size(75, 17);
             this.toolStripStatusLabelWorker.Text = "Init";
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(11, 116);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 3;
+            this.button6.Text = "Start";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(92, 116);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 4;
+            this.button7.Text = "Stop";
+            this.button7.UseVisualStyleBackColor = true;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(173, 116);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 5;
+            this.button8.Text = "Restart";
+            this.button8.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(254, 116);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(111, 23);
+            this.button9.TabIndex = 6;
+            this.button9.Text = "Clear Logs";
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(254, 145);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(111, 23);
+            this.button10.TabIndex = 7;
+            this.button10.Text = "Clear Data";
+            this.button10.UseVisualStyleBackColor = true;
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(254, 174);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(111, 23);
+            this.button11.TabIndex = 8;
+            this.button11.Text = "Clear mempool";
+            this.button11.UseVisualStyleBackColor = true;
+            // 
             // CoinMasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -962,6 +1028,12 @@
         private System.Windows.Forms.TabPage tabPageBlockchain;
         private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.DataGridView dataGridViewBlockchain;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button6;
     }
 }
 

@@ -38,10 +38,8 @@ namespace Stratis.NodeCommander
             ConfigReader reader = new ConfigReader();
             network = reader.Config;
 
-            foreach (SingleNode node in network.NetworkNodes.Values)
-            {
-                node.Network = CoinNetworkType.StratisTestnet;
-            }
+            //ToDo: Switch networks
+            //...
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -283,7 +281,7 @@ namespace Stratis.NodeCommander
             {
                 foreach (DataRow dataRow in table.Rows)
                 {
-                    if (((SingleNode)dataRow["Node"]).NodeName.Equals(nodeName))
+                    if (((SingleNode)dataRow["Node"]).NodeFullName.Equals(nodeName))
                     {
                         dataRow["Node"] = network.NetworkNodes[nodeName];
                         dataRow["Status"] = network.NetworkNodes[nodeName].NodeProcessState.State;
