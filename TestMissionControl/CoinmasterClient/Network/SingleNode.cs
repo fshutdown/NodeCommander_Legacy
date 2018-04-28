@@ -9,10 +9,7 @@ namespace Stratis.CoinmasterClient.Network
     public class SingleNode
     {
         #region Configuration Options
-        public string NodeFullName { get; set; }
-        public string NodeName { get; set; }
-        public string NodeNetworkName { get; set; }
-        public string NodeBlockchainName { get; set; }
+        public NodeEndpointName NodeEndpoint { get; set; }
         public string DisplayName { get; set; }
         public string DataDir { get; set; }
         public string CodeDirectory { get; set; }
@@ -28,7 +25,7 @@ namespace Stratis.CoinmasterClient.Network
         {
             get
             {
-                return Path.Combine(DataDir, NodeNetworkName, NodeBlockchainName);
+                return Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName);
             }
         }
 
@@ -39,15 +36,9 @@ namespace Stratis.CoinmasterClient.Network
 
         public SingleNode(string nodeFullName)
         {
-            NodeFullName = nodeFullName;
-            string[] nodeNameParts = nodeFullName.Split('.');
-            if (nodeNameParts.Length != 3) throw new ArgumentException($"Incorrect format of the node name {nodeFullName}");
+            NodeEndpoint = new NodeEndpointName(nodeFullName);
 
-            NodeName = nodeNameParts[0];
-            NodeNetworkName = nodeNameParts[1];
-            NodeBlockchainName = nodeNameParts[2];
-
-            DisplayName = nodeFullName;
+            DisplayName = NodeEndpoint.NodeName;
             NodeDeploymentState = new NodeDeploymentState();
             NodeProcessState = new NodeProcessState();
         }

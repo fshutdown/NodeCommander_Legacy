@@ -9,6 +9,7 @@ using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.StatusCheck;
+using Stratis.CoinMasterAgent.RequestProcessors;
 
 namespace Stratis.CoinMasterAgent
 {
@@ -123,6 +124,28 @@ namespace Stratis.CoinMasterAgent
                         logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process ActionRequest message", ex);
                     }
                     break;
+                case MessageType.DeployFile:
+                    DeployFile deployFile;
+                    try
+                    {
+                        deployFile = envelope.GetPayload<DeployFile>();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize DeployFile message", ex);
+                        break;
+                    }
+
+                    try
+                    {
+                        FileDeployment fileDeployment = new FileDeployment(socketConnection);
+                        fileDeployment.ProcessFileDeployRequest(deployFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process DeployFile message", ex);
+                    }
+                    break;
                 default:
                     logger.Fatal($"{socketConnection.ConnectionInfo.Id} Unknown message type {envelope.MessageType}");
                     return;
@@ -142,16 +165,16 @@ namespace Stratis.CoinMasterAgent
             connectionNodes = new NodeNetwork();
             foreach (SingleNode node in nodes)
             {
-                connectionNodes.NetworkNodes.Add(node.NodeFullName, node);
-                if (!localNodes.NetworkNodes.ContainsKey(node.NodeFullName))
-                    localNodes.NetworkNodes.Add(node.NodeFullName, node);
+                connectionNodes.NetworkNodes.Add(node.NodeEndpoint.FullNodeName, node);
+                if (!localNodes.NetworkNodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                    localNodes.NetworkNodes.Add(node.NodeEndpoint.FullNodeName, node);
             }
         }
 
         private void ProcessClientRegistration(ClientRegistration clientRegistration)
         {
             this.ClientRegistration = clientRegistration;
-            logger.Info($"{socketConnection.ConnectionInfo.Id}: Received Client Registration message for {clientRegistration.User} on {clientRegistration.Platform}/{clientRegistration.WorkstationName} on {clientRegistration.Netowrk} (update every {clientRegistration.UpdateFrequency / 1000} sec)");
+            logger.Info($"{socketConnection.ConnectionInfo.Id}: Received Client Registration message for {clientRegistration.User} on {clientRegistration.Platform}/{clientRegistration.WorkstationName} (update every {clientRegistration.UpdateFrequency / 1000} sec)");
         }
 
         private void StartClientMessageLoop()

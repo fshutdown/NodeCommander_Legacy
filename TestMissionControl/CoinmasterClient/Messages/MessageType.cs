@@ -10,7 +10,8 @@ namespace Stratis.CoinmasterClient.Messages
     {
         ClientRegistration,
         NodeList,
-        ActionRequest
+        ActionRequest,
+        DeployFile
 
     }
 }

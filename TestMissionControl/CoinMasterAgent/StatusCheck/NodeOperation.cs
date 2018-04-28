@@ -13,7 +13,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         public static NodeOperationState GetNodeOperationState(SingleNode node)
         {
             NodeOperationState state = new NodeOperationState();
-            state.BlockHeight = NodeRpcClient.GetConsensusTip();
+            //state.BlockHeight = NodeRpcClient.GetConsensusTip();
             return state;
         }
         

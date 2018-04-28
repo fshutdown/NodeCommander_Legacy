@@ -131,7 +131,7 @@ namespace Stratis.NodeCommander.Agents
             try
             {
                 await _ws.ConnectAsync(_uri, _cancellationToken);
-                ClientRegistration clientRegistration = new ClientRegistration(3000, CoinNetworkType.StratisTestnet);
+                ClientRegistration clientRegistration = new ClientRegistration(3000);
                 MessageEnvelope envelope = new MessageEnvelope();
                 envelope.MessageType = MessageType.ClientRegistration;
                 envelope.PayloadObject = clientRegistration;

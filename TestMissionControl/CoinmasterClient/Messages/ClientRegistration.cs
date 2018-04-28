@@ -10,15 +10,13 @@ namespace Stratis.CoinmasterClient.Messages
         public string User { get; set; }
 
         public int UpdateFrequency { get; set; }
-        public CoinNetworkType Netowrk { get; set; }
 
-        public ClientRegistration(int updateFrequency, CoinNetworkType netowrk)
+        public ClientRegistration(int updateFrequency)
         {
             Platform = Environment.OSVersion.Platform;
             WorkstationName = Environment.MachineName;
             User = Environment.UserName;
             UpdateFrequency = updateFrequency;
-            Netowrk = netowrk;
         }
 
     }

@@ -11,9 +11,9 @@ namespace Stratis.NodeCommander.Workers.DataStreams
         public delegate void DataUpdatedHandler(object source, CryptoIdDataUpdateEventArgs args);
         public event DataUpdatedHandler DataUpdate;
 
-        private CoinNetworkType networkType;
+        private NodeEndpointName networkType;
 
-        public CryptoIdWorker(double interval, CoinNetworkType networkType) : base(interval)
+        public CryptoIdWorker(double interval, NodeEndpointName networkType) : base(interval)
         {
             this.networkType = networkType;
         }
@@ -67,26 +67,16 @@ namespace Stratis.NodeCommander.Workers.DataStreams
         private string GetUrl(string action)
         {
             string network;
-            switch (networkType)
-            {
-                case CoinNetworkType.StratisMainnet:
-                    network = "strat";
-                    break;
-                case CoinNetworkType.StratisTestnet:
-                    network = "strat-test";
-                    break;
-                case CoinNetworkType.StratisRegnet:
-                    throw new NotImplementedException($"{networkType} is currently not implemented");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
 
+            if (networkType.FullBlockchainName == "Stratis.StratisTest") network = "strat-test";
+            else if (networkType.FullBlockchainName == "Stratis.StratisMain") network = "strat";
+            else throw new NotImplementedException($"{networkType} is currently not implemented");
+            
             return $"http://chainz.cryptoid.info/{network}/api.dws?q={action}";
         }
 
 
-        public void SetCoinNetwork(CoinNetworkType networkType)
+        public void SetCoinNetwork(NodeEndpointName networkType)
         {
             Reset();
             this.networkType = networkType;

@@ -104,19 +104,14 @@ namespace Stratis.CoinmasterClient.Config
         {
             string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
             if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
-            string source = fileDeploymentParts[0];
-            string destination = fileDeploymentParts[1];
+            string source = fileDeploymentParts[0].Trim();
+            string destination = fileDeploymentParts[1].Trim();
 
             Config.FileDeploy.Add(source, destination);
         }
 
         private void SetProperty(object target, string propertyName, string value)
         {
-            if (propertyName.ToLower() == "deploy")
-            {
-
-            }
-
             foreach (PropertyInfo property in target.GetType().GetProperties())
             {
                 if (property.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase))

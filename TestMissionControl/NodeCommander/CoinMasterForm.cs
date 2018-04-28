@@ -51,7 +51,7 @@ namespace Stratis.NodeCommander
             };
 
             //Create workers
-            cryptoIdWorker = new CryptoIdWorker(10000, CoinNetworkType.StratisTestnet);
+            cryptoIdWorker = new CryptoIdWorker(10000, new NodeEndpointName("Stratis", "StratisTest"));
             cryptoIdWorker.StateChange += DashboardWorkerStateChanged;
             cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
             _workers.Add(cryptoIdWorker);
@@ -281,7 +281,7 @@ namespace Stratis.NodeCommander
             {
                 foreach (DataRow dataRow in table.Rows)
                 {
-                    if (((SingleNode)dataRow["Node"]).NodeFullName.Equals(nodeName))
+                    if (((SingleNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(nodeName))
                     {
                         dataRow["Node"] = network.NetworkNodes[nodeName];
                         dataRow["Status"] = network.NetworkNodes[nodeName].NodeProcessState.State;
@@ -289,7 +289,6 @@ namespace Stratis.NodeCommander
                         dataRow["Memory"] = network.NetworkNodes[nodeName].NodeProcessState.PrivateMemorySize;
                         dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeOperationState.BlockHeight;
                         dataRow["ExceptionCount"] = network.NetworkNodes[nodeName].NodeLogState.ExceptionCount;
-
 
                         dataGridViewNodes.Columns["CPU"].Width = 45;
                         dataGridViewNodes.Columns["Memory"].Width = 45;
@@ -324,13 +323,13 @@ namespace Stratis.NodeCommander
             if (e.StateChanged != DataGridViewElementStates.Selected) return;
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
 
-
             SingleNode node = (SingleNode) dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
 
             textBoxNodeName.Text = node.DisplayName;
             textBoxUptime.Text = node.DataDir;
            
             dataGridViewNodeExceptions.DataSource = null;
+            propertyGrid1.SelectedObject = node;
         }
 
         private void button2_Click(object sender, EventArgs e)
