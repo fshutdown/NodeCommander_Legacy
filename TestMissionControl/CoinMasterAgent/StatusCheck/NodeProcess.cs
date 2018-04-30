@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
@@ -13,7 +14,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public static NodeProcessState GetNodePerformanceState(SingleNode node)
+        public async static Task<NodeProcessState> GetNodePerformanceState(SingleNode node)
         {
             NodeProcessState state = new NodeProcessState();
 

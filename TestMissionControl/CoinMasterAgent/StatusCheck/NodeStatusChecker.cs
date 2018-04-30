@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
@@ -29,20 +30,20 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     //ToDo: Pause the loop if there are no active clients
                     UpdateData();
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(3000);
                     if (signalingEvent.CurrentCount > 0) signalingEvent.Signal();
                 }
             });
             updateThread.Start();
         }
 
-        private void UpdateData()
+        private async void UpdateData()
         {
             foreach (SingleNode node in localNodes.NetworkNodes.Values)
             {
                 try
                 {
-                    node.NodeDeploymentState = NodeDeployment.GetNodeDeploymentState(node);
+                    node.NodeDeploymentState = await NodeDeployment.GetNodeDeploymentState(node);
                 }
                 catch (Exception ex)
                 {
@@ -52,17 +53,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
 
                 try
                 {
-                    node.NodeLogState = NodeLog.GetNodeLogState(node);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error($"Cannot get NodeLogState", ex);
-                    node.NodeLogState = new NodeLogState();
-                }
-
-                try
-                {
-                    node.NodeOperationState = NodeOperation.GetNodeOperationState(node);
+                    node.NodeOperationState = await NodeOperation.GetNodeOperationState(node);
                 }
                 catch (Exception ex)
                 {
@@ -72,14 +63,23 @@ namespace Stratis.CoinMasterAgent.StatusCheck
 
                 try
                 {
-                    node.NodeProcessState = NodeProcess.GetNodePerformanceState(node);
+                    node.NodeLogState = await NodeLog.GetNodeLogState(node);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Cannot get NodeLogState", ex);
+                    node.NodeLogState = new NodeLogState();
+                }
+
+                try
+                {
+                    node.NodeProcessState = await NodeProcess.GetNodePerformanceState(node);
                 }
                 catch (Exception ex)
                 {
                     logger.Error($"Cannot get NodeProcessState", ex);
                     node.NodeProcessState = new NodeProcessState();
                 }
-
             }
         }
 

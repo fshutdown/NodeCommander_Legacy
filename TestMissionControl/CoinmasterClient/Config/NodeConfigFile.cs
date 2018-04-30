@@ -12,7 +12,7 @@ namespace Stratis.CoinmasterClient.Config
         private String nodeConfigFileName;
         private FileInfo nodeConfigFile;
 
-        private List<KeyValuePair<String, String>> Options = new List<KeyValuePair<String, String>>();
+        public List<KeyValuePair<String, String>> Options = new List<KeyValuePair<String, String>>();
 
         public NodeConfigFile(string nodeConfigFileName)
         {
@@ -21,10 +21,10 @@ namespace Stratis.CoinmasterClient.Config
             if (!nodeConfigFile.Exists)
                 throw new Exception($"Node configuration file \"{nodeConfigFileName}\" doesn't exist.");
 
-            Load();
+            ReLoad();
         }
 
-        public void Load()
+        public void ReLoad()
         {
             StreamReader configReader = new StreamReader(nodeConfigFile.FullName);
 
@@ -52,6 +52,21 @@ namespace Stratis.CoinmasterClient.Config
                 lineNumber++;
             }
 
+        }
+
+        public int GetApiPort()
+        {
+            bool optionExists = Options.Any(o => o.Key.ToLower() == "apiport");
+            if (!optionExists) return 500;
+
+            int apiPort;
+            string apiPortString = Options.First(o => o.Key.ToLower() == "apiport").Value;
+            if (!int.TryParse(apiPortString, out apiPort))
+            {
+                throw new Exception($"ApiPort is not a number. Please check node configuration file {nodeConfigFileName}");
+            }
+
+            return apiPort;
         }
 
     }

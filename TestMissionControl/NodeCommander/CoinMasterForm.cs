@@ -141,16 +141,20 @@ namespace Stratis.NodeCommander
             DataTable nodesData = new DataTable();
             nodesData.Columns.Add("Node", typeof(SingleNode));
             nodesData.Columns.Add("Status");
-            nodesData.Columns.Add("CPU");
-            nodesData.Columns.Add("Memory");
             nodesData.Columns.Add("BlockHeight");
-            nodesData.Columns.Add("ExceptionCount");
+            nodesData.Columns.Add("ConsensusHeight");
+            nodesData.Columns.Add("NetworkHeight");
+            nodesData.Columns.Add("Mempool");
+            nodesData.Columns.Add("Peers");
+            nodesData.Columns.Add("Uptime");
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
                 SingleNode node = network.NetworkNodes[nodeName];
 
-                nodesData.Rows.Add(node, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+                object[] rowData = new object[nodesData.Columns.Count];
+                rowData[0] = node;
+                nodesData.Rows.Add(rowData);
             }
 
             return nodesData;
@@ -235,13 +239,14 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 dataGridViewNodes.AutoGenerateColumns = false;
 
-                dataGridViewNodes.Columns["Node"].Width = 200;
-                dataGridViewNodes.Columns["Status"].Width = 200;
-                dataGridViewNodes.Columns["CPU"].Width = 100;
-                dataGridViewNodes.Columns["Memory"].Width = 100;
-                dataGridViewNodes.Columns["BlockHeight"].Width = 100;
-                dataGridViewNodes.Columns["ExceptionCount"].Width = 100;
-
+                dataGridViewNodes.Columns["Node"].Width = 80;
+                dataGridViewNodes.Columns["Status"].Width = 80;
+                dataGridViewNodes.Columns["BlockHeight"].Width = 60;
+                dataGridViewNodes.Columns["ConsensusHeight"].Width = 60;
+                dataGridViewNodes.Columns["NetworkHeight"].Width = 60;
+                dataGridViewNodes.Columns["Mempool"].Width = 60;
+                dataGridViewNodes.Columns["Peers"].Width = 80;
+                dataGridViewNodes.Columns["Uptime"].Width = 80;
             }
 
             MergeMeasuresIntoNode(network, networkSegment);
@@ -284,16 +289,13 @@ namespace Stratis.NodeCommander
                     if (((SingleNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(nodeName))
                     {
                         dataRow["Node"] = network.NetworkNodes[nodeName];
-                        dataRow["Status"] = network.NetworkNodes[nodeName].NodeProcessState.State;
-                        dataRow["CPU"] = network.NetworkNodes[nodeName].NodeProcessState.Cpu;
-                        dataRow["Memory"] = network.NetworkNodes[nodeName].NodeProcessState.PrivateMemorySize;
+                        dataRow["Status"] = network.NetworkNodes[nodeName].NodeOperationState.State;
                         dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeOperationState.BlockHeight;
-                        dataRow["ExceptionCount"] = network.NetworkNodes[nodeName].NodeLogState.ExceptionCount;
-
-                        dataGridViewNodes.Columns["CPU"].Width = 45;
-                        dataGridViewNodes.Columns["Memory"].Width = 45;
-                        dataGridViewNodes.Columns["BlockHeight"].Width = 45;
-                        dataGridViewNodes.Columns["ExceptionCount"].Width = 45;
+                        dataRow["ConsensusHeight"] = network.NetworkNodes[nodeName].NodeOperationState.ConsensusHeight;
+                        dataRow["NetworkHeight"] = network.NetworkNodes[nodeName].NodeOperationState.NetworkHeight;
+                        dataRow["Mempool"] = network.NetworkNodes[nodeName].NodeOperationState.MempoolTransactionCount;
+                        dataRow["Peers"] = $"In:{network.NetworkNodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{network.NetworkNodes[nodeName].NodeOperationState.OutboundPeersCount}";
+                        dataRow["Uptime"] = network.NetworkNodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
                     }
                 }
             }
@@ -359,6 +361,32 @@ namespace Stratis.NodeCommander
             }
 
             notifier.Popup();
+        }
+
+        private void buttonDeployFiles_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
+            {
+                SingleNode node = (SingleNode)row.Cells["Node"].Value;
+                var agent = agentConnectionManager.GetAgent(node.Agent);
+
+                agent.ProcessFilesToDeploy(node, network);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
+            {
+                SingleNode node = (SingleNode)row.Cells["Node"].Value;
+                var agent = agentConnectionManager.GetAgent(node.Agent);
+
+                agent.StartNode(node);
+            }
         }
     }
 }

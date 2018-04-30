@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 
@@ -9,7 +10,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
 {
     public static class NodeDeployment
     {
-        public static NodeDeploymentState GetNodeDeploymentState(SingleNode node)
+        public async static Task<NodeDeploymentState> GetNodeDeploymentState(SingleNode node)
         {
             NodeDeploymentState state = new NodeDeploymentState();
 

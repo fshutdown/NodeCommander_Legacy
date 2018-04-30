@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -101,7 +104,7 @@ namespace Stratis.NodeCommander.Agents
             SendMessageAsync(message);
         }
 
-        private async void SendMessageAsync(string message)
+        public async Task SendMessageAsync(string message)
         {
             if (_ws.State != WebSocketState.Open)
             {
@@ -221,6 +224,61 @@ namespace Stratis.NodeCommander.Agents
         public override string ToString()
         {
             return Host;
+        }
+
+        public async void ProcessFilesToDeploy(SingleNode node, NodeNetwork network)
+        {
+            var filesInScope = from d in network.FileDeploy
+                               where d.Scope == node.NodeEndpoint.FullNodeName
+                               select d;
+
+            foreach (FileDescriptor file in filesInScope)
+            {
+                FileInfo localFile = new FileInfo(file.LocalPath);
+
+                DeployFile deployFile = new DeployFile();
+                deployFile.FullName = Path.Combine(file.RemotePath, localFile.Name);
+                deployFile.Size = localFile.Length;
+
+                FileStream f = new FileStream(localFile.FullName, FileMode.Open);
+
+                MessageEnvelope envelope = new MessageEnvelope();
+                envelope.MessageType = MessageType.DeployFile;
+                envelope.PayloadObject = deployFile;
+
+                int read;
+                int buffSize = 1024 * 256;
+                long totalBytesSent = 0;
+                deployFile.Data = new byte[buffSize];
+                while ((read = f.Read(deployFile.Data, 0, buffSize)) > 0)
+                {
+                    deployFile.Length = read;
+                    totalBytesSent += read;
+
+                    if (totalBytesSent == deployFile.Size) deployFile.EndOfData = true;
+
+                    DeployFile test_object = JsonConvert.DeserializeObject<DeployFile>(JsonConvert.SerializeObject(envelope.PayloadObject));
+
+                    await SendMessageAsync(JsonConvert.SerializeObject(envelope));
+                }
+
+                f.Close();
+            }
+        }
+
+        public void StartNode(SingleNode node)
+        {
+            ActionRequest action = new ActionRequest(ActionType.StartNode);
+            action.FullNodeName = node.NodeEndpoint.FullNodeName;
+
+            action.Parameters[ActionParameters.CompilerSwitches] = "--no-build";
+            action.Parameters[ActionParameters.RuntimeSwitches] = "";
+
+            MessageEnvelope envelope = new MessageEnvelope();
+            envelope.MessageType = MessageType.ActionRequest;
+            envelope.PayloadObject = action;
+
+            SendMessage(JsonConvert.SerializeObject(envelope));
         }
     }
 }

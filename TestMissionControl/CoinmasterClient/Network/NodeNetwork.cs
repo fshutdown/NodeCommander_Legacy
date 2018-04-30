@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stratis.CoinmasterClient.FileDeployment;
+using System;
 using System.Collections.Generic;
 
 namespace Stratis.CoinmasterClient.Network
@@ -7,12 +8,12 @@ namespace Stratis.CoinmasterClient.Network
     {
         public Dictionary<string, SingleNode> NetworkNodes;
         public string Network { get; set; }
-        public Dictionary<String, String> FileDeploy { get; private set; }
+        public List<FileDescriptor> FileDeploy { get; private set; }
 
         public NodeNetwork()
         {
             NetworkNodes = new Dictionary<string, SingleNode>();
-            FileDeploy = new Dictionary<String, String>();
+            FileDeploy = new List<FileDescriptor>();
         }
 
     }

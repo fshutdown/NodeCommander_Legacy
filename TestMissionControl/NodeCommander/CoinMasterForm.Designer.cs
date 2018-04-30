@@ -59,22 +59,22 @@
             this.dataGridViewNodes = new System.Windows.Forms.DataGridView();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dataGridViewNodeExceptions = new System.Windows.Forms.DataGridView();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.textBoxUptime = new System.Windows.Forms.TextBox();
+            this.button8 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.textBoxNodeName = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.buttonDeployFiles = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
             this.tabPageGit = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button3 = new System.Windows.Forms.Button();
@@ -106,7 +106,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelDatabase = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelWorker = new System.Windows.Forms.ToolStripStatusLabel();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -420,59 +419,12 @@
             this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(782, 208);
             this.dataGridViewNodeExceptions.TabIndex = 7;
             // 
-            // button11
+            // propertyGrid1
             // 
-            this.button11.Location = new System.Drawing.Point(253, 39);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(111, 23);
-            this.button11.TabIndex = 8;
-            this.button11.Text = "Clear mempool";
-            this.button11.UseVisualStyleBackColor = true;
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(253, 10);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(111, 23);
-            this.button10.TabIndex = 7;
-            this.button10.Text = "Clear Data";
-            this.button10.UseVisualStyleBackColor = true;
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(265, 73);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(111, 23);
-            this.button9.TabIndex = 6;
-            this.button9.Text = "Clear Logs";
-            this.button9.UseVisualStyleBackColor = true;
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(184, 73);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
-            this.button8.TabIndex = 5;
-            this.button8.Text = "Restart";
-            this.button8.UseVisualStyleBackColor = true;
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(103, 73);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
-            this.button7.TabIndex = 4;
-            this.button7.Text = "Stop";
-            this.button7.UseVisualStyleBackColor = true;
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(22, 73);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 3;
-            this.button6.Text = "Start";
-            this.button6.UseVisualStyleBackColor = true;
+            this.propertyGrid1.Location = new System.Drawing.Point(5, 116);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(380, 343);
+            this.propertyGrid1.TabIndex = 9;
             // 
             // groupBox9
             // 
@@ -527,14 +479,13 @@
             // 
             // groupBox8
             // 
+            this.groupBox8.Controls.Add(this.button5);
             this.groupBox8.Controls.Add(this.textBoxUptime);
-            this.groupBox8.Controls.Add(this.label5);
-            this.groupBox8.Controls.Add(this.textBoxNodeName);
-            this.groupBox8.Controls.Add(this.button9);
             this.groupBox8.Controls.Add(this.button8);
+            this.groupBox8.Controls.Add(this.label5);
+            this.groupBox8.Controls.Add(this.button4);
+            this.groupBox8.Controls.Add(this.textBoxNodeName);
             this.groupBox8.Controls.Add(this.label4);
-            this.groupBox8.Controls.Add(this.button7);
-            this.groupBox8.Controls.Add(this.button6);
             this.groupBox8.Location = new System.Drawing.Point(9, 3);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(382, 107);
@@ -542,12 +493,31 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "General";
             // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.LightCoral;
+            this.button5.Location = new System.Drawing.Point(115, 73);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(103, 23);
+            this.button5.TabIndex = 1;
+            this.button5.Text = "Stop all nodes";
+            this.button5.UseVisualStyleBackColor = false;
+            // 
             // textBoxUptime
             // 
             this.textBoxUptime.Location = new System.Drawing.Point(92, 47);
             this.textBoxUptime.Name = "textBoxUptime";
             this.textBoxUptime.Size = new System.Drawing.Size(284, 20);
             this.textBoxUptime.TabIndex = 3;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(239, 73);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 5;
+            this.button8.Text = "Restart";
+            this.button8.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
@@ -557,6 +527,17 @@
             this.label5.Size = new System.Drawing.Size(43, 13);
             this.label5.TabIndex = 2;
             this.label5.Text = "Uptime:";
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.PaleGreen;
+            this.button4.Location = new System.Drawing.Point(6, 73);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(103, 23);
+            this.button4.TabIndex = 0;
+            this.button4.Text = "Start all nodes";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // textBoxNodeName
             // 
@@ -576,10 +557,10 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.button5);
+            this.groupBox4.Controls.Add(this.buttonDeployFiles);
             this.groupBox4.Controls.Add(this.button11);
-            this.groupBox4.Controls.Add(this.button4);
             this.groupBox4.Controls.Add(this.button10);
+            this.groupBox4.Controls.Add(this.button9);
             this.groupBox4.Location = new System.Drawing.Point(5, 465);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(388, 73);
@@ -587,25 +568,42 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Node Management";
             // 
-            // button5
+            // buttonDeployFiles
             // 
-            this.button5.BackColor = System.Drawing.Color.LightCoral;
-            this.button5.Location = new System.Drawing.Point(115, 28);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(103, 23);
-            this.button5.TabIndex = 1;
-            this.button5.Text = "Stop all nodes";
-            this.button5.UseVisualStyleBackColor = false;
+            this.buttonDeployFiles.Location = new System.Drawing.Point(19, 37);
+            this.buttonDeployFiles.Name = "buttonDeployFiles";
+            this.buttonDeployFiles.Size = new System.Drawing.Size(111, 23);
+            this.buttonDeployFiles.TabIndex = 9;
+            this.buttonDeployFiles.Text = "Deploy Files";
+            this.buttonDeployFiles.UseVisualStyleBackColor = true;
+            this.buttonDeployFiles.Click += new System.EventHandler(this.buttonDeployFiles_Click);
             // 
-            // button4
+            // button11
             // 
-            this.button4.BackColor = System.Drawing.Color.PaleGreen;
-            this.button4.Location = new System.Drawing.Point(6, 28);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(103, 23);
-            this.button4.TabIndex = 0;
-            this.button4.Text = "Start all nodes";
-            this.button4.UseVisualStyleBackColor = false;
+            this.button11.Location = new System.Drawing.Point(253, 39);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(111, 23);
+            this.button11.TabIndex = 8;
+            this.button11.Text = "Clear mempool";
+            this.button11.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(253, 10);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(111, 23);
+            this.button10.TabIndex = 7;
+            this.button10.Text = "Clear Data";
+            this.button10.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(136, 37);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(111, 23);
+            this.button9.TabIndex = 6;
+            this.button9.Text = "Clear Logs";
+            this.button9.UseVisualStyleBackColor = true;
             // 
             // tabPageGit
             // 
@@ -913,13 +911,6 @@
             this.toolStripStatusLabelWorker.Size = new System.Drawing.Size(75, 17);
             this.toolStripStatusLabelWorker.Text = "Init";
             // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Location = new System.Drawing.Point(5, 116);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(380, 343);
-            this.propertyGrid1.TabIndex = 9;
-            // 
             // CoinMasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1041,9 +1032,8 @@
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.Button buttonDeployFiles;
     }
 }
 

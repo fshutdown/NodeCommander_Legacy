@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.NetworkInformation;
 using Stratis.CoinmasterClient.Analysis;
+using Stratis.CoinmasterClient.Config;
 
 namespace Stratis.CoinmasterClient.Network
 {
@@ -11,8 +12,10 @@ namespace Stratis.CoinmasterClient.Network
         #region Configuration Options
         public NodeEndpointName NodeEndpoint { get; set; }
         public string DisplayName { get; set; }
+        public string NodeConfig { get; set; }
         public string DataDir { get; set; }
         public string CodeDirectory { get; set; }
+        public string ProjectFolder { get; set; }
         public string Agent { get; set; }
         #endregion
 
@@ -39,8 +42,18 @@ namespace Stratis.CoinmasterClient.Network
             NodeEndpoint = new NodeEndpointName(nodeFullName);
 
             DisplayName = NodeEndpoint.NodeName;
-            NodeDeploymentState = new NodeDeploymentState();
             NodeProcessState = new NodeProcessState();
+            NodeDeploymentState = new NodeDeploymentState();
+            NodeOperationState = new NodeOperationState();
+            NodeLogState = new NodeLogState();
+        }
+
+        public NodeConfigFile GetNodeConfig()
+        {
+            string nodeConfigPath = Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName, NodeConfig);
+            NodeConfigFile config = new NodeConfigFile(nodeConfigPath);
+
+            return config;
         }
 
         public override string ToString()

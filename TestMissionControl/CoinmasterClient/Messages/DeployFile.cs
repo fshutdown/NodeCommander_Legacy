@@ -8,9 +8,15 @@ namespace Stratis.CoinmasterClient.Messages
 {
     public class DeployFile
     {
-        public String Path { get; set; }
-        public String FileName { get; set; }
+        public String FullName { get; set; }
         public long Size { get; set; }
         public Byte[] Data { get; set; }
+        public int Length { get; set; }
+        public bool EndOfData { get; set; }
+
+        public DeployFile()
+        {
+            EndOfData = false;
+        }
     }
 }

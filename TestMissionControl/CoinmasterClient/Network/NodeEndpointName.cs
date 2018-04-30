@@ -29,7 +29,7 @@ namespace Stratis.CoinmasterClient.Network
                 return $"{NodeNetworkName}.{NodeBlockchainName}.{NodeName}";
             }
         }
-
+        
         public NodeEndpointName()
         {
 
@@ -58,6 +58,8 @@ namespace Stratis.CoinmasterClient.Network
             NodeName = null;
         }
 
+        public bool IsTestnet { get { return NodeBlockchainName.ToLower().Contains("test"); } }
+        
         public override string ToString()
         {
             return FullNodeName;

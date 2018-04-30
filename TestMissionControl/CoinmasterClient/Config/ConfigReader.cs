@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Config
@@ -56,7 +57,7 @@ namespace Stratis.CoinmasterClient.Config
 
                         if (sectionName == "Global" && key.ToLower() == "deploy")
                         {
-                            AddToFileDeploymentList(value);
+                            AddToFileDeploymentList("Global", value);
                         }
                         else if (sectionName == "Global" && key.ToLower() != "deploy")
                         {
@@ -77,7 +78,7 @@ namespace Stratis.CoinmasterClient.Config
 
                             if (key.ToLower() == "deploy")
                             {
-                                AddToFileDeploymentList(value);
+                                AddToFileDeploymentList(sectionName, value);
                             }
                             else
                             {
@@ -100,14 +101,20 @@ namespace Stratis.CoinmasterClient.Config
 
         }
 
-        private void AddToFileDeploymentList(string value)
+        private void AddToFileDeploymentList(string scope, string value)
         {
             string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
             if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
             string source = fileDeploymentParts[0].Trim();
             string destination = fileDeploymentParts[1].Trim();
 
-            Config.FileDeploy.Add(source, destination);
+            FileDescriptor fileDescriptor = new FileDescriptor()
+            {
+                Scope = scope,
+                LocalPath = source,
+                RemotePath = destination
+            };
+            Config.FileDeploy.Add(fileDescriptor);
         }
 
         private void SetProperty(object target, string propertyName, string value)

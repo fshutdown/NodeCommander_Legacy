@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Timers;
 using Newtonsoft.Json;
@@ -53,7 +54,6 @@ namespace Stratis.NodeCommander.Agents
 
                     //ToDo: Remove this to increase performance
                     SingleNode[] test_object = JsonConvert.DeserializeObject<SingleNode[]>(JsonConvert.SerializeObject(envelope.PayloadObject));
-
                 });
                 connection.OnDisconnect(agentConnection =>
                 {
@@ -86,6 +86,8 @@ namespace Stratis.NodeCommander.Agents
             }
         }
 
+
+
         protected void OnConnectionStatusChanged(string connectionAddress)
         {
             if (ConnectionStatusChanged != null) ConnectionStatusChanged.Invoke(connectionAddress);
@@ -95,6 +97,13 @@ namespace Stratis.NodeCommander.Agents
         {
             if (MessageReceived != null) MessageReceived.Invoke(connection, networkSegment);
             //Invoke(new Action<object, NodeNetwork>(NodePerformanceUpdated), agentConnection, networkSegment);
+        }
+
+        public AgentConnection GetAgent(string agentAddress)
+        {
+            AgentConnection agent = AgentConnectionList.FirstOrDefault(a => a.Key == agentAddress).Value;
+
+            return agent;
         }
     }
 }

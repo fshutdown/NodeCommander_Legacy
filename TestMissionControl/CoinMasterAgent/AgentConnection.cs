@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -22,6 +23,7 @@ namespace Stratis.CoinMasterAgent
         private NodeNetwork connectionNodes;
         private NodeNetwork localNodes;
         private NodeStatusChecker statusChecker;
+        private Dictionary<string, FileDeploymentProcessor> activeDeplopyments = new Dictionary<string, FileDeploymentProcessor>();
 
         public AgentConnection(IWebSocketConnection socket, NodeStatusChecker statusChecker, NodeNetwork localNodes)
         {
@@ -56,7 +58,7 @@ namespace Stratis.CoinMasterAgent
                 return;
             }
             
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
+            logger.Trace($"{socketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
 
             switch (envelope.MessageType)
             {
@@ -117,7 +119,12 @@ namespace Stratis.CoinMasterAgent
 
                     try
                     {
-                        ProcessActionRequest(clientAction);
+                        logger.Info($"{socketConnection.ConnectionInfo.Id} Received action {clientAction.ToString()}");
+
+                        SingleNode node = localNodes.NetworkNodes.FirstOrDefault(n => n.Key == clientAction.FullNodeName).Value;
+
+                        ActionRequestProcessor processor = new ActionRequestProcessor();
+                        processor.ProcessActionRequest(clientAction, node);
                     }
                     catch (Exception ex)
                     {
@@ -138,8 +145,22 @@ namespace Stratis.CoinMasterAgent
 
                     try
                     {
-                        FileDeployment fileDeployment = new FileDeployment(socketConnection);
+                        string deploymentKey = socketConnection.ConnectionInfo.Id + deployFile.FullName;
+
+                        FileDeploymentProcessor fileDeployment;
+                        if (activeDeplopyments.ContainsKey(deploymentKey))
+                        {
+                            fileDeployment = activeDeplopyments[deploymentKey];
+                        } else
+                        {
+                            fileDeployment = new FileDeploymentProcessor(socketConnection);
+                            activeDeplopyments.Add(deploymentKey, fileDeployment);
+                        }
+
                         fileDeployment.ProcessFileDeployRequest(deployFile);
+
+                        if (fileDeployment.IsClosed)
+                            activeDeplopyments.Remove(deploymentKey);
                     }
                     catch (Exception ex)
                     {
@@ -152,11 +173,6 @@ namespace Stratis.CoinMasterAgent
             }
         }
         #endregion
-
-        private void ProcessActionRequest(ActionRequest actionRequest)
-        {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Received action {actionRequest.Name}");
-        }
 
         private void ProcessNodes(SingleNode[] nodes)
         {
