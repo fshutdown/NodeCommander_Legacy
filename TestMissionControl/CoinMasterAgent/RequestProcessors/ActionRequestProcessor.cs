@@ -26,8 +26,8 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
 
                     ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", $"run {compilerSwitches} -datadir={node.DataDir}{runtimeSwitches}");
                     startInfo.WorkingDirectory = Path.Combine(node.CodeDirectory, node.ProjectFolder);
-                    startInfo.RedirectStandardError = false;
-                    startInfo.RedirectStandardOutput = false;
+                    startInfo.RedirectStandardError = true;
+                    startInfo.RedirectStandardOutput = true;
                     Process process = new Process();
                     process.StartInfo = startInfo;
 

@@ -280,5 +280,17 @@ namespace Stratis.NodeCommander.Agents
 
             SendMessage(JsonConvert.SerializeObject(envelope));
         }
+
+        public void StopNode(SingleNode node)
+        {
+            ActionRequest action = new ActionRequest(ActionType.StopNode);
+            action.FullNodeName = node.NodeEndpoint.FullNodeName;
+
+            MessageEnvelope envelope = new MessageEnvelope();
+            envelope.MessageType = MessageType.ActionRequest;
+            envelope.PayloadObject = action;
+
+            SendMessage(JsonConvert.SerializeObject(envelope));
+        }
     }
 }

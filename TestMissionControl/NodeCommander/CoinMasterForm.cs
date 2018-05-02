@@ -388,5 +388,18 @@ namespace Stratis.NodeCommander
                 agent.StartNode(node);
             }
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
+            {
+                SingleNode node = (SingleNode)row.Cells["Node"].Value;
+                var agent = agentConnectionManager.GetAgent(node.Agent);
+
+                agent.StopNode(node);
+            }
+        }
     }
 }

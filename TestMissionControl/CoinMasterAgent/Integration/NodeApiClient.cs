@@ -44,7 +44,7 @@ namespace Stratis.CoinMasterAgent
             try
             {
                 int apiPort = GetApiPort(node);
-                string getInfoString = await SendApiRequestAsync<String>("Node", "status", new Dictionary<String, String>(), apiPort);
+                string getInfoString = await SendApiRequestAsync<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
 
                 nodeStatus = JsonConvert.DeserializeObject<NodeStatus>(getInfoString);
             } catch (Exception ex)
@@ -60,7 +60,7 @@ namespace Stratis.CoinMasterAgent
             try
             {
                 int apiPort = GetApiPort(node);
-                string getInfoString = await SendApiRequestAsync<String>("Node", "shutdown", new Dictionary<String, String>(), apiPort);
+                string getInfoString = await SendApiRequestAsync<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
             }
             catch (Exception ex)
             {
@@ -103,6 +103,7 @@ namespace Stratis.CoinMasterAgent
             try
             {
                 WebRequest webRequest = WebRequest.Create(url);
+                webRequest.Timeout = 2000;
                 WebResponse webResponse = webRequest.GetResponse();
                 StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
 
@@ -123,16 +124,16 @@ namespace Stratis.CoinMasterAgent
             }
         }
 
-        private async static Task<T> SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, int port)
+        private async static Task<T> SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
         {
             logger.Info($"Calling API {methodName} on port {port}");
             return await Task.Run(() =>
             {
-                return SendApiRequest<T>(methodDomain, methodName, arguments, port);
+                return SendApiRequest<T>(methodDomain, methodName, arguments, payload, port);
             });
         }
 
-        private static T SendApiRequest<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, int port)
+        private static T SendApiRequest<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
         {
             string queryString = BuildQueryString(arguments);
             string url = $"http://localhost:{port}/api/{methodDomain}/{methodName}?{queryString}";
@@ -141,9 +142,21 @@ namespace Stratis.CoinMasterAgent
             try
             {
                 WebRequest webRequest = WebRequest.Create(url);
+                webRequest.Timeout = 2000;
+                if (payload != null)
+                {
+                    webRequest.Method = "POST";
+                    StreamWriter requestStream = new StreamWriter(webRequest.GetRequestStream());
+                    requestStream.Write(payload);
+                    requestStream.Close();
+                }
+                else
+                {
+                    webRequest.Method = "GET";
+                }
+
                 WebResponse webResponse = webRequest.GetResponse();
                 StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
-
                 valueString = responseStream.ReadToEnd();
             }
             catch

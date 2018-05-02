@@ -500,8 +500,9 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(103, 23);
             this.button5.TabIndex = 1;
-            this.button5.Text = "Stop all nodes";
+            this.button5.Text = "Stop node";
             this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // textBoxUptime
             // 
@@ -535,7 +536,7 @@
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(103, 23);
             this.button4.TabIndex = 0;
-            this.button4.Text = "Start all nodes";
+            this.button4.Text = "Start node";
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
