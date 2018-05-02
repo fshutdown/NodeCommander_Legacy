@@ -587,6 +587,7 @@
             this.button11.TabIndex = 8;
             this.button11.Text = "Clear mempool";
             this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button10
             // 

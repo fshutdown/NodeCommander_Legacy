@@ -151,7 +151,8 @@ namespace Stratis.CoinMasterAgent
                         if (activeDeplopyments.ContainsKey(deploymentKey))
                         {
                             fileDeployment = activeDeplopyments[deploymentKey];
-                        } else
+                        }
+                        else
                         {
                             fileDeployment = new FileDeploymentProcessor(socketConnection);
                             activeDeplopyments.Add(deploymentKey, fileDeployment);

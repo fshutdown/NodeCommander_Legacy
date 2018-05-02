@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
@@ -285,6 +286,19 @@ namespace Stratis.NodeCommander.Agents
         {
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
+
+            MessageEnvelope envelope = new MessageEnvelope();
+            envelope.MessageType = MessageType.ActionRequest;
+            envelope.PayloadObject = action;
+
+            SendMessage(JsonConvert.SerializeObject(envelope));
+        }
+
+        public void RemoveFile(SingleNode node, string path)
+        {
+            ActionRequest action = new ActionRequest(ActionType.DeleteFile);
+            action.FullNodeName = node.NodeEndpoint.FullNodeName;
+            action.Parameters.Add(ActionParameters.Path, ConfigReader.Evaluate(path, node));
 
             MessageEnvelope envelope = new MessageEnvelope();
             envelope.MessageType = MessageType.ActionRequest;

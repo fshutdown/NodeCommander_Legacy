@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Stratis.CoinmasterClient.FileDeployment;
@@ -23,7 +25,6 @@ namespace Stratis.CoinmasterClient.Config
             Load();
         }
     
-
         public void Load()
         {
             Config = new NodeNetwork();
@@ -99,6 +100,31 @@ namespace Stratis.CoinmasterClient.Config
                 lineNumber++;
             }
 
+            //Enumerate variables to resolve any parameter values
+            foreach (SingleNode node in Config.NetworkNodes.Values)
+            {
+                Dictionary<String, String> variables = CreateEvaluationLookup(node);
+                foreach (string variableName in variables.Keys)
+                {
+                    string newValue = Evaluate(variables[variableName], variables);
+                    if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
+                        
+                    if (newValue != variables[variableName])
+                    {
+                        SetProperty(node, variableName, newValue);
+                        variables[variableName] = newValue;
+                    }
+                }
+
+                var fileDescriptors = Config.FileDeploy.Where(d => d.Scope == node.NodeEndpoint.FullNodeName);
+                foreach (FileDescriptor fileDescriptor in fileDescriptors)
+                {
+                    fileDescriptor.LocalPath = Evaluate(fileDescriptor.LocalPath, variables);
+                    fileDescriptor.RemotePath = Evaluate(fileDescriptor.RemotePath, variables);
+                    if (fileDescriptor.RemotePath.StartsWith(".")) fileDescriptor.RemotePath = Path.Combine(node.NetworkDirectory, fileDescriptor.RemotePath.Substring(1).Trim('\\'));
+
+                }
+            }
         }
 
         private void AddToFileDeploymentList(string scope, string value)
@@ -134,9 +160,44 @@ namespace Stratis.CoinmasterClient.Config
                     break;
                 }
             }
-
-            
         }
-            
+
+        private static Dictionary<String, String> CreateEvaluationLookup(SingleNode node)
+        {
+            Dictionary<String, String> variableLookup = new Dictionary<string, string>();
+            foreach (PropertyInfo property in typeof(SingleNode).GetProperties())
+            {
+                if (property.PropertyType == typeof(String))
+                {
+                    string propertyName = property.Name;
+                    string propertyValue = property.GetValue(node) as String;
+
+                    variableLookup.Add(propertyName, propertyValue);
+                }
+            }
+
+            return variableLookup;
+        }
+
+        private static string Evaluate(String text, Dictionary<String, String> variableLookup)
+        {
+            string result = text;
+            foreach (String variableName in variableLookup.Keys)
+            {
+                if (variableLookup[variableName] != null) result = result.Replace($"${variableName}", variableLookup[variableName]);
+            }
+
+            return result;
+        }
+
+        public static string Evaluate(String text, SingleNode node)
+        {
+            Dictionary<String, String> variableLookup = CreateEvaluationLookup(node);
+
+            string newValue = Evaluate(text, variableLookup);
+            if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
+            return newValue;
+        }
+
     }
 }

@@ -9,6 +9,7 @@ namespace Stratis.CoinmasterClient.Messages
     public enum ActionParameters
     {
         CompilerSwitches,
-        RuntimeSwitches
+        RuntimeSwitches,
+        Path
     }
 }
