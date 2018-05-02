@@ -8,6 +8,8 @@ namespace Stratis.CoinmasterClient.Analysis
 {
     public class NodeProcessState
     {
+        public Guid WorkerId { get; set; }
+
         public int ProcesPid { get; set; }
         public DateTime StartTime { get; set; }
         public ProcessState State { get; set; }
@@ -20,5 +22,15 @@ namespace Stratis.CoinmasterClient.Analysis
 
         public decimal Cpu { get; set; }
         public decimal PrivateMemorySize { get; set; }
+
+        public NodeProcessState()
+        {
+
+        }
+
+        public NodeProcessState(Guid workerId) : this()
+        {
+            WorkerId = workerId;
+        }
     }
 }

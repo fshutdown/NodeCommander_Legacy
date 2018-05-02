@@ -147,6 +147,7 @@ namespace Stratis.NodeCommander
             nodesData.Columns.Add("Mempool");
             nodesData.Columns.Add("Peers");
             nodesData.Columns.Add("Uptime");
+            nodesData.Columns.Add("Testing");
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
@@ -247,6 +248,7 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.Columns["Mempool"].Width = 60;
                 dataGridViewNodes.Columns["Peers"].Width = 80;
                 dataGridViewNodes.Columns["Uptime"].Width = 80;
+                dataGridViewNodes.Columns["Testing"].Width = 80;
             }
 
             MergeMeasuresIntoNode(network, networkSegment);
@@ -296,6 +298,7 @@ namespace Stratis.NodeCommander
                         dataRow["Mempool"] = network.NetworkNodes[nodeName].NodeOperationState.MempoolTransactionCount;
                         dataRow["Peers"] = $"In:{network.NetworkNodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{network.NetworkNodes[nodeName].NodeOperationState.OutboundPeersCount}";
                         dataRow["Uptime"] = network.NetworkNodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
+                        dataRow["Testing"] = network.NetworkNodes[nodeName].NodeLogState.ExceptionCount;
                     }
                 }
             }

@@ -2,44 +2,75 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinMasterAgent.StatusCheck
 {
-    public static class NodeDeployment
+    public class NodeDeployment
     {
-        public async static Task<NodeDeploymentState> GetNodeDeploymentState(SingleNode node)
+        public Guid WorkerGuid { get; private set; }
+        public NodeDeploymentState State { get; private set; }
+        public Boolean Enabled { get; private set; }
+
+        private Thread updateThread;
+        private SingleNode node;
+
+        public NodeDeployment(Guid workerGuid, SingleNode node)
         {
-            NodeDeploymentState state = new NodeDeploymentState();
-
-            DirectoryInfo nodeDataDir = new DirectoryInfo(node.DataDir);
-            state.DirectoryExists = nodeDataDir.Exists;
-
-            #region Node Config 
-            FileInfo nodeConfigFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "stratis.dat"));
-            state.MemPoolFileExists = nodeConfigFile.Exists;
-
-            if (state.MemPoolFileExists) state.MemPoolFileSize = nodeConfigFile.Length;
-            #endregion
-
-
-            #region MemPool 
-            FileInfo mempoolFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "mempool.dat"));
-            state.MemPoolFileExists = mempoolFile.Exists;
-            if (state.MemPoolFileExists) state.MemPoolFileSize = mempoolFile.Length;
-            #endregion
-
-            #region Peers
-            FileInfo peersFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "peers.json"));
-            state.PeersFileExists = peersFile.Exists;
-            if (state.PeersFileExists) state.PeersFileSize = peersFile.Length;
-            #endregion
-
-
-
-            return state;
+            this.node = node;
+            Enabled = false;
+            WorkerGuid = workerGuid;
+            State = new NodeDeploymentState(WorkerGuid);
+            Start();
         }
+
+        public void Start()
+        {
+            Enabled = true;
+            updateThread = new Thread(updateJob);
+            updateThread.Start();
+        }
+        public void Stop()
+        {
+            Enabled = false;
+        }
+
+        private void updateJob()
+        {
+            while (Enabled)
+            {
+                State = new NodeDeploymentState();
+
+                DirectoryInfo nodeDataDir = new DirectoryInfo(node.DataDir);
+                State.DirectoryExists = nodeDataDir.Exists;
+
+                #region Node Config 
+                FileInfo nodeConfigFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "stratis.dat"));
+                State.MemPoolFileExists = nodeConfigFile.Exists;
+
+                if (State.MemPoolFileExists) State.MemPoolFileSize = nodeConfigFile.Length;
+                #endregion
+
+
+                #region MemPool 
+                FileInfo mempoolFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "mempool.dat"));
+                State.MemPoolFileExists = mempoolFile.Exists;
+                if (State.MemPoolFileExists) State.MemPoolFileSize = mempoolFile.Length;
+                #endregion
+
+                #region Peers
+                FileInfo peersFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "peers.json"));
+                State.PeersFileExists = peersFile.Exists;
+                if (State.PeersFileExists) State.PeersFileSize = peersFile.Length;
+                #endregion
+
+                Thread.Sleep(1000);
+            }
+        }
+
+
     }
 }

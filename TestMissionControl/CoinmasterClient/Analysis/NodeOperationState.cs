@@ -22,5 +22,15 @@ namespace Stratis.CoinmasterClient.Analysis
         public TimeSpan Uptime { get; set; }
         public int NetworkHeight { get; set; }
         public int MempoolTransactionCount { get; set; }
+
+        public NodeOperationState()
+        {
+
+        }
+
+        public NodeOperationState(Guid workerId) : this()
+        {
+            WorkerId = workerId;
+        }
     }
 }
