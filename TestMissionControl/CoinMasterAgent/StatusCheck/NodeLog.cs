@@ -7,15 +7,18 @@ using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinMasterAgent.StatusCheck
 {
-    public static class NodeLog
+    public class NodeLog
     {
-        public async static Task<NodeLogState> GetNodeLogState(SingleNode node)
+        public Guid WorkerGuid { get; private set; }
+        public NodeLogState NodeLogState { get; private set; }
+
+        public NodeLog(Guid workerGuid)
         {
-            NodeLogState state = new NodeLogState();
-            if (node.NodeOperationState.State != ProcessState.Running) return state;
-
-
-            return state;
+            WorkerGuid = workerGuid;
+            NodeLogState = new NodeLogState(WorkerGuid);
         }
+
+
+
     }
 }

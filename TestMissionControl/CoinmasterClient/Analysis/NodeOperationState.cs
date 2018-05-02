@@ -9,6 +9,7 @@ namespace Stratis.CoinmasterClient.Analysis
 {
     public class NodeOperationState
     {
+        public Guid WorkerId { get; set; }
         public ProcessState State { get; set; }
         public int BlockHeight { get; set; }
         public string AgentName { get; set; }
