@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Timers;
 using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.NodeCommander.Agents
+namespace Stratis.NodeCommander.Client
 {
     public class AgentConnectionManager
     {

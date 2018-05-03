@@ -1,4 +1,4 @@
-﻿namespace Stratis.NodeCommander.Agents
+﻿namespace Stratis.NodeCommander.Client
 {
     public enum AgentState
     {

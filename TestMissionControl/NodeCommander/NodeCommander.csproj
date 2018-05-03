@@ -54,8 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agents\AgentConnectionManager.cs" />
-    <Compile Include="Agents\AgentState.cs" />
+    <Compile Include="Client\ClientConnectionManager.cs" />
+    <Compile Include="Client\AgentState.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="CoinMasterForm.cs">
       <SubType>Form</SubType>
@@ -63,7 +63,7 @@
     <Compile Include="CoinMasterForm.Designer.cs">
       <DependentUpon>CoinMasterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Agents\AgentConnection.cs" />
+    <Compile Include="Client\ClientConnection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workers\BaseWorker.cs" />

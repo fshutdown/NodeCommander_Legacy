@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Network;
-using Stratis.NodeCommander.Agents;
+using Stratis.NodeCommander.Client;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
