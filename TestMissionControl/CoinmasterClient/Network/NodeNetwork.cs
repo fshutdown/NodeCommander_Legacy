@@ -7,15 +7,17 @@ namespace Stratis.CoinmasterClient.Network
 {
     public class NodeNetwork
     {
-        public Dictionary<string, SingleNode> NetworkNodes;
+        public Dictionary<string, SingleNode> Nodes;
         public string Network { get; set; }
         public List<FileDescriptor> FileDeploy { get; private set; }
+        public LogMessagesResource LogMessageStore { get; set; }
         public AgentHealthState AgentHealthState { get; set; }
 
         public NodeNetwork()
         {
-            NetworkNodes = new Dictionary<string, SingleNode>();
+            Nodes = new Dictionary<string, SingleNode>();
             FileDeploy = new List<FileDescriptor>();
+            LogMessageStore = new LogMessagesResource();
         }
 
     }

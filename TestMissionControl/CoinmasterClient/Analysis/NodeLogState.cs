@@ -18,10 +18,9 @@ namespace Stratis.CoinmasterClient.Analysis
         public string WalletHeight { get; set; }
         public string DynamicSize { get; set; }
         public string OrphanSize { get; set; }
-        public Dictionary<String, int> InfoMessages { get; set; }
-        public Dictionary<String, int> WarningMessages { get; set; }
-        public Dictionary<String, int> ErrorMessages { get; set; }
-        public Dictionary<String, int> CriticalMessages { get; set; }
+        public int InfoMessageCount { get; set; }
+
+        public LogMessagesResource LogMessageStore { get; set; }
 
         public NodeLogState()
         {
@@ -31,10 +30,8 @@ namespace Stratis.CoinmasterClient.Analysis
         public NodeLogState(Guid workerId) : this()
         {
             WorkerId = workerId;
-            InfoMessages = new Dictionary<string, int>();
-            WarningMessages = new Dictionary<string, int>();
-            ErrorMessages = new Dictionary<string, int>();
-            CriticalMessages = new Dictionary<string, int>();
+            InfoMessageCount = 0;
+            LogMessageStore = new LogMessagesResource();
         }
     }
 }

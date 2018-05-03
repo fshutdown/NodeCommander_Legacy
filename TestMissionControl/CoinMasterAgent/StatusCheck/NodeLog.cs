@@ -80,34 +80,38 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     if (line.Substring(28).Trim().StartsWith("ERROR:"))
                     {
                         string errorKey = line.Substring(36);
-                        if (!State.ErrorMessages.ContainsKey(errorKey))
-                            State.ErrorMessages.Add(errorKey, 1);
+                        if (!State.LogMessageStore.ErrorMessages.ContainsKey(errorKey))
+                            State.LogMessageStore.ErrorMessages.Add(errorKey, 1);
                         else
-                            State.ErrorMessages[errorKey]++;
+                            State.LogMessageStore.ErrorMessages[errorKey]++;
+                    }
+                    if (line.Substring(28).Trim().StartsWith("FAIL:"))
+                    {
+                        string errorKey = line.Substring(35);
+                        if (!State.LogMessageStore.FailMessages.ContainsKey(errorKey))
+                            State.LogMessageStore.FailMessages.Add(errorKey, 1);
+                        else
+                            State.LogMessageStore.ErrorMessages[errorKey]++;
                     }
                     else if (line.Substring(28).Trim().StartsWith("INFO:"))
                     {
-                        string infoKey = line.Substring(35);
-                        if (!State.InfoMessages.ContainsKey(infoKey))
-                            State.InfoMessages.Add(infoKey, 1);
-                        else
-                            State.InfoMessages[infoKey]++;
+                        State.InfoMessageCount++;
                     }
                     else if (line.Substring(28).Trim().StartsWith("WARN:"))
                     {
                         string warningKey = line.Substring(35);
-                        if (!State.WarningMessages.ContainsKey(warningKey))
-                            State.WarningMessages.Add(warningKey, 1);
+                        if (!State.LogMessageStore.WarningMessages.ContainsKey(warningKey))
+                            State.LogMessageStore.WarningMessages.Add(warningKey, 1);
                         else
-                            State.WarningMessages[warningKey]++;
+                            State.LogMessageStore.WarningMessages[warningKey]++;
                     }
                     else if (line.Substring(28).Trim().StartsWith("CRIT:"))
                     {
                         string errorKey = line.Substring(35);
-                        if (!State.CriticalMessages.ContainsKey(errorKey))
-                            State.CriticalMessages.Add(errorKey, 1);
+                        if (!State.LogMessageStore.CriticalMessages.ContainsKey(errorKey))
+                            State.LogMessageStore.CriticalMessages.Add(errorKey, 1);
                         else
-                            State.CriticalMessages[errorKey]++;
+                            State.LogMessageStore.CriticalMessages[errorKey]++;
                     }
                 }
             }

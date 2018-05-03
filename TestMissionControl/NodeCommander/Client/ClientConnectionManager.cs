@@ -24,7 +24,7 @@ namespace Stratis.NodeCommander.Client
             this.network = network;
             AgentConnectionList = new Dictionary<string, AgentConnection>();
 
-            foreach (SingleNode node in network.NetworkNodes.Values)
+            foreach (SingleNode node in network.Nodes.Values)
             {
                 string[] addressParts = node.Agent.Split(':');
                 AgentConnection newAgent = AgentConnection.Create(addressParts[0], addressParts[1]);
@@ -43,7 +43,7 @@ namespace Stratis.NodeCommander.Client
                     agentConnection.State = AgentState.Connected;
                     OnConnectionStatusChanged(connection.Address);
 
-                    List<SingleNode> nodeList = (from n in network.NetworkNodes.Values
+                    List<SingleNode> nodeList = (from n in network.Nodes.Values
                                                  where n.Agent == connection.Address
                                                  select n).ToList();
 

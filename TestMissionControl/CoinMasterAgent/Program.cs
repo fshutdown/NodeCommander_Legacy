@@ -20,7 +20,7 @@ namespace Stratis.CoinMasterAgent
         public readonly static Logger logger = LogManager.GetCurrentClassLogger();
         private static WebSocketServer server;
         private static NodeStatusChecker statusChecker;
-        private static NodeNetwork localNodes;
+        private static NodeNetwork managedNodes;
 
 
         static void Main(string[] args)
@@ -30,8 +30,8 @@ namespace Stratis.CoinMasterAgent
             try
             {
                 logger.Debug("Starting node state checking loop");
-                localNodes = new NodeNetwork();
-                statusChecker = new NodeStatusChecker(localNodes);
+                managedNodes = new NodeNetwork();
+                statusChecker = new NodeStatusChecker(managedNodes);
                 statusChecker.Start();
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace Stratis.CoinMasterAgent
         private static void ConfigureEvents(IWebSocketConnection socket)
         {
             logger.Debug($"{socket.ConnectionInfo.Id} Received client connection from {socket.ConnectionInfo.ClientIpAddress}:{socket.ConnectionInfo.ClientPort}");
-            AgentConnection connection = new AgentConnection(socket, statusChecker, localNodes);
+            AgentConnection connection = new AgentConnection(socket, statusChecker, managedNodes);
             
             socket.OnOpen = () => connection.ConnectionOpen();
             socket.OnClose = () => connection.ConnectionClose();

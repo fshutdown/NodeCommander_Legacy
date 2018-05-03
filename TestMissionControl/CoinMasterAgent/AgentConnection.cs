@@ -7,6 +7,7 @@ using Fleck;
 using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.StatusCheck;
@@ -20,16 +21,15 @@ namespace Stratis.CoinMasterAgent
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private IWebSocketConnection socketConnection;
-        private NodeNetwork connectionNodes;
-        private NodeNetwork localNodes;
+        private NodeNetwork managedNodes;
         private NodeStatusChecker statusChecker;
         private Dictionary<string, FileDeploymentProcessor> activeDeplopyments = new Dictionary<string, FileDeploymentProcessor>();
 
-        public AgentConnection(IWebSocketConnection socket, NodeStatusChecker statusChecker, NodeNetwork localNodes)
+        public AgentConnection(IWebSocketConnection socket, NodeStatusChecker statusChecker, NodeNetwork managedNodes)
         {
             this.socketConnection = socket;
             this.statusChecker = statusChecker;
-            this.localNodes = localNodes;
+            this.managedNodes = managedNodes;
         }
 
         #region Socket Event Handlers
@@ -121,7 +121,7 @@ namespace Stratis.CoinMasterAgent
                     {
                         logger.Info($"{socketConnection.ConnectionInfo.Id} Received action {clientAction.ToString()}");
 
-                        SingleNode node = localNodes.NetworkNodes.FirstOrDefault(n => n.Key == clientAction.FullNodeName).Value;
+                        SingleNode node = managedNodes.Nodes.FirstOrDefault(n => n.Key == clientAction.FullNodeName).Value;
 
                         ActionRequestProcessor processor = new ActionRequestProcessor();
                         processor.ProcessActionRequest(clientAction, node);
@@ -179,12 +179,24 @@ namespace Stratis.CoinMasterAgent
         {
             logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {nodes.Length} nodes configuration");
 
-            connectionNodes = new NodeNetwork();
-            foreach (SingleNode node in nodes)
+            if (managedNodes == null) managedNodes = new NodeNetwork();
+
+            if (ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
-                connectionNodes.NetworkNodes.Add(node.NodeEndpoint.FullNodeName, node);
-                if (!localNodes.NetworkNodes.ContainsKey(node.NodeEndpoint.FullNodeName))
-                    localNodes.NetworkNodes.Add(node.NodeEndpoint.FullNodeName, node);
+                foreach (SingleNode node in managedNodes.Nodes.Values)
+                    node.OrphanNode = true;
+
+                foreach (SingleNode node in nodes)
+                {
+                    managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
+                    if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                        managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
+                    node.OrphanNode = false;
+                }
+            }
+            else if (ClientRegistration.ClientRole == ClientRoleType.WatchOnly)
+            {
+
             }
         }
 
@@ -198,7 +210,7 @@ namespace Stratis.CoinMasterAgent
         {
             logger.Debug($"{socketConnection.ConnectionInfo.Id}: Starting client update loop");
 
-            while (connectionNodes == null)
+            while (managedNodes == null)
             {
                 Thread.Sleep(1000);
                 logger.Trace($"{socketConnection.ConnectionInfo.Id}: Waiting for the client registration message");
@@ -207,40 +219,45 @@ namespace Stratis.CoinMasterAgent
             while (socketConnection.IsAvailable)
             {
                 logger.Debug($"{socketConnection.ConnectionInfo.Id}: Updating node measures");
-                NodeNetwork updatedNodes = statusChecker.GetUpdate();
+                managedNodes = statusChecker.GetUpdate();
 
-                foreach (string networkNodeName in updatedNodes.NetworkNodes.Keys)
-                    connectionNodes.NetworkNodes[networkNodeName] = updatedNodes.NetworkNodes[networkNodeName];
-                connectionNodes.AgentHealthState = updatedNodes.AgentHealthState;
-
-                string payload;
-                try
-                {
-                    logger.Debug($"{socketConnection.ConnectionInfo.Id}: Preparing message payload");
-                    payload = JsonConvert.SerializeObject(connectionNodes);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while generating message payload", ex);
-                    continue;
-                }
-
-                try
-                {
-                    logger.Debug($"{socketConnection.ConnectionInfo.Id}: Sending data to the client ({payload.Length} bytes)");
-                    
-                    socketConnection.Send(payload);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while sending data to the client", ex);
-                }
-                
+                SendObject(MessageType.NodeData, managedNodes);
                 Thread.Sleep(2000);
             }
 
             logger.Info($"{socketConnection.ConnectionInfo.Id}: The connection is no longer available");
             socketConnection.Close();
+        }
+
+        private void SendObject(MessageType messageType, object data)
+        {
+            string payload;
+            try
+            {
+                logger.Debug($"{socketConnection.ConnectionInfo.Id}: Preparing message {messageType} payload");
+
+                MessageEnvelope envelope = new MessageEnvelope();
+                envelope.MessageType = messageType;
+                envelope.PayloadObject = data;
+
+                payload = JsonConvert.SerializeObject(envelope);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while generating message {messageType} payload", ex);
+                return;
+            }
+
+            try
+            {
+                logger.Debug($"{socketConnection.ConnectionInfo.Id}: Sending {messageType} data to the client ({payload.Length} bytes)");
+
+                socketConnection.Send(payload);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while sending {messageType} data to the client", ex);
+            }
         }
 
 

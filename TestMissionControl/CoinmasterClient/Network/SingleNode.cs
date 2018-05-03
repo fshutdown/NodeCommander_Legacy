@@ -24,6 +24,8 @@ namespace Stratis.CoinmasterClient.Network
         public NodeOperationState NodeOperationState { get; set; }
         public NodeLogState NodeLogState { get; set; }
 
+        public bool OrphanNode { get; set; }
+
         public string NetworkDirectory
         {
             get
@@ -31,6 +33,8 @@ namespace Stratis.CoinmasterClient.Network
                 return Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName);
             }
         }
+
+        
 
         public SingleNode()
         {

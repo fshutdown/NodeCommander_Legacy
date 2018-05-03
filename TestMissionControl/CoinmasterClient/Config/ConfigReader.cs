@@ -67,14 +67,14 @@ namespace Stratis.CoinmasterClient.Config
                         else
                         {
                             SingleNode nodeConfig;
-                            if (!Config.NetworkNodes.ContainsKey(sectionName))
+                            if (!Config.Nodes.ContainsKey(sectionName))
                             {
                                 nodeConfig = new SingleNode(sectionName);
-                                Config.NetworkNodes.Add(sectionName, nodeConfig);
+                                Config.Nodes.Add(sectionName, nodeConfig);
                             }
                             else
                             {
-                                nodeConfig = Config.NetworkNodes[sectionName];
+                                nodeConfig = Config.Nodes[sectionName];
                             }
 
                             if (key.ToLower() == "deploy")
@@ -101,7 +101,7 @@ namespace Stratis.CoinmasterClient.Config
             }
 
             //Enumerate variables to resolve any parameter values
-            foreach (SingleNode node in Config.NetworkNodes.Values)
+            foreach (SingleNode node in Config.Nodes.Values)
             {
                 Dictionary<String, String> variables = CreateEvaluationLookup(node);
                 foreach (string variableName in variables.Keys)

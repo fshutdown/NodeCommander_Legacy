@@ -54,7 +54,7 @@ namespace Stratis.NodeCommander
             //Create workers
             cryptoIdWorker = new CryptoIdWorker(10000, new NodeEndpointName("Stratis", "StratisTest"));
             cryptoIdWorker.StateChange += DashboardWorkerStateChanged;
-            cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<AgentConnection, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
+            cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
             _workers.Add(cryptoIdWorker);
 
             //Start all workers
@@ -154,9 +154,9 @@ namespace Stratis.NodeCommander
             nodesData.Columns.Add("Uptime");
             nodesData.Columns.Add("Messages");
 
-            foreach (string nodeName in network.NetworkNodes.Keys)
+            foreach (string nodeName in network.Nodes.Keys)
             {
-                SingleNode node = network.NetworkNodes[nodeName];
+                SingleNode node = network.Nodes[nodeName];
 
                 object[] rowData = new object[nodesData.Columns.Count];
                 rowData[0] = node;
@@ -284,45 +284,46 @@ namespace Stratis.NodeCommander
             if (networkSegment == null) return;
             network.AgentHealthState = networkSegment.AgentHealthState;
 
-            foreach (string nodeName in network.NetworkNodes.Keys)
+            foreach (string nodeName in network.Nodes.Keys)
             {
-                if (networkSegment.NetworkNodes.ContainsKey(nodeName))
+                if (networkSegment.Nodes.ContainsKey(nodeName))
                 {
-                    network.NetworkNodes[nodeName].NodeDeploymentState = networkSegment.NetworkNodes[nodeName].NodeDeploymentState;
-                    network.NetworkNodes[nodeName].NodeProcessState = networkSegment.NetworkNodes[nodeName].NodeProcessState;
-                    network.NetworkNodes[nodeName].NodeLogState = networkSegment.NetworkNodes[nodeName].NodeLogState;
-                    network.NetworkNodes[nodeName].NodeOperationState = networkSegment.NetworkNodes[nodeName].NodeOperationState;
+                    network.Nodes[nodeName].NodeDeploymentState = networkSegment.Nodes[nodeName].NodeDeploymentState;
+                    network.Nodes[nodeName].NodeProcessState = networkSegment.Nodes[nodeName].NodeProcessState;
+                    network.Nodes[nodeName].NodeLogState = networkSegment.Nodes[nodeName].NodeLogState;
+                    network.Nodes[nodeName].NodeOperationState = networkSegment.Nodes[nodeName].NodeOperationState;
                 }
             }
         }
 
-        private void MergeMeasuresIntoDataTable(DataGridView grid, NodeNetwork network)
+        private void MergeMeasuresIntoDataTable(DataGridView grid, NodeNetwork managedNodes)
         {
-            if (network == null) return;
+            if (managedNodes == null) return;
 
             DataView dataView = ((DataView)grid.DataSource);
             DataTable table = dataView.Table;
 
-            foreach (string nodeName in network.NetworkNodes.Keys)
+            foreach (string nodeName in managedNodes.Nodes.Keys)
             {
                 foreach (DataRow dataRow in table.Rows)
                 {
                     if (((SingleNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(nodeName))
                     {
-                        dataRow["Node"] = network.NetworkNodes[nodeName];
-                        dataRow["Status"] = network.NetworkNodes[nodeName].NodeOperationState.State;
-                        dataRow["HeaderHeight"] = network.NetworkNodes[nodeName].NodeLogState.HeadersHeight;
-                        dataRow["ConsensusHeight"] = network.NetworkNodes[nodeName].NodeLogState.ConsensusHeight;
-                        dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeLogState.BlockStoreHeight;
-                        dataRow["WalletHeight"] = network.NetworkNodes[nodeName].NodeLogState.WalletHeight;
-                        dataRow["NetworkHeight"] = network.NetworkNodes[nodeName].NodeOperationState.NetworkHeight;
-                        dataRow["Mempool"] = network.NetworkNodes[nodeName].NodeOperationState.MempoolTransactionCount;
-                        dataRow["Peers"] = $"In:{network.NetworkNodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{network.NetworkNodes[nodeName].NodeOperationState.OutboundPeersCount}";
-                        dataRow["Uptime"] = network.NetworkNodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-                        dataRow["Messages"] = $"I:{network.NetworkNodes[nodeName].NodeLogState.InfoMessages.Count} / " +
-                                              $"W:{network.NetworkNodes[nodeName].NodeLogState.WarningMessages.Count} / " +
-                                              $"E:{network.NetworkNodes[nodeName].NodeLogState.ErrorMessages.Count} / " +
-                                              $"C:{network.NetworkNodes[nodeName].NodeLogState.CriticalMessages.Count} / ";
+                        dataRow["Node"] = managedNodes.Nodes[nodeName];
+                        dataRow["Status"] = managedNodes.Nodes[nodeName].NodeOperationState.State;
+                        dataRow["HeaderHeight"] = managedNodes.Nodes[nodeName].NodeLogState.HeadersHeight;
+                        dataRow["ConsensusHeight"] = managedNodes.Nodes[nodeName].NodeLogState.ConsensusHeight;
+                        dataRow["BlockHeight"] = managedNodes.Nodes[nodeName].NodeLogState.BlockStoreHeight;
+                        dataRow["WalletHeight"] = managedNodes.Nodes[nodeName].NodeLogState.WalletHeight;
+                        dataRow["NetworkHeight"] = managedNodes.Nodes[nodeName].NodeOperationState.NetworkHeight;
+                        dataRow["Mempool"] = managedNodes.Nodes[nodeName].NodeOperationState.MempoolTransactionCount;
+                        dataRow["Peers"] = $"In:{managedNodes.Nodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[nodeName].NodeOperationState.OutboundPeersCount}";
+                        dataRow["Uptime"] = managedNodes.Nodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
+                        dataRow["Messages"] = $"I:{managedNodes.Nodes[nodeName].NodeLogState.InfoMessageCount} / " +
+                                              $"W:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.WarningMessages.Count} / " +
+                                              $"E:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.ErrorMessages.Count} / " +
+                                              $"E:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.FailMessages.Count} / " +
+                                              $"C:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.CriticalMessages.Count} / ";
                     }
                 }
             }
@@ -370,11 +371,9 @@ namespace Stratis.NodeCommander
 
             if (node.NodeLogState == null) return;
 
-            foreach (string key in node.NodeLogState.CriticalMessages.Keys) exceptions.Rows.Add("Crit", key, node.NodeLogState.CriticalMessages[key]);
-            foreach (string key in node.NodeLogState.ErrorMessages.Keys) exceptions.Rows.Add("Error", key, node.NodeLogState.ErrorMessages[key]);
-            foreach (string key in node.NodeLogState.WarningMessages.Keys) exceptions.Rows.Add("Warn", key, node.NodeLogState.WarningMessages[key]);
-            foreach (string key in node.NodeLogState.InfoMessages.Keys) exceptions.Rows.Add("Info", key, node.NodeLogState.InfoMessages[key]);
-
+            foreach (string key in node.NodeLogState.LogMessageStore.CriticalMessages.Keys) exceptions.Rows.Add("Crit", key, node.NodeLogState.LogMessageStore.CriticalMessages[key]);
+            foreach (string key in node.NodeLogState.LogMessageStore.ErrorMessages.Keys) exceptions.Rows.Add("Error", key, node.NodeLogState.LogMessageStore.ErrorMessages[key]);
+            foreach (string key in node.NodeLogState.LogMessageStore.WarningMessages.Keys) exceptions.Rows.Add("Warn", key, node.NodeLogState.LogMessageStore.WarningMessages[key]);
             
         }
 

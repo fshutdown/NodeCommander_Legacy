@@ -10,6 +10,7 @@ namespace Stratis.CoinmasterClient.Messages
         public string User { get; set; }
 
         public int UpdateFrequency { get; set; }
+        public ClientRoleType ClientRole { get; set; }
 
         public ClientRegistration(int updateFrequency)
         {

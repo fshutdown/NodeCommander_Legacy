@@ -13,17 +13,18 @@ namespace Stratis.CoinMasterAgent.StatusCheck
     public class NodeStatusChecker
     {
         private CountdownEvent signalingEvent = new CountdownEvent(1);
-        private NodeNetwork localNodes;
+        private NodeNetwork managedNodes;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private Dictionary<Guid, NodeLog> nodeLogWorkers = new Dictionary<Guid, NodeLog>();
         private Dictionary<Guid, NodeOperation> nodeOperationWorkers = new Dictionary<Guid, NodeOperation>();
         private Dictionary<Guid, NodeDeployment> nodeDeploymentWorkers = new Dictionary<Guid, NodeDeployment>();
         private Dictionary<Guid, NodeProcess> nodeProcessWorkers = new Dictionary<Guid, NodeProcess>();
         private Dictionary<Guid, AgentHealth> agentHealthWorkers = new Dictionary<Guid, AgentHealth>();
 
-        public NodeStatusChecker(NodeNetwork localNodes)
+        public NodeStatusChecker(NodeNetwork managedNodes)
         {
-            this.localNodes = localNodes;
+            this.managedNodes = managedNodes;
         }
 
         public void Start()
@@ -33,11 +34,11 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                 while (true)
                 {
                     //ToDo: Pause the loop if there are no active clients
-                    foreach (SingleNode node in localNodes.NetworkNodes.Values)
+                    foreach (SingleNode node in managedNodes.Nodes.Values)
                     {
                         await UpdateNodeData(node);
                     }
-                    await UpdateAgentData(localNodes);
+                    await UpdateAgentData();
 
                     Thread.Sleep(3000);
                     if (signalingEvent.CurrentCount > 0) signalingEvent.Signal();
@@ -46,16 +47,16 @@ namespace Stratis.CoinMasterAgent.StatusCheck
             updateThread.Start();
         }
 
-        private async Task UpdateAgentData(NodeNetwork network)
+        private async Task UpdateAgentData()
         {
             try
             {
-                if (network.AgentHealthState == null) network.AgentHealthState = new AgentHealthState();
+                if (managedNodes.AgentHealthState == null) managedNodes.AgentHealthState = new AgentHealthState();
 
                 AgentHealth agentHealth;
-                if (network.AgentHealthState.WorkerId != Guid.Empty && agentHealthWorkers.ContainsKey(network.AgentHealthState.WorkerId))
+                if (managedNodes.AgentHealthState.WorkerId != Guid.Empty && agentHealthWorkers.ContainsKey(managedNodes.AgentHealthState.WorkerId))
                 {
-                    agentHealth = agentHealthWorkers[network.AgentHealthState.WorkerId];
+                    agentHealth = agentHealthWorkers[managedNodes.AgentHealthState.WorkerId];
                 }
                 else
                 {
@@ -64,7 +65,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     agentHealth = new AgentHealth(newWorkerGuid);
                     agentHealthWorkers.Add(newWorkerGuid, agentHealth);
                 }
-                network.AgentHealthState = agentHealth.State;
+                managedNodes.AgentHealthState = agentHealth.State;
             }
             catch (Exception ex)
             {
@@ -171,7 +172,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         {
             signalingEvent.Wait();
             signalingEvent.Reset();
-            return localNodes;
+            return managedNodes;
         }
         
     }
