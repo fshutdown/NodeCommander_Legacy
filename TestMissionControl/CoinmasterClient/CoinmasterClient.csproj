@@ -53,14 +53,16 @@
     <Compile Include="Analysis\NodeOperationState.cs" />
     <Compile Include="Analysis\NodeProcessState.cs" />
     <Compile Include="Analysis\ProcessState.cs" />
+    <Compile Include="ClientConnection.cs" />
     <Compile Include="Config\ConfigReader.cs" />
     <Compile Include="Config\NodeConfigFile.cs" />
     <Compile Include="FileDeployment\FileDescriptor.cs" />
     <Compile Include="Messages\ActionParameters.cs" />
     <Compile Include="Messages\ActionRequest.cs" />
     <Compile Include="Messages\ActionType.cs" />
+    <Compile Include="Messages\AgentRegistration.cs" />
     <Compile Include="Messages\ClientRegistration.cs" />
-    <Compile Include="Messages\DeployFile.cs" />
+    <Compile Include="Messages\Resource.cs" />
     <Compile Include="Messages\MessageEnvelope.cs" />
     <Compile Include="Messages\MessageType.cs" />
     <Compile Include="Network\NodeNetwork.cs" />

@@ -83,7 +83,7 @@ namespace Stratis.CoinMasterAgent
                         logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process ClientRegistration message", ex);
                     }
                     break;
-                case MessageType.NodeList:
+                case MessageType.NodeData:
                     SingleNode[] nodeList;
                     try
                     {
@@ -132,10 +132,10 @@ namespace Stratis.CoinMasterAgent
                     }
                     break;
                 case MessageType.DeployFile:
-                    DeployFile deployFile;
+                    Resource deployFile;
                     try
                     {
-                        deployFile = envelope.GetPayload<DeployFile>();
+                        deployFile = envelope.GetPayload<Resource>();
                     }
                     catch (Exception ex)
                     {

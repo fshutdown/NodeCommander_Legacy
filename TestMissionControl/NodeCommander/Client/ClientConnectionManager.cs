@@ -13,7 +13,9 @@ namespace Stratis.NodeCommander.Client
         public Dictionary<string, AgentConnection> AgentConnectionList;
 
         public event Action<string> ConnectionStatusChanged;
-        public event Action<AgentConnection, NodeNetwork> MessageReceived;
+        public event Action<AgentConnection, NodeNetwork> NodeStatsUpdated;
+        public event Action<AgentConnection, AgentRegistration> AgentRegistrationUpdated;
+        public event Action<AgentConnection, Resource> ResourceDownloadUpdated;
 
         private NodeNetwork network;
 
@@ -46,7 +48,7 @@ namespace Stratis.NodeCommander.Client
                                                  select n).ToList();
 
                     MessageEnvelope envelope = new MessageEnvelope();
-                    envelope.MessageType = MessageType.NodeList;
+                    envelope.MessageType = MessageType.NodeData;
                     envelope.PayloadObject = nodeList.ToArray<SingleNode>();
                     
                     agentConnection.SendMessage(JsonConvert.SerializeObject(envelope));
@@ -61,9 +63,34 @@ namespace Stratis.NodeCommander.Client
                 });
                 connection.OnMessage((s, agentConnection) =>
                 {
-                    NodeNetwork networkSegment = JsonConvert.DeserializeObject<NodeNetwork>(s);
+                    MessageEnvelope envelope;
+                    try
+                    {
+                        envelope = JsonConvert.DeserializeObject<MessageEnvelope>(s);
+                    }
+                    catch (Exception ex)
+                    {
+                        return;
+                    }
 
-                    OnMessageReceived(agentConnection, networkSegment);
+                    switch (envelope.MessageType)
+                    {
+                        case MessageType.NodeData:
+                            NodeNetwork networkSegment = envelope.GetPayload<NodeNetwork>();
+                            OnNodeStatsUpdated(agentConnection, networkSegment);
+                            break;
+                        case MessageType.AgentRegistration:
+                            AgentRegistration registration = envelope.GetPayload<AgentRegistration>();
+                            OnAgentRegistrationUpdated(agentConnection, registration);
+                            break;
+                        case MessageType.FileDownload:
+                            Resource fileDownload = envelope.GetPayload<Resource>();
+                            OnResourceDownloadUpdated(agentConnection, fileDownload);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    
                     OnConnectionStatusChanged(connection.Address);
                 });
 
@@ -86,17 +113,26 @@ namespace Stratis.NodeCommander.Client
         }
 
 
-
         protected void OnConnectionStatusChanged(string connectionAddress)
         {
             if (ConnectionStatusChanged != null) ConnectionStatusChanged.Invoke(connectionAddress);
             //Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
         }
-        protected void OnMessageReceived(AgentConnection connection, NodeNetwork networkSegment)
+        protected void OnNodeStatsUpdated(AgentConnection agentConnection, NodeNetwork networkSegment)
         {
-            if (MessageReceived != null) MessageReceived.Invoke(connection, networkSegment);
-            //Invoke(new Action<object, NodeNetwork>(NodePerformanceUpdated), agentConnection, networkSegment);
+            if (NodeStatsUpdated != null) NodeStatsUpdated.Invoke(agentConnection, networkSegment);
         }
+
+        private void OnAgentRegistrationUpdated(AgentConnection agentConnection, AgentRegistration registration)
+        {
+            if (AgentRegistrationUpdated != null) AgentRegistrationUpdated.Invoke(agentConnection, registration);
+        }
+
+        private void OnResourceDownloadUpdated(AgentConnection agentConnection, Resource fileDownload)
+        {
+            if (ResourceDownloadUpdated != null) ResourceDownloadUpdated.Invoke(agentConnection, fileDownload);
+        }
+
 
         public AgentConnection GetAgent(string agentAddress)
         {

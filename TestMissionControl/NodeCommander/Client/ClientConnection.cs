@@ -237,7 +237,7 @@ namespace Stratis.NodeCommander.Client
             {
                 FileInfo localFile = new FileInfo(file.LocalPath);
 
-                DeployFile deployFile = new DeployFile();
+                Resource deployFile = new Resource();
                 deployFile.FullName = Path.Combine(file.RemotePath, localFile.Name);
                 deployFile.Size = localFile.Length;
 
@@ -258,7 +258,8 @@ namespace Stratis.NodeCommander.Client
 
                     if (totalBytesSent == deployFile.Size) deployFile.EndOfData = true;
 
-                    DeployFile test_object = JsonConvert.DeserializeObject<DeployFile>(JsonConvert.SerializeObject(envelope.PayloadObject));
+                    //ToDO: Remove to increase performance
+                    Resource test_object = JsonConvert.DeserializeObject<Resource>(JsonConvert.SerializeObject(envelope.PayloadObject));
 
                     await SendMessageAsync(JsonConvert.SerializeObject(envelope));
                 }

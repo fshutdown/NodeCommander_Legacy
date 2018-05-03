@@ -30,7 +30,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
             this.socketConnection = socketConnection;
         }
 
-        public void ProcessFileDeployRequest(DeployFile deployFile)
+        public void ProcessFileDeployRequest(Resource deployFile)
         {
             if (IsClosed) OpenStream(deployFile);
 
@@ -45,7 +45,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
             }
         }
 
-        private void OpenStream(DeployFile deployFile)
+        private void OpenStream(Resource deployFile)
         {
             fileToDeplopy = new FileInfo(deployFile.FullName);
             fileDirectory = new DirectoryInfo(fileToDeplopy.DirectoryName);

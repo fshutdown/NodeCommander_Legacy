@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.NodeCommander.Client;
 using Stratis.NodeCommander.Workers;
@@ -53,7 +54,7 @@ namespace Stratis.NodeCommander
             //Create workers
             cryptoIdWorker = new CryptoIdWorker(10000, new NodeEndpointName("Stratis", "StratisTest"));
             cryptoIdWorker.StateChange += DashboardWorkerStateChanged;
-            cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
+            cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<AgentConnection, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
             _workers.Add(cryptoIdWorker);
 
             //Start all workers
@@ -62,7 +63,9 @@ namespace Stratis.NodeCommander
             agentConnectionManager = new AgentConnectionManager();
             agentConnectionManager.CreateListOfAgents(network);
             agentConnectionManager.ConnectionStatusChanged += connectionAddress => Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
-            agentConnectionManager.MessageReceived += (agentConnection, networkSegment) => Invoke(new Action<object, NodeNetwork>(NodePerformanceUpdated), agentConnection, networkSegment);
+            agentConnectionManager.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<AgentConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
+            agentConnectionManager.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
+            agentConnectionManager.ResourceDownloadUpdated += (agentConnection, resource) => Invoke(new Action<AgentConnection, Resource>(ResourceDownloadUpdated), agentConnection, resource);
 
             agentConnectionManager.ConnectToAgents();
         }
@@ -228,7 +231,7 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void NodePerformanceUpdated(object source, NodeNetwork networkSegment)
+        private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork networkSegment)
         {
             int performanceIsues = 0;
             if (dataGridViewNodes.DataSource == null)
@@ -264,6 +267,17 @@ namespace Stratis.NodeCommander
                 ShowNotifier("Dashboard", message, NotificationType.PerformanceIssue);
             }
         }
+
+        private void AgentRegistrationUpdated(AgentConnection agentConnection, AgentRegistration agentRegistration)
+        {
+
+        }
+
+        private void ResourceDownloadUpdated(AgentConnection agentConnection, Resource resource)
+        {
+
+        }
+
 
         private void MergeMeasuresIntoNode(NodeNetwork network, NodeNetwork networkSegment)
         {

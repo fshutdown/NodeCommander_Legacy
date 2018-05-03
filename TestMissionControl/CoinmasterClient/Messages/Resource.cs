@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stratis.CoinmasterClient.Messages
 {
-    public class DeployFile
+    public class Resource
     {
         public String FullName { get; set; }
         public long Size { get; set; }
@@ -14,7 +14,7 @@ namespace Stratis.CoinmasterClient.Messages
         public int Length { get; set; }
         public bool EndOfData { get; set; }
 
-        public DeployFile()
+        public Resource()
         {
             EndOfData = false;
         }

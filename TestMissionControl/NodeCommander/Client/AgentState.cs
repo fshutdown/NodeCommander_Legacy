@@ -6,6 +6,5 @@
         Connecting,
         Connected,
         Error
-
     }
 }

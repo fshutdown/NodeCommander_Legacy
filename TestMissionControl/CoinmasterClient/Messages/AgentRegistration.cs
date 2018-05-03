@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace Stratis.CoinmasterClient.Messages
 {
-    public enum MessageType
+    public class AgentRegistration
     {
-        ClientRegistration,
-        AgentRegistration,
-        NodeData,
-        ActionRequest,
-        DeployFile,
-        FileDownload,
-        
+        public ClientConnection Client { get; set; }
     }
 }
