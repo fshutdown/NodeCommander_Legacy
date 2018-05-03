@@ -48,6 +48,7 @@
     <Compile Include="Actions\NodeManagement.cs" />
     <Compile Include="Analysis\NodeDeploymentState.cs" />
     <Compile Include="Analysis\LogLevel.cs" />
+    <Compile Include="Analysis\AgentHealthState.cs" />
     <Compile Include="Analysis\NodeLogState.cs" />
     <Compile Include="Analysis\NodeOperationState.cs" />
     <Compile Include="Analysis\NodeProcessState.cs" />

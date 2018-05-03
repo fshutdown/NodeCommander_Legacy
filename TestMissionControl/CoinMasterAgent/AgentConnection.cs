@@ -211,6 +211,7 @@ namespace Stratis.CoinMasterAgent
 
                 foreach (string networkNodeName in updatedNodes.NetworkNodes.Keys)
                     connectionNodes.NetworkNodes[networkNodeName] = updatedNodes.NetworkNodes[networkNodeName];
+                connectionNodes.AgentHealthState = updatedNodes.AgentHealthState;
 
                 string payload;
                 try

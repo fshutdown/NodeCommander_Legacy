@@ -40,12 +40,7 @@ namespace Stratis.CoinmasterClient.Network
         public SingleNode(string nodeFullName)
         {
             NodeEndpoint = new NodeEndpointName(nodeFullName);
-
             DisplayName = NodeEndpoint.NodeName;
-            NodeProcessState = new NodeProcessState();
-            NodeDeploymentState = new NodeDeploymentState();
-            NodeOperationState = new NodeOperationState();
-            //NodeLogState = new NodeLogState();
         }
 
         public NodeConfigFile GetNodeConfig()

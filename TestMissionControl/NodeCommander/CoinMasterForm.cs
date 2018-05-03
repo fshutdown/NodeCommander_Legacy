@@ -141,13 +141,15 @@ namespace Stratis.NodeCommander
             DataTable nodesData = new DataTable();
             nodesData.Columns.Add("Node", typeof(SingleNode));
             nodesData.Columns.Add("Status");
-            nodesData.Columns.Add("BlockHeight");
+            nodesData.Columns.Add("HeaderHeight");
             nodesData.Columns.Add("ConsensusHeight");
+            nodesData.Columns.Add("BlockHeight");
+            nodesData.Columns.Add("WalletHeight");
             nodesData.Columns.Add("NetworkHeight");
             nodesData.Columns.Add("Mempool");
             nodesData.Columns.Add("Peers");
             nodesData.Columns.Add("Uptime");
-            nodesData.Columns.Add("Testing");
+            nodesData.Columns.Add("Messages");
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
@@ -242,13 +244,15 @@ namespace Stratis.NodeCommander
 
                 dataGridViewNodes.Columns["Node"].Width = 80;
                 dataGridViewNodes.Columns["Status"].Width = 80;
-                dataGridViewNodes.Columns["BlockHeight"].Width = 60;
+                dataGridViewNodes.Columns["HeaderHeight"].Width = 60;
                 dataGridViewNodes.Columns["ConsensusHeight"].Width = 60;
+                dataGridViewNodes.Columns["BlockHeight"].Width = 60;
+                dataGridViewNodes.Columns["WalletHeight"].Width = 60;
                 dataGridViewNodes.Columns["NetworkHeight"].Width = 60;
                 dataGridViewNodes.Columns["Mempool"].Width = 60;
                 dataGridViewNodes.Columns["Peers"].Width = 80;
                 dataGridViewNodes.Columns["Uptime"].Width = 80;
-                dataGridViewNodes.Columns["Testing"].Width = 80;
+                dataGridViewNodes.Columns["Messages"].Width = 80;
             }
 
             MergeMeasuresIntoNode(network, networkSegment);
@@ -264,6 +268,7 @@ namespace Stratis.NodeCommander
         private void MergeMeasuresIntoNode(NodeNetwork network, NodeNetwork networkSegment)
         {
             if (networkSegment == null) return;
+            network.AgentHealthState = networkSegment.AgentHealthState;
 
             foreach (string nodeName in network.NetworkNodes.Keys)
             {
@@ -292,13 +297,18 @@ namespace Stratis.NodeCommander
                     {
                         dataRow["Node"] = network.NetworkNodes[nodeName];
                         dataRow["Status"] = network.NetworkNodes[nodeName].NodeOperationState.State;
-                        dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeOperationState.BlockHeight;
-                        dataRow["ConsensusHeight"] = network.NetworkNodes[nodeName].NodeOperationState.ConsensusHeight;
+                        dataRow["HeaderHeight"] = network.NetworkNodes[nodeName].NodeLogState.HeadersHeight;
+                        dataRow["ConsensusHeight"] = network.NetworkNodes[nodeName].NodeLogState.ConsensusHeight;
+                        dataRow["BlockHeight"] = network.NetworkNodes[nodeName].NodeLogState.BlockStoreHeight;
+                        dataRow["WalletHeight"] = network.NetworkNodes[nodeName].NodeLogState.WalletHeight;
                         dataRow["NetworkHeight"] = network.NetworkNodes[nodeName].NodeOperationState.NetworkHeight;
                         dataRow["Mempool"] = network.NetworkNodes[nodeName].NodeOperationState.MempoolTransactionCount;
                         dataRow["Peers"] = $"In:{network.NetworkNodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{network.NetworkNodes[nodeName].NodeOperationState.OutboundPeersCount}";
                         dataRow["Uptime"] = network.NetworkNodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-                        dataRow["Testing"] = network.NetworkNodes[nodeName].NodeLogState.ExceptionCount;
+                        dataRow["Messages"] = $"I:{network.NetworkNodes[nodeName].NodeLogState.InfoMessages.Count} / " +
+                                              $"W:{network.NetworkNodes[nodeName].NodeLogState.WarningMessages.Count} / " +
+                                              $"E:{network.NetworkNodes[nodeName].NodeLogState.ErrorMessages.Count} / " +
+                                              $"C:{network.NetworkNodes[nodeName].NodeLogState.CriticalMessages.Count} / ";
                     }
                 }
             }
@@ -335,6 +345,23 @@ namespace Stratis.NodeCommander
            
             dataGridViewNodeExceptions.DataSource = null;
             propertyGrid1.SelectedObject = node;
+
+
+            //---------------------
+            DataTable exceptions = new DataTable();
+            exceptions.Columns.Add("Level");
+            exceptions.Columns.Add("Message");
+            exceptions.Columns.Add("Count");
+            dataGridViewNodeExceptions.DataSource = exceptions;
+
+            if (node.NodeLogState == null) return;
+
+            foreach (string key in node.NodeLogState.CriticalMessages.Keys) exceptions.Rows.Add("Crit", key, node.NodeLogState.CriticalMessages[key]);
+            foreach (string key in node.NodeLogState.ErrorMessages.Keys) exceptions.Rows.Add("Error", key, node.NodeLogState.ErrorMessages[key]);
+            foreach (string key in node.NodeLogState.WarningMessages.Keys) exceptions.Rows.Add("Warn", key, node.NodeLogState.WarningMessages[key]);
+            foreach (string key in node.NodeLogState.InfoMessages.Keys) exceptions.Rows.Add("Info", key, node.NodeLogState.InfoMessages[key]);
+
+            
         }
 
         private void button2_Click(object sender, EventArgs e)

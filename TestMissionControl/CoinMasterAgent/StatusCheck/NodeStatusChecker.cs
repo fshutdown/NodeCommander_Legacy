@@ -19,6 +19,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         private Dictionary<Guid, NodeOperation> nodeOperationWorkers = new Dictionary<Guid, NodeOperation>();
         private Dictionary<Guid, NodeDeployment> nodeDeploymentWorkers = new Dictionary<Guid, NodeDeployment>();
         private Dictionary<Guid, NodeProcess> nodeProcessWorkers = new Dictionary<Guid, NodeProcess>();
+        private Dictionary<Guid, AgentHealth> agentHealthWorkers = new Dictionary<Guid, AgentHealth>();
 
         public NodeStatusChecker(NodeNetwork localNodes)
         {
@@ -29,15 +30,14 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         {
             Thread updateThread = new Thread(async ()  =>
             {
-
                 while (true)
                 {
                     //ToDo: Pause the loop if there are no active clients
                     foreach (SingleNode node in localNodes.NetworkNodes.Values)
                     {
-                        await UpdateData(node);
+                        await UpdateNodeData(node);
                     }
-                        
+                    await UpdateAgentData(localNodes);
 
                     Thread.Sleep(3000);
                     if (signalingEvent.CurrentCount > 0) signalingEvent.Signal();
@@ -46,14 +46,40 @@ namespace Stratis.CoinMasterAgent.StatusCheck
             updateThread.Start();
         }
 
-        private async Task UpdateData(SingleNode node)
+        private async Task UpdateAgentData(NodeNetwork network)
+        {
+            try
+            {
+                if (network.AgentHealthState == null) network.AgentHealthState = new AgentHealthState();
+
+                AgentHealth agentHealth;
+                if (network.AgentHealthState.WorkerId != Guid.Empty && agentHealthWorkers.ContainsKey(network.AgentHealthState.WorkerId))
+                {
+                    agentHealth = agentHealthWorkers[network.AgentHealthState.WorkerId];
+                }
+                else
+                {
+                    Guid newWorkerGuid = Guid.NewGuid();
+
+                    agentHealth = new AgentHealth(newWorkerGuid);
+                    agentHealthWorkers.Add(newWorkerGuid, agentHealth);
+                }
+                network.AgentHealthState = agentHealth.State;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Cannot get AgentHealthState", ex);
+            }
+        }
+        
+        private async Task UpdateNodeData(SingleNode node)
         {
             try
             {
                 if (node.NodeDeploymentState == null) node.NodeDeploymentState = new NodeDeploymentState();
 
                 NodeDeployment nodeDeployment;
-                if (node.NodeDeploymentState.WorkerId != Guid.Empty && nodeOperationWorkers.ContainsKey(node.NodeDeploymentState.WorkerId))
+                if (node.NodeDeploymentState.WorkerId != Guid.Empty && nodeDeploymentWorkers.ContainsKey(node.NodeDeploymentState.WorkerId))
                 {
                     nodeDeployment = nodeDeploymentWorkers[node.NodeDeploymentState.WorkerId];
                 }
@@ -107,7 +133,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                 {
                     Guid newWorkerGuid = Guid.NewGuid();
 
-                    nodeLog = new NodeLog(newWorkerGuid);
+                    nodeLog = new NodeLog(newWorkerGuid, node);
                     nodeLogWorkers.Add(newWorkerGuid, nodeLog);
                 }
                 node.NodeLogState = nodeLog.State;
@@ -119,10 +145,10 @@ namespace Stratis.CoinMasterAgent.StatusCheck
 
             try
             {
-                if (node.NodeLogState == null) node.NodeLogState = new NodeLogState();
+                if (node.NodeProcessState == null) node.NodeProcessState = new NodeProcessState();
 
                 NodeProcess nodeProcess;
-                if (node.NodeLogState.WorkerId != Guid.Empty && nodeProcessWorkers.ContainsKey(node.NodeProcessState.WorkerId))
+                if (node.NodeProcessState.WorkerId != Guid.Empty && nodeProcessWorkers.ContainsKey(node.NodeProcessState.WorkerId))
                 {
                     nodeProcess = nodeProcessWorkers[node.NodeProcessState.WorkerId];
                 }

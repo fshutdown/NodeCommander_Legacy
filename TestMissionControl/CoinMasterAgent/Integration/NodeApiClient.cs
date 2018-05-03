@@ -87,7 +87,7 @@ namespace Stratis.CoinMasterAgent
 
         private async static Task<T> SendRpcRequestAsync<T>(string methodName, Dictionary<String, String> arguments, int port)
         {
-            logger.Info($"Calling RPC {methodName} on port {port}");
+            logger.Trace($"Calling RPC {methodName} on port {port}");
             return await Task.Run(() =>
             {
                 return SendRpcRequest<T>(methodName, arguments, port);
@@ -126,7 +126,7 @@ namespace Stratis.CoinMasterAgent
 
         private async static Task<T> SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
         {
-            logger.Info($"Calling API {methodName} on port {port}");
+            logger.Trace($"Calling API {methodName} on port {port}");
             return await Task.Run(() =>
             {
                 return SendApiRequest<T>(methodDomain, methodName, arguments, payload, port);
