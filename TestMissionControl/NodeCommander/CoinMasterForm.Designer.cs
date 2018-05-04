@@ -59,16 +59,13 @@
             this.dataGridViewNodes = new System.Windows.Forms.DataGridView();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dataGridViewNodeExceptions = new System.Windows.Forms.DataGridView();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.button5 = new System.Windows.Forms.Button();
-            this.textBoxUptime = new System.Windows.Forms.TextBox();
             this.button8 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
-            this.textBoxNodeName = new System.Windows.Forms.TextBox();
+            this.textBoxCodeDirectory = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.buttonDeployFiles = new System.Windows.Forms.Button();
@@ -106,6 +103,20 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelDatabase = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelWorker = new System.Windows.Forms.ToolStripStatusLabel();
+            this.textBoxDataDirectory = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBoxNetworkDirectory = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxNodeConfig = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBoxProjectDirectory = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.labelMempool = new System.Windows.Forms.Label();
+            this.labelPeers = new System.Windows.Forms.Label();
+            this.labelUptime = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -248,7 +259,6 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox9);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox8);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox4);
@@ -365,6 +375,7 @@
             this.dataGridViewNodes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewNodes.Size = new System.Drawing.Size(782, 398);
             this.dataGridViewNodes.TabIndex = 8;
+            this.dataGridViewNodes.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridViewNodes_CellFormatting);
             this.dataGridViewNodes.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dataGridViewNodes_RowStateChanged);
             // 
             // groupBox5
@@ -419,15 +430,9 @@
             this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(782, 208);
             this.dataGridViewNodeExceptions.TabIndex = 7;
             // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Location = new System.Drawing.Point(5, 116);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(380, 343);
-            this.propertyGrid1.TabIndex = 9;
-            // 
             // groupBox9
             // 
+            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox9.Controls.Add(this.dataGridViewAgents);
             this.groupBox9.Location = new System.Drawing.Point(5, 544);
             this.groupBox9.Name = "groupBox9";
@@ -479,16 +484,27 @@
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.button5);
-            this.groupBox8.Controls.Add(this.textBoxUptime);
-            this.groupBox8.Controls.Add(this.button8);
-            this.groupBox8.Controls.Add(this.label5);
-            this.groupBox8.Controls.Add(this.button4);
-            this.groupBox8.Controls.Add(this.textBoxNodeName);
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox8.Controls.Add(this.labelUptime);
+            this.groupBox8.Controls.Add(this.label15);
+            this.groupBox8.Controls.Add(this.labelPeers);
+            this.groupBox8.Controls.Add(this.labelMempool);
+            this.groupBox8.Controls.Add(this.label11);
+            this.groupBox8.Controls.Add(this.label10);
+            this.groupBox8.Controls.Add(this.textBoxProjectDirectory);
+            this.groupBox8.Controls.Add(this.label9);
+            this.groupBox8.Controls.Add(this.textBoxNodeConfig);
+            this.groupBox8.Controls.Add(this.label8);
+            this.groupBox8.Controls.Add(this.textBoxNetworkDirectory);
+            this.groupBox8.Controls.Add(this.label7);
+            this.groupBox8.Controls.Add(this.textBoxDataDirectory);
+            this.groupBox8.Controls.Add(this.label6);
+            this.groupBox8.Controls.Add(this.textBoxCodeDirectory);
             this.groupBox8.Controls.Add(this.label4);
             this.groupBox8.Location = new System.Drawing.Point(9, 3);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(382, 107);
+            this.groupBox8.Size = new System.Drawing.Size(382, 419);
             this.groupBox8.TabIndex = 2;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "General";
@@ -496,7 +512,7 @@
             // button5
             // 
             this.button5.BackColor = System.Drawing.Color.LightCoral;
-            this.button5.Location = new System.Drawing.Point(115, 73);
+            this.button5.Location = new System.Drawing.Point(6, 50);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(103, 23);
             this.button5.TabIndex = 1;
@@ -504,35 +520,19 @@
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // textBoxUptime
-            // 
-            this.textBoxUptime.Location = new System.Drawing.Point(92, 47);
-            this.textBoxUptime.Name = "textBoxUptime";
-            this.textBoxUptime.Size = new System.Drawing.Size(284, 20);
-            this.textBoxUptime.TabIndex = 3;
-            // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(239, 73);
+            this.button8.Location = new System.Drawing.Point(6, 79);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.Size = new System.Drawing.Size(103, 23);
             this.button8.TabIndex = 5;
             this.button8.Text = "Restart";
             this.button8.UseVisualStyleBackColor = true;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(43, 50);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(43, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Uptime:";
-            // 
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.PaleGreen;
-            this.button4.Location = new System.Drawing.Point(6, 73);
+            this.button4.Location = new System.Drawing.Point(6, 21);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(103, 23);
             this.button4.TabIndex = 0;
@@ -540,38 +540,42 @@
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // textBoxNodeName
+            // textBoxCodeDirectory
             // 
-            this.textBoxNodeName.Location = new System.Drawing.Point(92, 21);
-            this.textBoxNodeName.Name = "textBoxNodeName";
-            this.textBoxNodeName.Size = new System.Drawing.Size(284, 20);
-            this.textBoxNodeName.TabIndex = 1;
+            this.textBoxCodeDirectory.Location = new System.Drawing.Point(105, 21);
+            this.textBoxCodeDirectory.Name = "textBoxCodeDirectory";
+            this.textBoxCodeDirectory.Size = new System.Drawing.Size(271, 20);
+            this.textBoxCodeDirectory.TabIndex = 1;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(19, 24);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(67, 13);
+            this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 0;
-            this.label4.Text = "Node Name:";
+            this.label4.Text = "Code Directory:";
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox4.Controls.Add(this.buttonDeployFiles);
             this.groupBox4.Controls.Add(this.button11);
             this.groupBox4.Controls.Add(this.button10);
             this.groupBox4.Controls.Add(this.button9);
-            this.groupBox4.Location = new System.Drawing.Point(5, 465);
+            this.groupBox4.Controls.Add(this.button4);
+            this.groupBox4.Controls.Add(this.button5);
+            this.groupBox4.Controls.Add(this.button8);
+            this.groupBox4.Location = new System.Drawing.Point(5, 428);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(388, 73);
+            this.groupBox4.Size = new System.Drawing.Size(388, 110);
             this.groupBox4.TabIndex = 1;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Node Management";
             // 
             // buttonDeployFiles
             // 
-            this.buttonDeployFiles.Location = new System.Drawing.Point(19, 37);
+            this.buttonDeployFiles.Location = new System.Drawing.Point(152, 21);
             this.buttonDeployFiles.Name = "buttonDeployFiles";
             this.buttonDeployFiles.Size = new System.Drawing.Size(111, 23);
             this.buttonDeployFiles.TabIndex = 9;
@@ -581,7 +585,7 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(253, 39);
+            this.button11.Location = new System.Drawing.Point(269, 50);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(111, 23);
             this.button11.TabIndex = 8;
@@ -591,7 +595,7 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(253, 10);
+            this.button10.Location = new System.Drawing.Point(269, 21);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(111, 23);
             this.button10.TabIndex = 7;
@@ -600,7 +604,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(136, 37);
+            this.button9.Location = new System.Drawing.Point(269, 79);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(111, 23);
             this.button9.TabIndex = 6;
@@ -913,6 +917,133 @@
             this.toolStripStatusLabelWorker.Size = new System.Drawing.Size(75, 17);
             this.toolStripStatusLabelWorker.Text = "Init";
             // 
+            // textBoxDataDirectory
+            // 
+            this.textBoxDataDirectory.Location = new System.Drawing.Point(105, 78);
+            this.textBoxDataDirectory.Name = "textBoxDataDirectory";
+            this.textBoxDataDirectory.Size = new System.Drawing.Size(271, 20);
+            this.textBoxDataDirectory.TabIndex = 7;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(21, 81);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(78, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Data Directory:";
+            // 
+            // textBoxNetworkDirectory
+            // 
+            this.textBoxNetworkDirectory.Location = new System.Drawing.Point(105, 104);
+            this.textBoxNetworkDirectory.Name = "textBoxNetworkDirectory";
+            this.textBoxNetworkDirectory.Size = new System.Drawing.Size(271, 20);
+            this.textBoxNetworkDirectory.TabIndex = 9;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(4, 107);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(95, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Network Directory:";
+            // 
+            // textBoxNodeConfig
+            // 
+            this.textBoxNodeConfig.Location = new System.Drawing.Point(105, 130);
+            this.textBoxNodeConfig.Name = "textBoxNodeConfig";
+            this.textBoxNodeConfig.Size = new System.Drawing.Size(271, 20);
+            this.textBoxNodeConfig.TabIndex = 11;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(30, 133);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(69, 13);
+            this.label8.TabIndex = 10;
+            this.label8.Text = "Node Config:";
+            // 
+            // textBoxProjectDirectory
+            // 
+            this.textBoxProjectDirectory.Location = new System.Drawing.Point(105, 47);
+            this.textBoxProjectDirectory.Name = "textBoxProjectDirectory";
+            this.textBoxProjectDirectory.Size = new System.Drawing.Size(271, 20);
+            this.textBoxProjectDirectory.TabIndex = 13;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(11, 50);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(88, 13);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "Project Directory:";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label10.Location = new System.Drawing.Point(6, 398);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(61, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "Mempool:";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label11.Location = new System.Drawing.Point(128, 398);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(43, 13);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "Peers:";
+            // 
+            // labelMempool
+            // 
+            this.labelMempool.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelMempool.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.labelMempool.Location = new System.Drawing.Point(62, 398);
+            this.labelMempool.Name = "labelMempool";
+            this.labelMempool.Size = new System.Drawing.Size(60, 13);
+            this.labelMempool.TabIndex = 20;
+            // 
+            // labelPeers
+            // 
+            this.labelPeers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelPeers.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.labelPeers.Location = new System.Drawing.Point(168, 398);
+            this.labelPeers.Name = "labelPeers";
+            this.labelPeers.Size = new System.Drawing.Size(60, 13);
+            this.labelPeers.TabIndex = 21;
+            // 
+            // labelUptime
+            // 
+            this.labelUptime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelUptime.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.labelUptime.Location = new System.Drawing.Point(290, 398);
+            this.labelUptime.Name = "labelUptime";
+            this.labelUptime.Size = new System.Drawing.Size(86, 13);
+            this.labelUptime.TabIndex = 23;
+            // 
+            // label15
+            // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label15.Location = new System.Drawing.Point(234, 398);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(50, 13);
+            this.label15.TabIndex = 22;
+            this.label15.Text = "Uptime:";
+            // 
             // CoinMasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1021,10 +1152,8 @@
         private System.Windows.Forms.ToolStripMenuItem notifyAboutPerformanceIssuesToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBoxRunningNodesOnly;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.TextBox textBoxNodeName;
+        private System.Windows.Forms.TextBox textBoxCodeDirectory;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBoxUptime;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.DataGridView dataGridViewAgents;
         private System.Windows.Forms.TabPage tabPageBlockchain;
@@ -1034,8 +1163,21 @@
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.Button buttonDeployFiles;
+        private System.Windows.Forms.TextBox textBoxProjectDirectory;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBoxNodeConfig;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBoxNetworkDirectory;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBoxDataDirectory;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label labelUptime;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label labelPeers;
+        private System.Windows.Forms.Label labelMempool;
     }
 }
 

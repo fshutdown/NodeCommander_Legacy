@@ -356,13 +356,30 @@ namespace Stratis.NodeCommander
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
 
             SingleNode node = (SingleNode) dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
+            if (!node.Initialized) return;
 
-            textBoxNodeName.Text = node.DisplayName;
-            textBoxUptime.Text = node.DataDir;
-           
-            dataGridViewNodeExceptions.DataSource = null;
-            propertyGrid1.SelectedObject = node;
+            groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
+            textBoxCodeDirectory.Text = node.CodeDirectory;
+            textBoxProjectDirectory.Text = node.ProjectFolder;
+            textBoxDataDirectory.Text = node.DataDir;
+            textBoxNetworkDirectory.Text = node.NetworkDirectory;
+            textBoxNodeConfig.Text = node.NodeConfig;
+            labelUptime.Text = node.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
 
+            if (node.NodeDeploymentState.DirectoryExists)
+            {
+                if (node.NodeDeploymentState.MemPoolFileExists)
+                    labelMempool.Text = node.NodeDeploymentState.MemPoolFileSize.ToString();
+                else labelMempool.Text = "No File";
+                if (node.NodeDeploymentState.PeersFileExists)
+                    labelPeers.Text = node.NodeDeploymentState.PeersFileExists.ToString();
+                else labelPeers.Text = "No File";
+            }
+            else
+            {
+                labelMempool.Text = "No Data Dir";
+                labelPeers.Text = "No Data Dir";
+            }
 
             //---------------------
             DataTable exceptions = new DataTable();
@@ -458,6 +475,56 @@ namespace Stratis.NodeCommander
 
                 agent.RemoveFile(node, "$NetworkDirectory\\hello.txt");
             }
+        }
+
+        private void dataGridViewNodes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            SingleNode node = (SingleNode)dataGridViewNodes.Rows[e.RowIndex].Cells[0].Value;
+            if (!node.Initialized) return;
+
+            int maxHeight;
+            int headersHeight = int.Parse(node.NodeLogState.HeadersHeight);
+            int consensusHeight = int.Parse(node.NodeLogState.ConsensusHeight);
+            int blockstoreHeight = int.Parse(node.NodeLogState.BlockStoreHeight);
+            int walletHeight;
+            if (!int.TryParse(node.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
+            int networkHeight = node.NodeOperationState.NetworkHeight;
+
+            maxHeight = Math.Max(headersHeight, consensusHeight);
+            maxHeight = Math.Max(maxHeight, blockstoreHeight);
+            maxHeight = Math.Max(maxHeight, walletHeight);
+            maxHeight = Math.Max(maxHeight, networkHeight);
+
+            if (walletHeight == -1) walletHeight = maxHeight;
+
+            
+            if (e.ColumnIndex == 2 && headersHeight < maxHeight)
+            {
+                e.CellStyle.ForeColor = Color.Crimson;
+            }
+            else if (e.ColumnIndex == 3 && consensusHeight < maxHeight)
+            {
+                e.CellStyle.ForeColor = Color.Crimson;
+            }
+            else if (e.ColumnIndex == 4 && blockstoreHeight < maxHeight)
+            {
+                e.CellStyle.ForeColor = Color.Crimson;
+            }
+            else if (e.ColumnIndex == 5 && walletHeight < maxHeight)
+            {
+                e.CellStyle.ForeColor = Color.Crimson;
+            }
+            else if (e.ColumnIndex == 6 && networkHeight < maxHeight)
+            {
+                e.CellStyle.ForeColor = Color.Crimson;
+            }
+            else
+            {
+                e.CellStyle.ForeColor = Color.Black;
+            }
+            
+
+
         }
     }
 }
