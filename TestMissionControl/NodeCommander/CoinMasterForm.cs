@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Config;
@@ -284,14 +285,15 @@ namespace Stratis.NodeCommander
             if (networkSegment == null) return;
             network.AgentHealthState = networkSegment.AgentHealthState;
 
-            foreach (string nodeName in network.Nodes.Keys)
+            foreach (string nodeName in network.Nodes.Keys.ToList())
             {
                 if (networkSegment.Nodes.ContainsKey(nodeName))
                 {
-                    network.Nodes[nodeName].NodeDeploymentState = networkSegment.Nodes[nodeName].NodeDeploymentState;
-                    network.Nodes[nodeName].NodeProcessState = networkSegment.Nodes[nodeName].NodeProcessState;
-                    network.Nodes[nodeName].NodeLogState = networkSegment.Nodes[nodeName].NodeLogState;
-                    network.Nodes[nodeName].NodeOperationState = networkSegment.Nodes[nodeName].NodeOperationState;
+                    network.Nodes[nodeName] = networkSegment.Nodes[nodeName];
+                    //network.Nodes[nodeName].NodeDeploymentState = networkSegment.Nodes[nodeName].NodeDeploymentState;
+                    //network.Nodes[nodeName].NodeProcessState = networkSegment.Nodes[nodeName].NodeProcessState;
+                    //network.Nodes[nodeName].NodeLogState = networkSegment.Nodes[nodeName].NodeLogState;
+                    //network.Nodes[nodeName].NodeOperationState = networkSegment.Nodes[nodeName].NodeOperationState;
                 }
             }
         }
@@ -307,7 +309,7 @@ namespace Stratis.NodeCommander
             {
                 foreach (DataRow dataRow in table.Rows)
                 {
-                    if (((SingleNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(nodeName))
+                    if (managedNodes.Nodes[nodeName].Initialized && ((SingleNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(nodeName))
                     {
                         dataRow["Node"] = managedNodes.Nodes[nodeName];
                         dataRow["Status"] = managedNodes.Nodes[nodeName].NodeOperationState.State;

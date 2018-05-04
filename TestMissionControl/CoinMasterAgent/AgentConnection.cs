@@ -188,10 +188,10 @@ namespace Stratis.CoinMasterAgent
 
                 foreach (SingleNode node in nodes)
                 {
-                    managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
                     if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
                         managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
                     node.OrphanNode = false;
+                    node.Initialized = true;
                 }
             }
             else if (ClientRegistration.ClientRole == ClientRoleType.WatchOnly)

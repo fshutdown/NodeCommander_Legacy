@@ -54,7 +54,6 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                 if (State.MemPoolFileExists) State.MemPoolFileSize = nodeConfigFile.Length;
                 #endregion
 
-
                 #region MemPool 
                 FileInfo mempoolFile = new FileInfo(Path.Combine(nodeDataDir.FullName, "mempool.dat"));
                 State.MemPoolFileExists = mempoolFile.Exists;

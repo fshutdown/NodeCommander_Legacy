@@ -44,7 +44,7 @@ namespace Stratis.NodeCommander.Client
                     OnConnectionStatusChanged(connection.Address);
 
                     List<SingleNode> nodeList = (from n in network.Nodes.Values
-                                                 where n.Agent == connection.Address
+                                                 where (n.Agent == connection.Address) && n.Enabled
                                                  select n).ToList();
 
                     MessageEnvelope envelope = new MessageEnvelope();

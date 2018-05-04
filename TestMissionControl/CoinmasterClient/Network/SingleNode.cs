@@ -17,7 +17,9 @@ namespace Stratis.CoinmasterClient.Network
         public string CodeDirectory { get; set; }
         public string ProjectFolder { get; set; }
         public string Agent { get; set; }
+        public bool Enabled { get; set; }
         #endregion
+        public bool Initialized { get; set; }
 
         public NodeProcessState NodeProcessState { get; set; }
         public NodeDeploymentState NodeDeploymentState { get; set; }
@@ -38,10 +40,10 @@ namespace Stratis.CoinmasterClient.Network
 
         public SingleNode()
         {
-
+            Initialized = false;
         }
 
-        public SingleNode(string nodeFullName)
+        public SingleNode(string nodeFullName) : this()
         {
             NodeEndpoint = new NodeEndpointName(nodeFullName);
             DisplayName = NodeEndpoint.NodeName;

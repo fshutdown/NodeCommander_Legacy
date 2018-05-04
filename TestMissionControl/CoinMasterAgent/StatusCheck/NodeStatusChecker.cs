@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,8 +35,9 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                 while (true)
                 {
                     //ToDo: Pause the loop if there are no active clients
-                    foreach (SingleNode node in managedNodes.Nodes.Values)
+                    foreach (String nodeName in managedNodes.Nodes.Keys.ToList())
                     {
+                        SingleNode node = managedNodes.Nodes[nodeName];
                         await UpdateNodeData(node);
                     }
                     await UpdateAgentData();
