@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\NodeManagement.cs" />
-    <Compile Include="Analysis\LogMessagesResource.cs" />
     <Compile Include="Analysis\NodeDeploymentState.cs" />
     <Compile Include="Analysis\LogLevel.cs" />
     <Compile Include="Analysis\AgentHealthState.cs" />

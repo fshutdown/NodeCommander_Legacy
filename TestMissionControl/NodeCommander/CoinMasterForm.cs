@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -66,7 +67,7 @@ namespace Stratis.NodeCommander
             agentConnectionManager.ConnectionStatusChanged += connectionAddress => Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
             agentConnectionManager.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<AgentConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
             agentConnectionManager.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
-            agentConnectionManager.ResourceDownloadUpdated += (agentConnection, resource) => Invoke(new Action<AgentConnection, Resource>(ResourceDownloadUpdated), agentConnection, resource);
+            agentConnectionManager.ResourceDownloadUpdated += (agentConnection, resourceList) => Invoke(new Action<AgentConnection, List<Resource>>(ResourceDownloadUpdated), agentConnection, resourceList);
 
             agentConnectionManager.ConnectToAgents();
         }
@@ -192,8 +193,6 @@ namespace Stratis.NodeCommander
             return blockchainData;
         }
 
-
-
         private void AgentDataTableUpdated(string address)
         {
             DataTable dataTable;
@@ -274,9 +273,16 @@ namespace Stratis.NodeCommander
 
         }
 
-        private void ResourceDownloadUpdated(AgentConnection agentConnection, Resource resource)
+        private void ResourceDownloadUpdated(AgentConnection agentConnection, List<Resource> resourceList)
         {
+            foreach (Resource resource in resourceList)
+            {
+                string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", resource.ResourceId.ToString());
 
+                FileStream f = new FileStream(resourcePath, FileMode.Append);
+                f.Write(resource.Data, 0, resource.Length);
+                f.Close();
+            }
         }
 
 
@@ -321,11 +327,7 @@ namespace Stratis.NodeCommander
                         dataRow["Mempool"] = managedNodes.Nodes[nodeName].NodeOperationState.MempoolTransactionCount;
                         dataRow["Peers"] = $"In:{managedNodes.Nodes[nodeName].NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[nodeName].NodeOperationState.OutboundPeersCount}";
                         dataRow["Uptime"] = managedNodes.Nodes[nodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-                        dataRow["Messages"] = $"I:{managedNodes.Nodes[nodeName].NodeLogState.InfoMessageCount} / " +
-                                              $"W:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.WarningMessages.Count} / " +
-                                              $"E:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.ErrorMessages.Count} / " +
-                                              $"E:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.FailMessages.Count} / " +
-                                              $"C:{managedNodes.Nodes[nodeName].NodeLogState.LogMessageStore.CriticalMessages.Count} / ";
+                        dataRow["Messages"] = $"I:{managedNodes.Nodes[nodeName].NodeLogState.InfoMessageCount}";
                     }
                 }
             }
@@ -390,10 +392,21 @@ namespace Stratis.NodeCommander
 
             if (node.NodeLogState == null) return;
 
-            foreach (string key in node.NodeLogState.LogMessageStore.CriticalMessages.Keys) exceptions.Rows.Add("Crit", key, node.NodeLogState.LogMessageStore.CriticalMessages[key]);
-            foreach (string key in node.NodeLogState.LogMessageStore.ErrorMessages.Keys) exceptions.Rows.Add("Error", key, node.NodeLogState.LogMessageStore.ErrorMessages[key]);
-            foreach (string key in node.NodeLogState.LogMessageStore.WarningMessages.Keys) exceptions.Rows.Add("Warn", key, node.NodeLogState.LogMessageStore.WarningMessages[key]);
             
+            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.Resources["nodeCommander.txt"].ToString());
+            FileInfo resourceFile = new FileInfo(resourcePath);
+            if (!resourceFile.Exists) return;
+
+            FileStream f = new FileStream(resourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StreamReader reader = new StreamReader(f);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                exceptions.Rows.Add("-", line, 0);
+            }
+
+            f.Close();
+
         }
 
         private void button2_Click(object sender, EventArgs e)

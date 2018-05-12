@@ -36,11 +36,13 @@ namespace Stratis.CoinmasterClient.Network
             }
         }
 
-        
+        public Dictionary<String, Guid> Resources { get; set; }
+
 
         public SingleNode()
         {
             Initialized = false;
+            Resources = new Dictionary<string, Guid>();
         }
 
         public SingleNode(string nodeFullName) : this()

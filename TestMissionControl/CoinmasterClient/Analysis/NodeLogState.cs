@@ -19,8 +19,6 @@ namespace Stratis.CoinmasterClient.Analysis
         public string OrphanSize { get; set; }
         public int InfoMessageCount { get; set; }
 
-        public LogMessagesResource LogMessageStore { get; set; }
-
         public NodeLogState()
         {
 
@@ -30,7 +28,6 @@ namespace Stratis.CoinmasterClient.Analysis
         {
             WorkerId = workerId;
             InfoMessageCount = 0;
-            LogMessageStore = new LogMessagesResource();
         }
     }
 }

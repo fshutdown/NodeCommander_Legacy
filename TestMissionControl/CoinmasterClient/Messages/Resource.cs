@@ -8,6 +8,7 @@ namespace Stratis.CoinmasterClient.Messages
 {
     public class Resource
     {
+        public Guid ResourceId { get; set; }
         public String FullName { get; set; }
         public long Size { get; set; }
         public Byte[] Data { get; set; }
@@ -16,6 +17,7 @@ namespace Stratis.CoinmasterClient.Messages
 
         public Resource()
         {
+            ResourceId = Guid.NewGuid();
             EndOfData = false;
         }
     }

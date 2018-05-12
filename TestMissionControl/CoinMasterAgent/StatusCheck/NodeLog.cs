@@ -12,8 +12,8 @@ namespace Stratis.CoinMasterAgent.StatusCheck
 {
     public class NodeLog
     {
-        public Guid WorkerGuid { get; private set; }
-        public NodeLogState State { get; private set; }
+        public Guid WorkerGuid { get; set; }
+        public NodeLogState State { get; set; }
         public Boolean Enabled { get; private set; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -73,46 +73,6 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     string[] lineParts = line.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
                     State.DynamicSize = lineParts[3];
                     State.OrphanSize = lineParts[6];
-                }
-
-                if (line.Length > 28)
-                {
-                    if (line.Substring(28).Trim().StartsWith("ERROR:"))
-                    {
-                        string errorKey = line.Substring(36);
-                        if (!State.LogMessageStore.ErrorMessages.ContainsKey(errorKey))
-                            State.LogMessageStore.ErrorMessages.Add(errorKey, 1);
-                        else
-                            State.LogMessageStore.ErrorMessages[errorKey]++;
-                    }
-                    if (line.Substring(28).Trim().StartsWith("FAIL:"))
-                    {
-                        string errorKey = line.Substring(35);
-                        if (!State.LogMessageStore.FailMessages.ContainsKey(errorKey))
-                            State.LogMessageStore.FailMessages.Add(errorKey, 1);
-                        else
-                            State.LogMessageStore.ErrorMessages[errorKey]++;
-                    }
-                    else if (line.Substring(28).Trim().StartsWith("INFO:"))
-                    {
-                        State.InfoMessageCount++;
-                    }
-                    else if (line.Substring(28).Trim().StartsWith("WARN:"))
-                    {
-                        string warningKey = line.Substring(35);
-                        if (!State.LogMessageStore.WarningMessages.ContainsKey(warningKey))
-                            State.LogMessageStore.WarningMessages.Add(warningKey, 1);
-                        else
-                            State.LogMessageStore.WarningMessages[warningKey]++;
-                    }
-                    else if (line.Substring(28).Trim().StartsWith("CRIT:"))
-                    {
-                        string errorKey = line.Substring(35);
-                        if (!State.LogMessageStore.CriticalMessages.ContainsKey(errorKey))
-                            State.LogMessageStore.CriticalMessages.Add(errorKey, 1);
-                        else
-                            State.LogMessageStore.CriticalMessages[errorKey]++;
-                    }
                 }
             }
 

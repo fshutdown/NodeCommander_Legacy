@@ -15,7 +15,7 @@ namespace Stratis.NodeCommander.Client
         public event Action<string> ConnectionStatusChanged;
         public event Action<AgentConnection, NodeNetwork> NodeStatsUpdated;
         public event Action<AgentConnection, AgentRegistration> AgentRegistrationUpdated;
-        public event Action<AgentConnection, Resource> ResourceDownloadUpdated;
+        public event Action<AgentConnection, List<Resource>> ResourceDownloadUpdated;
 
         private NodeNetwork network;
 
@@ -84,8 +84,8 @@ namespace Stratis.NodeCommander.Client
                             OnAgentRegistrationUpdated(agentConnection, registration);
                             break;
                         case MessageType.FileDownload:
-                            Resource fileDownload = envelope.GetPayload<Resource>();
-                            OnResourceDownloadUpdated(agentConnection, fileDownload);
+                            List<Resource> resourceList = envelope.GetPayload<List<Resource>>();
+                            OnResourceDownloadUpdated(agentConnection, resourceList);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -128,7 +128,7 @@ namespace Stratis.NodeCommander.Client
             if (AgentRegistrationUpdated != null) AgentRegistrationUpdated.Invoke(agentConnection, registration);
         }
 
-        private void OnResourceDownloadUpdated(AgentConnection agentConnection, Resource fileDownload)
+        private void OnResourceDownloadUpdated(AgentConnection agentConnection, List<Resource> fileDownload)
         {
             if (ResourceDownloadUpdated != null) ResourceDownloadUpdated.Invoke(agentConnection, fileDownload);
         }

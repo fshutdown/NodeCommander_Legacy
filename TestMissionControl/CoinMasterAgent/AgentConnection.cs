@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using Fleck;
@@ -210,19 +211,35 @@ namespace Stratis.CoinMasterAgent
         {
             logger.Debug($"{socketConnection.ConnectionInfo.Id}: Starting client update loop");
 
-            while (managedNodes == null)
+            while (managedNodes == null || managedNodes.Nodes.Count == 0)
             {
                 Thread.Sleep(1000);
                 logger.Trace($"{socketConnection.ConnectionInfo.Id}: Waiting for the client registration message");
             }
-            
+
+            ResourceUploader uploader = new ResourceUploader();
+            foreach (SingleNode node in managedNodes.Nodes.Values)
+            {
+                Resource logResource = new Resource();
+                string logFilePath = Path.Combine(node.NetworkDirectory, "Logs", "nodeCommander.txt");
+                logResource.FullName = logFilePath;
+
+                uploader.AddResource(logResource);
+                node.Resources.Add("nodeCommander.txt", logResource.ResourceId);
+            }
+
             while (socketConnection.IsAvailable)
             {
                 logger.Debug($"{socketConnection.ConnectionInfo.Id}: Updating node measures");
                 managedNodes = statusChecker.GetUpdate();
 
                 SendObject(MessageType.NodeData, managedNodes);
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
+
+                uploader.ReadData();
+                logger.Debug($"Uploading {uploader.GetResources().Count} resourceas");
+                SendObject(MessageType.FileDownload, uploader.GetResources());
+                Thread.Sleep(1000);
             }
 
             logger.Info($"{socketConnection.ConnectionInfo.Id}: The connection is no longer available");
