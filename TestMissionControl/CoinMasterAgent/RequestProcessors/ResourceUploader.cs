@@ -28,7 +28,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
                 if (resourceStreams[resource] == null) resourceStreams[resource] = OpenFile(resource);
                 if (resourceStreams[resource] == null)
                 {
-                    logger.Warn($"Resource file {resource.FullName} doesn't exist");
+                    logger.Debug($"Resource file {resource.FullName} doesn't exist");
                     continue;
                 }
                 FileStream f = resourceStreams[resource];

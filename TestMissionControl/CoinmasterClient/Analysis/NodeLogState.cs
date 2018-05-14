@@ -28,6 +28,12 @@ namespace Stratis.CoinmasterClient.Analysis
         {
             WorkerId = workerId;
             InfoMessageCount = 0;
+            HeadersHeight = string.Empty;
+            ConsensusHeight = string.Empty;
+            BlockStoreHeight = string.Empty;
+            WalletHeight = string.Empty;
+            DynamicSize = string.Empty;
+            OrphanSize = string.Empty;
         }
     }
 }

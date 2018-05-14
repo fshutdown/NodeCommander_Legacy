@@ -180,25 +180,29 @@ namespace Stratis.CoinMasterAgent
         {
             logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {nodes.Length} nodes configuration");
 
-            if (managedNodes == null) managedNodes = new NodeNetwork();
+            NodeNetwork newManagedNodes = managedNodes;
+            managedNodes = null;
+            if (newManagedNodes == null) newManagedNodes = new NodeNetwork();
 
             if (ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
-                foreach (SingleNode node in managedNodes.Nodes.Values)
+                foreach (SingleNode node in newManagedNodes.Nodes.Values)
                     node.OrphanNode = true;
 
                 foreach (SingleNode node in nodes)
                 {
-                    if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
-                        managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
+                    if (!newManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                        newManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
                     node.OrphanNode = false;
-                    node.Initialized = true;
                 }
             }
             else if (ClientRegistration.ClientRole == ClientRoleType.WatchOnly)
             {
 
             }
+
+            managedNodes = newManagedNodes;
+            logger.Trace("-");
         }
 
         private void ProcessClientRegistration(ClientRegistration clientRegistration)

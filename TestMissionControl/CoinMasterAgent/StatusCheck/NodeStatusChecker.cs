@@ -39,6 +39,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     {
                         SingleNode node = managedNodes.Nodes[nodeName];
                         await UpdateNodeData(node);
+                        node.Initialized = true;
                     }
                     await UpdateAgentData();
 

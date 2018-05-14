@@ -13,7 +13,6 @@ using Stratis.NodeCommander.Client;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
-
 namespace Stratis.NodeCommander
 {
     public partial class CoinMasterForm : Form
@@ -277,6 +276,7 @@ namespace Stratis.NodeCommander
         {
             foreach (Resource resource in resourceList)
             {
+                if (resource.Length == 0) continue;
                 string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", resource.ResourceId.ToString());
 
                 FileStream f = new FileStream(resourcePath, FileMode.Append);
@@ -385,9 +385,11 @@ namespace Stratis.NodeCommander
 
             //---------------------
             DataTable exceptions = new DataTable();
+            exceptions.Columns.Add("Date");
+            exceptions.Columns.Add("Thread");
             exceptions.Columns.Add("Level");
+            exceptions.Columns.Add("Source");
             exceptions.Columns.Add("Message");
-            exceptions.Columns.Add("Count");
             dataGridViewNodeExceptions.DataSource = exceptions;
 
             if (node.NodeLogState == null) return;
@@ -402,7 +404,9 @@ namespace Stratis.NodeCommander
             while (!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
-                exceptions.Rows.Add("-", line, 0);
+                string[] fields = line.Split(new[] {"||"}, StringSplitOptions.None);
+
+                exceptions.Rows.Add(fields);
             }
 
             f.Close();
@@ -496,11 +500,18 @@ namespace Stratis.NodeCommander
             if (!node.Initialized) return;
 
             int maxHeight;
-            int headersHeight = int.Parse(node.NodeLogState.HeadersHeight);
-            int consensusHeight = int.Parse(node.NodeLogState.ConsensusHeight);
-            int blockstoreHeight = int.Parse(node.NodeLogState.BlockStoreHeight);
+            int headersHeight;
+            if (!int.TryParse(node.NodeLogState.HeadersHeight, out headersHeight)) headersHeight = 0;
+
+            int consensusHeight;
+            if (!int.TryParse(node.NodeLogState.ConsensusHeight, out consensusHeight)) consensusHeight = 0;
+
+            int blockstoreHeight;
+            if (!int.TryParse(node.NodeLogState.BlockStoreHeight, out blockstoreHeight)) blockstoreHeight = 0;
+
             int walletHeight;
             if (!int.TryParse(node.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
+
             int networkHeight = node.NodeOperationState.NetworkHeight;
 
             maxHeight = Math.Max(headersHeight, consensusHeight);
