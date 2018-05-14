@@ -57,11 +57,12 @@
     <Compile Include="Config\ConfigReader.cs" />
     <Compile Include="Config\NodeConfigFile.cs" />
     <Compile Include="FileDeployment\FileDescriptor.cs" />
+    <Compile Include="FileDeployment\ResourceScope.cs" />
     <Compile Include="Messages\ActionParameters.cs" />
     <Compile Include="Messages\ActionRequest.cs" />
     <Compile Include="Messages\ActionType.cs" />
     <Compile Include="Messages\AgentRegistration.cs" />
-    <Compile Include="Messages\ClientRegistration.cs" />
+    <Compile Include="Messages\ClientRegistrationRequest.cs" />
     <Compile Include="Messages\ClientRoleType.cs" />
     <Compile Include="Messages\Resource.cs" />
     <Compile Include="Messages\MessageEnvelope.cs" />

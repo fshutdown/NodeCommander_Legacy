@@ -5,56 +5,60 @@ using System.Text;
 using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.RequestProcessors.Objects;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors
 {
-    public class FileDeploymentProcessor
+    public sealed class FileDeploymentProcessor : RequestProcessorBase
     {
-        private IWebSocketConnection socketConnection;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private Dictionary<string, FileDeploymentObject> activeDeplopyments = new Dictionary<string, FileDeploymentObject>();
 
-        private FileStream fileStream = null;
-        private FileInfo fileToDeplopy;
-        private DirectoryInfo fileDirectory;
+        public Resource deployFile { get; set; }
 
-        public bool IsClosed
+        public FileDeploymentProcessor(AgentConnection agent, NodeNetwork managedNodes) : base(agent, managedNodes)
         {
-            get
+        }
+
+        public override void OpenEnvelope()
+        {
+            try
             {
-                return fileStream == null;
+                deployFile = Message.GetPayload<Resource>();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize DeployFile message");
             }
         }
 
-        public FileDeploymentProcessor(IWebSocketConnection socketConnection)
+        public override void Process()
         {
-            this.socketConnection = socketConnection;
-        }
-
-        public void ProcessFileDeployRequest(Resource deployFile)
-        {
-            if (IsClosed) OpenStream(deployFile);
-
-            fileStream.Write(deployFile.Data, 0, deployFile.Length);
-            fileStream.Flush();
-
-            if (deployFile.EndOfData)
+            try
             {
-                logger.Info($"{socketConnection.ConnectionInfo.Id} Closing file {deployFile.FullName}");
-                fileStream.Close();
-                fileStream = null;
+                string deploymentKey = Agent.SocketConnection.ConnectionInfo.Id + deployFile.FullName;
+
+                FileDeploymentObject fileDeployment;
+                if (activeDeplopyments.ContainsKey(deploymentKey))
+                {
+                    fileDeployment = activeDeplopyments[deploymentKey];
+                }
+                else
+                {
+                    fileDeployment = new FileDeploymentObject(Agent);
+                    activeDeplopyments.Add(deploymentKey, fileDeployment);
+                }
+
+                fileDeployment.ProcessFileDeployRequest(deployFile);
+
+                if (fileDeployment.IsClosed)
+                    activeDeplopyments.Remove(deploymentKey);
             }
-        }
-
-        private void OpenStream(Resource deployFile)
-        {
-            fileToDeplopy = new FileInfo(deployFile.FullName);
-            fileDirectory = new DirectoryInfo(fileToDeplopy.DirectoryName);
-
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Deploying file {fileToDeplopy.Name} to the node");
-
-            if (!fileDirectory.Exists) fileDirectory.Create();
-
-            fileStream = new FileStream(fileToDeplopy.FullName, FileMode.OpenOrCreate);
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot process DeployFile message");
+            }
         }
     }
 }

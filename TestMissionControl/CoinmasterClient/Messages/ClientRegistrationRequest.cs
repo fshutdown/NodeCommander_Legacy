@@ -3,7 +3,7 @@ using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Messages
 {
-    public class ClientRegistration
+    public class ClientRegistrationRequest
     {
         public PlatformID Platform { get; set; }
         public string WorkstationName { get; set; }
@@ -12,7 +12,7 @@ namespace Stratis.CoinmasterClient.Messages
         public int UpdateFrequency { get; set; }
         public ClientRoleType ClientRole { get; set; }
 
-        public ClientRegistration(int updateFrequency)
+        public ClientRegistrationRequest(int updateFrequency)
         {
             Platform = Environment.OSVersion.Platform;
             WorkstationName = Environment.MachineName;

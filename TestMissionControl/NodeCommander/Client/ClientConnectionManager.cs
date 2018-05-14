@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Newtonsoft.Json;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -47,7 +48,7 @@ namespace Stratis.NodeCommander.Client
                                                  where (n.Agent == connection.Address) && n.Enabled
                                                  select n).ToList();
 
-                    MessageEnvelope envelope = new MessageEnvelope();
+                    MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Global);
                     envelope.MessageType = MessageType.NodeData;
                     envelope.PayloadObject = nodeList.ToArray<SingleNode>();
                     

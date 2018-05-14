@@ -14,6 +14,7 @@ namespace Stratis.CoinmasterClient.Messages
         public Byte[] Data { get; set; }
         public int Length { get; set; }
         public bool EndOfData { get; set; }
+        public string FullNodeName { get; set; }
 
         public Resource()
         {

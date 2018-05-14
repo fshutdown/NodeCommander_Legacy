@@ -8,8 +8,15 @@ namespace Stratis.CoinmasterClient.FileDeployment
 {
     public class FileDescriptor
     {
-        public String Scope { get; set; }
+        public ResourceScope Scope { get; set; }
+        public String FullNodeName { get; set; }
         public String LocalPath { get; set; }
         public String RemotePath { get; set; }
+
+        public FileDescriptor(ResourceScope scope, string fullNodeName)
+        {
+            Scope = scope;
+            FullNodeName = fullNodeName;
+        }
     }
 }

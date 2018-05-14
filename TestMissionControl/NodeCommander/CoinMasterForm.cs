@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.NodeCommander.Client;
@@ -451,7 +452,7 @@ namespace Stratis.NodeCommander
                 SingleNode node = (SingleNode)row.Cells["Node"].Value;
                 var agent = agentConnectionManager.GetAgent(node.Agent);
 
-                agent.ProcessFilesToDeploy(node, network);
+                agent.ProcessFilesToDeploy(network, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             }
         }
 

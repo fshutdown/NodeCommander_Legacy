@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.StatusCheck;
@@ -18,35 +19,46 @@ namespace Stratis.CoinMasterAgent
 {
     public class AgentConnection
     {
-        public ClientRegistration ClientRegistration { get; set; }
+        public IWebSocketConnection SocketConnection { get; set; }
+        public ClientRegistrationRequest ClientRegistration { get; set; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private IWebSocketConnection socketConnection;
         private NodeNetwork managedNodes;
         private NodeStatusChecker statusChecker;
-        private Dictionary<string, FileDeploymentProcessor> activeDeplopyments = new Dictionary<string, FileDeploymentProcessor>();
+
+        //Processors
+        private ClientRegistrationProcessor clientRegistrationProcessor;
+        private NodeConfigurationProcessor nodeConfigurationProcessor;
+        private ActionRequestProcessor actionRequestProcessor;
+        private FileDeploymentProcessor fileDeploymentProcessor;
+
 
         public AgentConnection(IWebSocketConnection socket, NodeStatusChecker statusChecker, NodeNetwork managedNodes)
         {
-            this.socketConnection = socket;
+            this.SocketConnection = socket;
             this.statusChecker = statusChecker;
             this.managedNodes = managedNodes;
+
+            clientRegistrationProcessor = new ClientRegistrationProcessor(this, managedNodes);
+            nodeConfigurationProcessor = new NodeConfigurationProcessor(this, managedNodes);
+            actionRequestProcessor = new ActionRequestProcessor(this, managedNodes);
+            fileDeploymentProcessor = new FileDeploymentProcessor(this, managedNodes);
         }
 
         #region Socket Event Handlers
         public void ConnectionOpen()
         {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Connection opened for client { socketConnection.ConnectionInfo.ClientIpAddress}:{ socketConnection.ConnectionInfo.ClientPort}");
+            logger.Info($"{SocketConnection.ConnectionInfo.Id} Connection opened for client { SocketConnection.ConnectionInfo.ClientIpAddress}:{ SocketConnection.ConnectionInfo.ClientPort}");
             StartClientMessageLoop();
         }
 
         public void ConnectionClose()
         {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Connection closed for client { socketConnection.ConnectionInfo.ClientIpAddress}:{ socketConnection.ConnectionInfo.ClientPort}");
+            logger.Info($"{SocketConnection.ConnectionInfo.Id} Connection closed for client { SocketConnection.ConnectionInfo.ClientIpAddress}:{ SocketConnection.ConnectionInfo.ClientPort}");
         }
         public void MessageReceived(string payload)
         {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Received message from client {payload.Substring(0, 30)}...");
+            logger.Info($"{SocketConnection.ConnectionInfo.Id} Received message from client {payload.Substring(0, 30)}...");
 
             MessageEnvelope envelope;
             try
@@ -55,176 +67,84 @@ namespace Stratis.CoinMasterAgent
             }
             catch (Exception ex)
             {
-                logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize message envelope", ex);
+                logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id} Cannot deserialize message envelope");
                 return;
             }
             
-            logger.Trace($"{socketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
+            logger.Trace($"{SocketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
+
 
             switch (envelope.MessageType)
             {
                 case MessageType.ClientRegistration:
-                    ClientRegistration clientRegistration;
                     try
                     {
-                        clientRegistration = envelope.GetPayload<ClientRegistration>();
+                        
+                        clientRegistrationProcessor.ProcessMessage(envelope);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize ClientRegistration message", ex);
-                        break;
+                        logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id} Cannot process ActionRequest message");
                     }
 
-                    try
-                    {
-                        ProcessClientRegistration(clientRegistration);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process ClientRegistration message", ex);
-                    }
                     break;
                 case MessageType.NodeData:
-                    SingleNode[] nodeList;
                     try
                     {
-                        nodeList = envelope.GetPayload<SingleNode[]>();
+                        
+                        nodeConfigurationProcessor.ProcessMessage(envelope);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize NodeList message" + ex.StackTrace, ex);
-                        logger.Error(envelope.PayloadObject.ToString());
-                        break;
-                    }
-
-                    try
-                    {
-                        ProcessNodes(nodeList);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process NodeList message", ex);
-                    }
+                        logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id} Cannot process NodeList message");
+                    }                    
                     break;
                 case MessageType.ActionRequest:
-                    ActionRequest clientAction;
                     try
                     {
-                        clientAction = envelope.GetPayload<ActionRequest>();
+                        
+                        actionRequestProcessor.ProcessMessage(envelope);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize ActionRequest message", ex);
-                        break;
-                    }
-
-                    try
-                    {
-                        logger.Info($"{socketConnection.ConnectionInfo.Id} Received action {clientAction.ToString()}");
-
-                        SingleNode node = managedNodes.Nodes.FirstOrDefault(n => n.Key == clientAction.FullNodeName).Value;
-
-                        ActionRequestProcessor processor = new ActionRequestProcessor();
-                        processor.ProcessActionRequest(clientAction, node);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process ActionRequest message", ex);
+                        logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id} Cannot process ActionRequest message");
                     }
                     break;
                 case MessageType.DeployFile:
-                    Resource deployFile;
                     try
                     {
-                        deployFile = envelope.GetPayload<Resource>();
+                        
+                        fileDeploymentProcessor.ProcessMessage(envelope);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot deserialize DeployFile message", ex);
-                        break;
+                        logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id} Cannot process FileDeployment message");
                     }
-
-                    try
-                    {
-                        string deploymentKey = socketConnection.ConnectionInfo.Id + deployFile.FullName;
-
-                        FileDeploymentProcessor fileDeployment;
-                        if (activeDeplopyments.ContainsKey(deploymentKey))
-                        {
-                            fileDeployment = activeDeplopyments[deploymentKey];
-                        }
-                        else
-                        {
-                            fileDeployment = new FileDeploymentProcessor(socketConnection);
-                            activeDeplopyments.Add(deploymentKey, fileDeployment);
-                        }
-
-                        fileDeployment.ProcessFileDeployRequest(deployFile);
-
-                        if (fileDeployment.IsClosed)
-                            activeDeplopyments.Remove(deploymentKey);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error($"{socketConnection.ConnectionInfo.Id} Cannot process DeployFile message", ex);
-                    }
+                    
                     break;
                 default:
-                    logger.Fatal($"{socketConnection.ConnectionInfo.Id} Unknown message type {envelope.MessageType}");
+                    logger.Fatal($"{SocketConnection.ConnectionInfo.Id} Unknown message type {envelope.MessageType}");
                     return;
             }
         }
         #endregion
-
-        private void ProcessNodes(SingleNode[] nodes)
-        {
-            logger.Info($"{socketConnection.ConnectionInfo.Id} Processing {nodes.Length} nodes configuration");
-
-            NodeNetwork newManagedNodes = managedNodes;
-            managedNodes = null;
-            if (newManagedNodes == null) newManagedNodes = new NodeNetwork();
-
-            if (ClientRegistration.ClientRole == ClientRoleType.Primary)
-            {
-                foreach (SingleNode node in newManagedNodes.Nodes.Values)
-                    node.OrphanNode = true;
-
-                foreach (SingleNode node in nodes)
-                {
-                    if (!newManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
-                        newManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
-                    node.OrphanNode = false;
-                }
-            }
-            else if (ClientRegistration.ClientRole == ClientRoleType.WatchOnly)
-            {
-
-            }
-
-            managedNodes = newManagedNodes;
-            logger.Trace("-");
-        }
-
-        private void ProcessClientRegistration(ClientRegistration clientRegistration)
-        {
-            this.ClientRegistration = clientRegistration;
-            logger.Info($"{socketConnection.ConnectionInfo.Id}: Received Client Registration message for {clientRegistration.User} on {clientRegistration.Platform}/{clientRegistration.WorkstationName} (update every {clientRegistration.UpdateFrequency / 1000} sec)");
-        }
+        
 
         private void StartClientMessageLoop()
         {
-            logger.Debug($"{socketConnection.ConnectionInfo.Id}: Starting client update loop");
+            logger.Debug($"{SocketConnection.ConnectionInfo.Id}: Starting client update loop");
 
             while (managedNodes == null || managedNodes.Nodes.Count == 0)
             {
                 Thread.Sleep(1000);
-                logger.Trace($"{socketConnection.ConnectionInfo.Id}: Waiting for the client registration message");
+                logger.Trace($"{SocketConnection.ConnectionInfo.Id}: Waiting for the client registration message");
             }
 
             ResourceUploader uploader = new ResourceUploader();
             foreach (SingleNode node in managedNodes.Nodes.Values)
             {
                 Resource logResource = new Resource();
+                logResource.FullNodeName = node.NodeEndpoint.FullNodeName;
                 string logFilePath = Path.Combine(node.NetworkDirectory, "Logs", "nodeCommander.txt");
                 logResource.FullName = logFilePath;
 
@@ -232,32 +152,32 @@ namespace Stratis.CoinMasterAgent
                 node.Resources.Add("nodeCommander.txt", logResource.ResourceId);
             }
 
-            while (socketConnection.IsAvailable)
+            while (SocketConnection.IsAvailable)
             {
-                logger.Debug($"{socketConnection.ConnectionInfo.Id}: Updating node measures");
+                logger.Debug($"{SocketConnection.ConnectionInfo.Id}: Updating node measures");
                 managedNodes = statusChecker.GetUpdate();
 
-                SendObject(MessageType.NodeData, managedNodes);
+                SendObject(MessageType.NodeData, managedNodes, ResourceScope.Global);
                 Thread.Sleep(1000);
 
                 uploader.ReadData();
                 logger.Debug($"Uploading {uploader.GetResources().Count} resourceas");
-                SendObject(MessageType.FileDownload, uploader.GetResources());
+                SendObject(MessageType.FileDownload, uploader.GetResources(), ResourceScope.Global);
                 Thread.Sleep(1000);
             }
 
-            logger.Info($"{socketConnection.ConnectionInfo.Id}: The connection is no longer available");
-            socketConnection.Close();
+            logger.Info($"{SocketConnection.ConnectionInfo.Id}: The connection is no longer available");
+            SocketConnection.Close();
         }
 
-        private void SendObject(MessageType messageType, object data)
+        private void SendObject(MessageType messageType, object data, ResourceScope scope, string fullNodeName = null)
         {
             string payload;
             try
             {
-                logger.Debug($"{socketConnection.ConnectionInfo.Id}: Preparing message {messageType} payload");
+                logger.Debug($"{SocketConnection.ConnectionInfo.Id}: Preparing message {messageType} payload");
 
-                MessageEnvelope envelope = new MessageEnvelope();
+                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
                 envelope.MessageType = messageType;
                 envelope.PayloadObject = data;
 
@@ -265,19 +185,19 @@ namespace Stratis.CoinMasterAgent
             }
             catch (Exception ex)
             {
-                logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while generating message {messageType} payload", ex);
+                logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id}: Error while generating message {messageType} payload");
                 return;
             }
 
             try
             {
-                logger.Debug($"{socketConnection.ConnectionInfo.Id}: Sending {messageType} data to the client ({payload.Length} bytes)");
+                logger.Debug($"{SocketConnection.ConnectionInfo.Id}: Sending {messageType} data to the client ({payload.Length} bytes)");
 
-                socketConnection.Send(payload);
+                SocketConnection.Send(payload);
             }
             catch (Exception ex)
             {
-                logger.Error($"{socketConnection.ConnectionInfo.Id}: Error while sending {messageType} data to the client", ex);
+                logger.Error(ex, $"{SocketConnection.ConnectionInfo.Id}: Error while sending {messageType} data to the client");
             }
         }
 

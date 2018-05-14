@@ -116,27 +116,37 @@ namespace Stratis.CoinmasterClient.Config
                     }
                 }
 
-                var fileDescriptors = Config.FileDeploy.Where(d => d.Scope == node.NodeEndpoint.FullNodeName);
+                var fileDescriptors = Config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
                 foreach (FileDescriptor fileDescriptor in fileDescriptors)
                 {
                     fileDescriptor.LocalPath = Evaluate(fileDescriptor.LocalPath, variables);
                     fileDescriptor.RemotePath = Evaluate(fileDescriptor.RemotePath, variables);
                     if (fileDescriptor.RemotePath.StartsWith(".")) fileDescriptor.RemotePath = Path.Combine(node.NetworkDirectory, fileDescriptor.RemotePath.Substring(1).Trim('\\'));
-
                 }
             }
         }
 
-        private void AddToFileDeploymentList(string scope, string value)
+        private void AddToFileDeploymentList(string sectionName, string value)
         {
             string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
             if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
             string source = fileDeploymentParts[0].Trim();
             string destination = fileDeploymentParts[1].Trim();
 
-            FileDescriptor fileDescriptor = new FileDescriptor()
+            ResourceScope scope;
+            String fullNodeName = null;
+            if (sectionName.Equals("global", StringComparison.InvariantCultureIgnoreCase))
             {
-                Scope = scope,
+                scope = ResourceScope.Global;
+            }
+            else
+            {
+                scope = ResourceScope.Node;
+                fullNodeName = sectionName;
+            }
+
+            FileDescriptor fileDescriptor = new FileDescriptor(scope, fullNodeName)
+            {
                 LocalPath = source,
                 RemotePath = destination
             };

@@ -135,8 +135,8 @@ namespace Stratis.NodeCommander.Client
             try
             {
                 await _ws.ConnectAsync(_uri, _cancellationToken);
-                ClientRegistration clientRegistration = new ClientRegistration(3000);
-                MessageEnvelope envelope = new MessageEnvelope();
+                ClientRegistrationRequest clientRegistration = new ClientRegistrationRequest(3000);
+                MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Global);
                 envelope.MessageType = MessageType.ClientRegistration;
                 envelope.PayloadObject = clientRegistration;
 
@@ -227,10 +227,10 @@ namespace Stratis.NodeCommander.Client
             return Host;
         }
 
-        public async void ProcessFilesToDeploy(SingleNode node, NodeNetwork network)
+        public async void ProcessFilesToDeploy(NodeNetwork network, ResourceScope scope, String fullNodeName = null)
         {
             var filesInScope = from d in network.FileDeploy
-                               where d.Scope == node.NodeEndpoint.FullNodeName
+                               where d.Scope == scope && d.FullNodeName == fullNodeName
                                select d;
 
             foreach (FileDescriptor file in filesInScope)
@@ -238,12 +238,13 @@ namespace Stratis.NodeCommander.Client
                 FileInfo localFile = new FileInfo(file.LocalPath);
 
                 Resource deployFile = new Resource();
+                deployFile.FullNodeName = file.FullNodeName;
                 deployFile.FullName = Path.Combine(file.RemotePath, localFile.Name);
                 deployFile.Size = localFile.Length;
 
                 FileStream f = new FileStream(localFile.FullName, FileMode.Open);
 
-                MessageEnvelope envelope = new MessageEnvelope();
+                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
                 envelope.MessageType = MessageType.DeployFile;
                 envelope.PayloadObject = deployFile;
 
@@ -276,7 +277,7 @@ namespace Stratis.NodeCommander.Client
             action.Parameters[ActionParameters.CompilerSwitches] = "--no-build";
             action.Parameters[ActionParameters.RuntimeSwitches] = "";
 
-            MessageEnvelope envelope = new MessageEnvelope();
+            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             envelope.MessageType = MessageType.ActionRequest;
             envelope.PayloadObject = action;
 
@@ -288,7 +289,7 @@ namespace Stratis.NodeCommander.Client
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
 
-            MessageEnvelope envelope = new MessageEnvelope();
+            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             envelope.MessageType = MessageType.ActionRequest;
             envelope.PayloadObject = action;
 
@@ -301,7 +302,7 @@ namespace Stratis.NodeCommander.Client
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
             action.Parameters.Add(ActionParameters.Path, ConfigReader.Evaluate(path, node));
 
-            MessageEnvelope envelope = new MessageEnvelope();
+            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             envelope.MessageType = MessageType.ActionRequest;
             envelope.PayloadObject = action;
 
