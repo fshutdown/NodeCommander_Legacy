@@ -11,7 +11,7 @@ using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.NodeCommander.Client
+namespace Stratis.CoinmasterClient.Client
 {
     public class AgentConnection
     {
@@ -300,7 +300,7 @@ namespace Stratis.NodeCommander.Client
         {
             ActionRequest action = new ActionRequest(ActionType.DeleteFile);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
-            action.Parameters.Add(ActionParameters.Path, ConfigReader.Evaluate(path, node));
+            action.Parameters.Add(ActionParameters.Path, FullNodeConfig.Evaluate(path, node));
 
             MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             envelope.MessageType = MessageType.ActionRequest;

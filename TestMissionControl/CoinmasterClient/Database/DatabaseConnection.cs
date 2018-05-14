@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DBreeze;
+﻿using DBreeze;
 
-namespace Stratis.NodeCommander.Database
+namespace Stratis.CoinmasterClient.Database
 {
     public class DatabaseConnection
     {

@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DBreeze, Version=1.90.2018.220, Culture=neutral, PublicKeyToken=174b57f1c155f3c6, processorArchitecture=MSIL">
+      <HintPath>..\packages\DBreeze.1.90.0\lib\net461\DBreeze.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -54,8 +57,12 @@
     <Compile Include="Analysis\NodeProcessState.cs" />
     <Compile Include="Analysis\ProcessState.cs" />
     <Compile Include="ClientConnection.cs" />
-    <Compile Include="Config\ConfigReader.cs" />
-    <Compile Include="Config\NodeConfigFile.cs" />
+    <Compile Include="Client\AgentState.cs" />
+    <Compile Include="Client\ClientConnection.cs" />
+    <Compile Include="Client\ClientConnectionManager.cs" />
+    <Compile Include="Config\FullNodeConfig.cs" />
+    <Compile Include="Config\NodeCommanderConfig.cs" />
+    <Compile Include="Database\DatabaseConnection.cs" />
     <Compile Include="FileDeployment\FileDescriptor.cs" />
     <Compile Include="FileDeployment\ResourceScope.cs" />
     <Compile Include="Messages\ActionParameters.cs" />
@@ -70,7 +77,6 @@
     <Compile Include="Network\NodeNetwork.cs" />
     <Compile Include="Network\NodeEndpointName.cs" />
     <Compile Include="Network\SingleNode.cs" />
-    <Compile Include="NodeJsonObjects\NodeStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,6 +84,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CoinMasterCore\CoinMasterCore.csproj">
+      <Project>{4f645e08-59b6-4ea5-b589-07631f52a8b8}</Project>
+      <Name>CoinMasterCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

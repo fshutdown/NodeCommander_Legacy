@@ -6,11 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
-using Stratis.NodeCommander.Client;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
@@ -38,7 +38,7 @@ namespace Stratis.NodeCommander
         {
             InitializeComponent();
 
-            ConfigReader reader = new ConfigReader();
+            FullNodeConfig reader = new FullNodeConfig();
             network = reader.Config;
 
             //ToDo: Switch networks

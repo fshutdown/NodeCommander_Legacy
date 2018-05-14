@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Stratis.CoinmasterClient.Config
 {
-    public class NodeConfigFile
+    public class NodeCommanderConfig
     {
         private String nodeConfigFileName;
         private FileInfo nodeConfigFile;
 
         public List<KeyValuePair<String, String>> Options = new List<KeyValuePair<String, String>>();
 
-        public NodeConfigFile(string nodeConfigFileName)
+        public NodeCommanderConfig(string nodeConfigFileName)
         {
             this.nodeConfigFileName = nodeConfigFileName;
             nodeConfigFile = new FileInfo(nodeConfigFileName);

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinmasterClient", "Coinmas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeCommander", "NodeCommander\NodeCommander.csproj", "{21F43832-7F28-4596-87BA-6E27C5AE10FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinMasterCore", "CoinMasterCore\CoinMasterCore.csproj", "{4F645E08-59B6-4EA5-B589-07631F52A8B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{21F43832-7F28-4596-87BA-6E27C5AE10FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21F43832-7F28-4596-87BA-6E27C5AE10FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21F43832-7F28-4596-87BA-6E27C5AE10FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F645E08-59B6-4EA5-B589-07631F52A8B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F645E08-59B6-4EA5-B589-07631F52A8B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F645E08-59B6-4EA5-B589-07631F52A8B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F645E08-59B6-4EA5-B589-07631F52A8B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

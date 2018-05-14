@@ -7,7 +7,7 @@ using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.NodeCommander.Client
+namespace Stratis.CoinmasterClient.Client
 {
     public class AgentConnectionManager
     {

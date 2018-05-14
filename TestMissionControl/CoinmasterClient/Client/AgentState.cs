@@ -1,4 +1,4 @@
-﻿namespace Stratis.NodeCommander.Client
+﻿namespace Stratis.CoinmasterClient.Client
 {
     public enum AgentState
     {

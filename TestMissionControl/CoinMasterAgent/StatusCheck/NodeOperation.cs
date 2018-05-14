@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
-using Stratis.CoinmasterClient.NodeJsonObjects;
 using System.Threading.Tasks;
+using Stratis.CoinMasterAgent.NodeJsonObjects;
 
 namespace Stratis.CoinMasterAgent.StatusCheck
 {

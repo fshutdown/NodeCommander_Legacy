@@ -9,7 +9,7 @@ using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Config
 {
-    public class ConfigReader
+    public class FullNodeConfig
     {
         public static string ConfigFileName = "nodes.conf";
 
@@ -20,7 +20,7 @@ namespace Stratis.CoinmasterClient.Config
         private Regex commentRegEx = new Regex("\\s*#.*", RegexOptions.IgnoreCase);
         private Regex parameterRegEx = new Regex("([A-Z0-9]+)=(.*)\\s*#?.*", RegexOptions.IgnoreCase);
 
-        public ConfigReader()
+        public FullNodeConfig()
         {
             Load();
         }

@@ -2,13 +2,13 @@
 using NLog;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Network;
-using Stratis.CoinmasterClient.NodeJsonObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Stratis.CoinMasterAgent.NodeJsonObjects;
 
 namespace Stratis.CoinMasterAgent
 {
@@ -18,7 +18,7 @@ namespace Stratis.CoinMasterAgent
 
         private static int GetApiPort(SingleNode node)
         {
-            NodeConfigFile config = node.GetNodeConfig();
+            NodeCommanderConfig config = node.GetNodeConfig();
             int apiPort = config.GetApiPort();
             return apiPort;
         }
