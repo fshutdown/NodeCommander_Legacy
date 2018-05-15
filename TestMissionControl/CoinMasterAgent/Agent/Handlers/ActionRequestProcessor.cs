@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using NLog;
-using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.Messages;
-using Stratis.CoinmasterClient.Network;
 using System.IO;
-using System.Threading.Tasks;
-using Fleck;
-using Stratis.CoinMasterAgent.Agent;
+using NLog;
+using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinMasterAgent.Integration;
 
-namespace Stratis.CoinMasterAgent.RequestProcessors
+namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
     public sealed class ActionRequestProcessor : RequestProcessorBase
     {

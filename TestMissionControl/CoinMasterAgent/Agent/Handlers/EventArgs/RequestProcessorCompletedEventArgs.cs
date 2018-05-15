@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Stratis.CoinMasterAgent.Agent;
-
-namespace Stratis.CoinMasterAgent.RequestProcessors
+﻿namespace Stratis.CoinMasterAgent.Agent.Handlers.EventArgs
 {
     public class RequestProcessorCompletedEventArgs
     {

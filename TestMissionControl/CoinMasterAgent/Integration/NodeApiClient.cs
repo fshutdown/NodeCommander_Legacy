@@ -1,16 +1,14 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.Network;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using NLog;
+using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.NodeJsonObjects;
 
-namespace Stratis.CoinMasterAgent
+namespace Stratis.CoinMasterAgent.Integration
 {
     public static class NodeApiClient
     {

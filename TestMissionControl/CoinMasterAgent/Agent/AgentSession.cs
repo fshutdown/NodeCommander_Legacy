@@ -10,7 +10,8 @@ using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
-using Stratis.CoinMasterAgent.RequestProcessors;
+using Stratis.CoinMasterAgent.Agent.Handlers;
+using Stratis.CoinMasterAgent.Agent.Handlers.EventArgs;
 
 namespace Stratis.CoinMasterAgent.Agent
 {

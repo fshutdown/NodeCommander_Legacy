@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
-using Stratis.CoinmasterClient.Network;
-using Stratis.CoinMasterAgent.Agent;
-using Stratis.CoinMasterAgent.RequestProcessors.Objects;
+using Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers;
 
-namespace Stratis.CoinMasterAgent.RequestProcessors
+namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
     public sealed class FileDeploymentProcessor : RequestProcessorBase
     {

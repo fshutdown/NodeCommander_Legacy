@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
-using Stratis.CoinmasterClient.Network;
-using Stratis.CoinMasterAgent.Agent;
 
-namespace Stratis.CoinMasterAgent.RequestProcessors
+namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
     public sealed class ClientRegistrationProcessor : RequestProcessorBase
     {

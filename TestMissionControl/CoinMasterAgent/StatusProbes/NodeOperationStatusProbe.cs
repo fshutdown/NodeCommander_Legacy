@@ -9,6 +9,7 @@ using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 using System.Threading.Tasks;
 using NLog;
+using Stratis.CoinMasterAgent.Integration;
 using Stratis.CoinMasterAgent.NodeJsonObjects;
 
 namespace Stratis.CoinMasterAgent.StatusProbes

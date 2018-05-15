@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
-using Stratis.CoinmasterClient.Network;
 
-namespace Stratis.CoinMasterAgent.Agent.Dispatchers
+namespace Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs
 {
     public class UpdateEventArgs
     {

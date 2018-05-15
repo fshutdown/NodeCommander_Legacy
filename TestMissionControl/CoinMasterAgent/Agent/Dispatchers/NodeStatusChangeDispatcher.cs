@@ -9,6 +9,7 @@ using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs;
 using Stratis.CoinMasterAgent.StatusProbes;
 
 namespace Stratis.CoinMasterAgent.Agent.Dispatchers

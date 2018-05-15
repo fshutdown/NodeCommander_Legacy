@@ -12,7 +12,6 @@ using Stratis.CoinmasterClient;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent;
-using Stratis.CoinMasterAgent.RequestProcessors;
 
 namespace Stratis.CoinMasterAgent
 {
