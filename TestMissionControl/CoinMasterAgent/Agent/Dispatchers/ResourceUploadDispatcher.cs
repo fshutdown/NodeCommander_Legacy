@@ -3,16 +3,62 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
+using System.Threading;
 using NLog;
+using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.RequestProcessors;
 
-namespace Stratis.CoinMasterAgent.RequestProcessors
+namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 {
-    public class ResourceUploader
+    public class ResourceUploadDispatcher : DispatcherBase
     {
-        private Dictionary<Resource, FileStream> resourceStreams = new Dictionary<Resource, FileStream>();
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private Dictionary<Resource, FileStream> resourceStreams = new Dictionary<Resource, FileStream>();
+        
+        public ResourceUploadDispatcher(AgentSession session, double interval) : base(session, interval)
+        {
+        }
+
+        public override void Reset()
+        {
+            foreach (SingleNode node in Session.ManagedNodes.Nodes.Values)
+            {
+                if (!node.Resources.ContainsKey("nodeCommander.txt")) {
+                    Resource logResource = new Resource();
+                    logResource.FullNodeName = node.NodeEndpoint.FullNodeName;
+                    string logFilePath = Path.Combine(node.NetworkDirectory, "Logs", "nodeCommander.txt");
+                    logResource.FullName = logFilePath;
+
+                    AddResource(logResource);
+                    node.Resources.Add("nodeCommander.txt", logResource.ResourceId);
+                }
+            }
+        }
+
+        public override void Close()
+        {
+            foreach (FileStream fileStream in resourceStreams.Values)
+            {
+                fileStream.Close();
+            }
+        }
+
+        public override void SendData()
+        {
+            logger.Debug($"Uploading {GetResources().Count} resources");
+
+            ReadData();
+            UpdateEventArgs args = new UpdateEventArgs()
+            {
+                MessageType = MessageType.FileDownload,
+                Data = GetResources(),
+                Scope = ResourceScope.Global
+            };
+            OnUpdate(this, args);
+        }
+
 
         public void AddResource(Resource fileResource)
         {

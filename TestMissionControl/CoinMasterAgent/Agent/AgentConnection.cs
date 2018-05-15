@@ -10,7 +10,7 @@ using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
 using Stratis.CoinMasterAgent.RequestProcessors;
-using Stratis.CoinMasterAgent.StatusCheck;
+using Stratis.CoinMasterAgent.StatusProbes;
 
 namespace Stratis.CoinMasterAgent.Agent
 {

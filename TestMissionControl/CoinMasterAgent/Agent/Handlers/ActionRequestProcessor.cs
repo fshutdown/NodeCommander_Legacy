@@ -55,7 +55,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
                 case ActionType.StopNode:
                     try
                     {
-                        await StopNode();
+                        StopNode();
                     }
                     catch (Exception ex)
                     {
@@ -96,9 +96,9 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
             process.Start();
         }
 
-        private async Task StopNode()
+        private void StopNode()
         {
-            await NodeApiClient.Shutdown(Node);
+            NodeApiClient.Shutdown(Node);
         }
 
         private void DeleteResource()

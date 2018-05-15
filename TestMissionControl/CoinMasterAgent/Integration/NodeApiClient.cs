@@ -23,13 +23,13 @@ namespace Stratis.CoinMasterAgent
             return apiPort;
         }
 
-        public async static Task<int> GetBlockCount(SingleNode node)
+        public static int GetBlockCount(SingleNode node)
         {
             int blockCount = 0;
             try
             {
                 int apiPort = GetApiPort(node);
-                blockCount = await SendRpcRequestAsync<int>("getblockcount", new Dictionary<String, String>(), apiPort);
+                blockCount = SendRpcRequestAsync<int>("getblockcount", new Dictionary<String, String>(), apiPort);
             }
             catch (Exception ex)
             {
@@ -38,13 +38,13 @@ namespace Stratis.CoinMasterAgent
             return blockCount;
         }
 
-        public async static Task<NodeStatus> GetNodeStatus(SingleNode node)
+        public static NodeStatus GetNodeStatus(SingleNode node)
         {
             NodeStatus nodeStatus = null;
             try
             {
                 int apiPort = GetApiPort(node);
-                string getInfoString = await SendApiRequestAsync<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
+                string getInfoString = SendApiRequestAsync<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
 
                 nodeStatus = JsonConvert.DeserializeObject<NodeStatus>(getInfoString);
             } catch (Exception ex)
@@ -54,13 +54,13 @@ namespace Stratis.CoinMasterAgent
             return nodeStatus;
         }
 
-        public async static Task Shutdown(SingleNode node)
+        public static void Shutdown(SingleNode node)
         {
             NodeStatus nodeStatus = null;
             try
             {
                 int apiPort = GetApiPort(node);
-                string getInfoString = await SendApiRequestAsync<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
+                string getInfoString = SendApiRequestAsync<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
             }
             catch (Exception ex)
             {
@@ -69,13 +69,13 @@ namespace Stratis.CoinMasterAgent
         }
 
 
-        public async static Task<string[]> GetMempoolTransactions(SingleNode node)
+        public static string[] GetMempoolTransactions(SingleNode node)
         {
             string[] mempoolTransactions = new string[0];
             try
             {
                 int apiPort = GetApiPort(node);
-                string mempoolTransactionsString = await SendRpcRequestAsync<string>("getrawmempool", new Dictionary<String, String>(), apiPort);
+                string mempoolTransactionsString = SendRpcRequestAsync<string>("getrawmempool", new Dictionary<String, String>(), apiPort);
                 mempoolTransactions = JsonConvert.DeserializeObject<string[]>(mempoolTransactionsString);
             }
             catch (Exception ex)
@@ -85,13 +85,10 @@ namespace Stratis.CoinMasterAgent
             return mempoolTransactions;
         }
 
-        private async static Task<T> SendRpcRequestAsync<T>(string methodName, Dictionary<String, String> arguments, int port)
+        private static T SendRpcRequestAsync<T>(string methodName, Dictionary<String, String> arguments, int port)
         {
             logger.Trace($"Calling RPC {methodName} on port {port}");
-            return await Task.Run(() =>
-            {
-                return SendRpcRequest<T>(methodName, arguments, port);
-            });
+            return SendRpcRequest<T>(methodName, arguments, port);
         }
 
         private static T SendRpcRequest<T>(string methodName, Dictionary<String, String> arguments, int port)
@@ -126,13 +123,10 @@ namespace Stratis.CoinMasterAgent
             }
         }
 
-        private async static Task<T> SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
+        private static T SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
         {
             logger.Trace($"Calling API {methodName} on port {port}");
-            return await Task.Run(() =>
-            {
-                return SendApiRequest<T>(methodDomain, methodName, arguments, payload, port);
-            });
+            return SendApiRequest<T>(methodDomain, methodName, arguments, payload, port);
         }
 
         private static T SendApiRequest<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)

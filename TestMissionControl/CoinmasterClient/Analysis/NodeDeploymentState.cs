@@ -4,7 +4,6 @@ namespace Stratis.CoinmasterClient.Analysis
 {
     public class NodeDeploymentState
     {
-        public Guid WorkerId { get; set; }
         public bool DirectoryExists { get; set; }
         public bool MemPoolFileExists { get; set; }
         public long MemPoolFileSize { get; set; }
@@ -15,10 +14,6 @@ namespace Stratis.CoinmasterClient.Analysis
         {
 
         }
-
-        public NodeDeploymentState(Guid workerId) : this()
-        {
-            WorkerId = workerId;
-        }
+        
     }
 }

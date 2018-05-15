@@ -36,8 +36,8 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         }
 
         public abstract void Reset();
-        protected abstract void SendData();
-
+        public abstract void SendData();
+        public abstract void Close();
 
         public void Start()
         {
@@ -49,6 +49,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         public void Stop()
         {
             _jobScheduler.Stop();
+            Close();
         }
 
 
