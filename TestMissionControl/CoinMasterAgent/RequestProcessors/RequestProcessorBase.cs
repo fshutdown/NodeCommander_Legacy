@@ -5,6 +5,7 @@ using System.Text;
 using Fleck;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors
 {
@@ -12,14 +13,22 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
     {
         public AgentConnection Agent { get; set; }
         public MessageEnvelope Message { get; set; }
-        public NodeNetwork ManagedNodes { get; set; }
         public string NodeName => Message.FullNodeName;
+
+        public delegate void CompletedHandler(RequestProcessorCompletedEventArgs args);
+
+        public event CompletedHandler Completed;
+
+        protected void OnCompleted(RequestProcessorCompletedEventArgs args)
+        {
+            Completed?.Invoke(args);
+        }
 
         public SingleNode Node
         {
             get
             {
-                SingleNode node = ManagedNodes.Nodes.FirstOrDefault(n => n.Key == NodeName).Value;
+                SingleNode node = Agent.Session.ManagedNodes.Nodes.FirstOrDefault(n => n.Key == NodeName).Value;
                 return node;
             }
         }
@@ -29,15 +38,20 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
             Message = message;
             OpenEnvelope();
             Process();
+
+            RequestProcessorCompletedEventArgs args = new RequestProcessorCompletedEventArgs()
+            {
+                Agent = Agent
+            };
+            OnCompleted(args);
         }
 
         public abstract void OpenEnvelope();
         public abstract void Process();
 
-        public RequestProcessorBase(AgentConnection agent, NodeNetwork managedNodes)
+        public RequestProcessorBase(AgentConnection agent)
         {
             this.Agent = agent;
-            this.ManagedNodes = managedNodes;
         }
 
     }

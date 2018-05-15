@@ -11,6 +11,8 @@ using NLog;
 using Stratis.CoinmasterClient;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent;
+using Stratis.CoinMasterAgent.RequestProcessors;
 using Stratis.CoinMasterAgent.StatusCheck;
 
 namespace Stratis.CoinMasterAgent
@@ -19,8 +21,8 @@ namespace Stratis.CoinMasterAgent
     {
         public readonly static Logger logger = LogManager.GetCurrentClassLogger();
         private static WebSocketServer server;
-        private static NodeStatusChecker statusChecker;
-        private static NodeNetwork managedNodes;
+        private static AgentSession session;
+        
 
 
         static void Main(string[] args)
@@ -29,14 +31,12 @@ namespace Stratis.CoinMasterAgent
 
             try
             {
-                logger.Debug("Starting node state checking loop");
-                managedNodes = new NodeNetwork();
-                statusChecker = new NodeStatusChecker(managedNodes);
-                statusChecker.Start();
+                session = new AgentSession();
+                
             }
             catch (Exception ex)
             {
-                logger.Error("Error while starting node state checking loop");
+                logger.Error(ex, $"Cannot start Agent Session");
             }
 
             try
@@ -60,11 +60,8 @@ namespace Stratis.CoinMasterAgent
         private static void ConfigureEvents(IWebSocketConnection socket)
         {
             logger.Debug($"{socket.ConnectionInfo.Id} Received client connection from {socket.ConnectionInfo.ClientIpAddress}:{socket.ConnectionInfo.ClientPort}");
-            AgentConnection connection = new AgentConnection(socket, statusChecker, managedNodes);
-            
-            socket.OnOpen = () => connection.ConnectionOpen();
-            socket.OnClose = () => connection.ConnectionClose();
-            socket.OnMessage = payload => connection.MessageReceived(payload);
+            AgentConnection connection = new AgentConnection(socket);
+            session.ConnectAgent(connection);
         }
 
 

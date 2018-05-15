@@ -84,11 +84,5 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CoinMasterCore\CoinMasterCore.csproj">
-      <Project>{4f645e08-59b6-4ea5-b589-07631f52a8b8}</Project>
-      <Name>CoinMasterCore</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

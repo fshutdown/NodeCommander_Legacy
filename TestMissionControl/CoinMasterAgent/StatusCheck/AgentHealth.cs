@@ -36,6 +36,7 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         {
             Enabled = true;
             updateThread = new Thread(UpdateJob);
+            updateThread.Name = $"{GetType().Name}-{WorkerGuid}";
             updateThread.Start();
         }
         public void Stop()

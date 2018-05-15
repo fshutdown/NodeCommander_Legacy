@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
+using Stratis.CoinmasterClient.FileDeployment;
+using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.StatusCheck;
 
-namespace Stratis.CoinMasterAgent.StatusCheck
+namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 {
-    public class NodeStatusChecker
+    public class NodeStatusChange : DispatcherBase
     {
-        private CountdownEvent signalingEvent = new CountdownEvent(1);
-        private NodeNetwork managedNodes;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<Guid, NodeLog> nodeLogWorkers = new Dictionary<Guid, NodeLog>();
@@ -23,43 +23,49 @@ namespace Stratis.CoinMasterAgent.StatusCheck
         private Dictionary<Guid, NodeProcess> nodeProcessWorkers = new Dictionary<Guid, NodeProcess>();
         private Dictionary<Guid, AgentHealth> agentHealthWorkers = new Dictionary<Guid, AgentHealth>();
 
-        public NodeStatusChecker(NodeNetwork managedNodes)
+
+        public NodeStatusChange(AgentSession session, double interval) : base(session, interval)
         {
-            this.managedNodes = managedNodes;
         }
 
-        public void Start()
+        public override void Reset()
         {
-            Thread updateThread = new Thread(async ()  =>
+            
+        }
+
+        protected override void SendData()
+        {
+            logger.Debug($"Updating node measures");
+            
+            //ToDo: Pause the loop if there are no active clients
+            foreach (String nodeName in Session.ManagedNodes.Nodes.Keys.ToList())
             {
-                while (true)
-                {
-                    //ToDo: Pause the loop if there are no active clients
-                    foreach (String nodeName in managedNodes.Nodes.Keys.ToList())
-                    {
-                        SingleNode node = managedNodes.Nodes[nodeName];
-                        await UpdateNodeData(node);
-                        node.Initialized = true;
-                    }
-                    await UpdateAgentData();
+                SingleNode node = Session.ManagedNodes.Nodes[nodeName];
+                UpdateNodeData(node);
+                node.Initialized = true;
+            }
+            UpdateAgentData();
 
-                    Thread.Sleep(3000);
-                    if (signalingEvent.CurrentCount > 0) signalingEvent.Signal();
-                }
-            });
-            updateThread.Start();
+            UpdateEventArgs args = new UpdateEventArgs()
+            {
+                MessageType = MessageType.NodeData,
+                Scope = ResourceScope.Global,
+                Data = Session.ManagedNodes
+            };
+            OnUpdate(this, args);
         }
 
-        private async Task UpdateAgentData()
+
+        private void UpdateAgentData()
         {
             try
             {
-                if (managedNodes.AgentHealthState == null) managedNodes.AgentHealthState = new AgentHealthState();
+                if (Session.ManagedNodes.AgentHealthState == null) Session.ManagedNodes.AgentHealthState = new AgentHealthState();
 
                 AgentHealth agentHealth;
-                if (managedNodes.AgentHealthState.WorkerId != Guid.Empty && agentHealthWorkers.ContainsKey(managedNodes.AgentHealthState.WorkerId))
+                if (Session.ManagedNodes.AgentHealthState.WorkerId != Guid.Empty && agentHealthWorkers.ContainsKey(Session.ManagedNodes.AgentHealthState.WorkerId))
                 {
-                    agentHealth = agentHealthWorkers[managedNodes.AgentHealthState.WorkerId];
+                    agentHealth = agentHealthWorkers[Session.ManagedNodes.AgentHealthState.WorkerId];
                 }
                 else
                 {
@@ -68,15 +74,15 @@ namespace Stratis.CoinMasterAgent.StatusCheck
                     agentHealth = new AgentHealth(newWorkerGuid);
                     agentHealthWorkers.Add(newWorkerGuid, agentHealth);
                 }
-                managedNodes.AgentHealthState = agentHealth.State;
+                Session.ManagedNodes.AgentHealthState = agentHealth.State;
             }
             catch (Exception ex)
             {
                 logger.Error($"Cannot get AgentHealthState", ex);
             }
         }
-        
-        private async Task UpdateNodeData(SingleNode node)
+
+        private void UpdateNodeData(SingleNode node)
         {
             try
             {
@@ -171,12 +177,5 @@ namespace Stratis.CoinMasterAgent.StatusCheck
             }
         }
 
-        public NodeNetwork GetUpdate()
-        {
-            signalingEvent.Wait();
-            signalingEvent.Reset();
-            return managedNodes;
-        }
-        
     }
 }

@@ -9,6 +9,7 @@ using Stratis.CoinmasterClient.Network;
 using System.IO;
 using System.Threading.Tasks;
 using Fleck;
+using Stratis.CoinMasterAgent.Agent;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors
 {
@@ -17,7 +18,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
         public ActionRequest ClientAction;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public ActionRequestProcessor(AgentConnection agent, NodeNetwork managedNodes) : base(agent, managedNodes)
+        public ActionRequestProcessor(AgentConnection agent) : base(agent)
         {
         }
 

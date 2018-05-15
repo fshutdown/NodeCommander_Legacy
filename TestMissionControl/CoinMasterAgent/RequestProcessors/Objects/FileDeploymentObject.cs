@@ -6,6 +6,7 @@ using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors.Objects
 {

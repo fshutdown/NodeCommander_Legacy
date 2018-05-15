@@ -5,6 +5,7 @@ using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors
 {
@@ -13,7 +14,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
         public SingleNode[] NodeList { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeConfigurationProcessor(AgentConnection agent, NodeNetwork managedNodes) : base(agent, managedNodes)
+        public NodeConfigurationProcessor(AgentConnection agent) : base(agent)
         {
         }
 
@@ -33,19 +34,17 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
         {
             logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id} Processing {NodeList.Length} nodes configuration");
 
-            NodeNetwork newManagedNodes = ManagedNodes;
-            ManagedNodes = null;
-            if (newManagedNodes == null) newManagedNodes = new NodeNetwork();
+            if (Agent.Session.ManagedNodes == null) Agent.Session.ManagedNodes = new NodeNetwork();
 
             if (Agent.ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
-                foreach (SingleNode node in newManagedNodes.Nodes.Values)
+                foreach (SingleNode node in Agent.Session.ManagedNodes.Nodes.Values)
                     node.OrphanNode = true;
 
                 foreach (SingleNode node in NodeList)
                 {
-                    if (!newManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
-                        newManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
+                    if (!Agent.Session.ManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                        Agent.Session.ManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
                     node.OrphanNode = false;
                 }
             }
@@ -54,7 +53,6 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
 
             }
 
-            ManagedNodes = newManagedNodes;
             logger.Trace("-");
         }
     }

@@ -6,6 +6,7 @@ using Fleck;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent;
 using Stratis.CoinMasterAgent.RequestProcessors.Objects;
 
 namespace Stratis.CoinMasterAgent.RequestProcessors
@@ -17,7 +18,7 @@ namespace Stratis.CoinMasterAgent.RequestProcessors
 
         public Resource deployFile { get; set; }
 
-        public FileDeploymentProcessor(AgentConnection agent, NodeNetwork managedNodes) : base(agent, managedNodes)
+        public FileDeploymentProcessor(AgentConnection agent) : base(agent)
         {
         }
 

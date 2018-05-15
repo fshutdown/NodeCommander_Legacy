@@ -108,6 +108,8 @@ namespace Stratis.CoinMasterAgent
                 StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
 
                 valueString = responseStream.ReadToEnd();
+                responseStream.Close();
+                webResponse.Close();
             }
             catch
             {
@@ -158,6 +160,8 @@ namespace Stratis.CoinMasterAgent
                 WebResponse webResponse = webRequest.GetResponse();
                 StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
                 valueString = responseStream.ReadToEnd();
+                responseStream.Close();
+                webResponse.Close();
             }
             catch
             {
