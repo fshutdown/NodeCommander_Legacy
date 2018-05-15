@@ -22,7 +22,7 @@ namespace Stratis.CoinMasterAgent.Agent
         public Dictionary<MessageType, RequestProcessorBase> Processors { get; set; }
         public AgentSession Session { get; set; }
         public String Identity => $"{ SocketConnection.ConnectionInfo.ClientIpAddress}:{ SocketConnection.ConnectionInfo.ClientPort}";
-
+        
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public AgentConnection(IWebSocketConnection socket)

@@ -21,14 +21,11 @@ namespace Stratis.CoinMasterAgent
         private static WebSocketServer server;
         private static AgentSession session;
         
-
-
         static void Main(string[] args)
         {
-            logger.Debug("Starting Agent Process");
-
             try
             {
+                logger.Debug("Starting Agent Process");
                 session = new AgentSession();
                 
             }
