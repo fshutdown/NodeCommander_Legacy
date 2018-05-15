@@ -20,7 +20,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                 node.NodeDeploymentState = new NodeDeploymentState();
             }
 
-            Task checkNodeFilesTask = new Task(() => CheckNodeFiles(node));
+            Task checkNodeFilesTask = Task.Run(() => CheckNodeFiles(node));
             tasks.Add(checkNodeFilesTask);
 
             return tasks;

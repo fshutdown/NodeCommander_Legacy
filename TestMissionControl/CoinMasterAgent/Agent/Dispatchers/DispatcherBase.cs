@@ -14,6 +14,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 
         protected Timer _jobScheduler;
         protected double _interval;
+        public bool Enabled { get; protected set; }
 
         public Double Interval
         {
@@ -42,12 +43,15 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         public void Start()
         {
             Reset();
+            Enabled = true;
             _jobScheduler.Interval = 100;
             _jobScheduler.Start();
         }
         
         public void Stop()
         {
+            Enabled = false;
+            _jobScheduler.Enabled = false;
             _jobScheduler.Stop();
             Close();
         }
@@ -68,6 +72,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             _jobScheduler.Interval = _interval;
             _jobScheduler.Stop();
 
+            if (!Enabled) return;
             SendData();
 
             _jobScheduler.Start();

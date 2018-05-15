@@ -28,8 +28,13 @@ namespace Stratis.CoinMasterAgent
             int blockCount = 0;
             try
             {
+                if (node.APIConnectionBan-- > 0) return 0;
                 int apiPort = GetApiPort(node);
-                blockCount = SendRpcRequestAsync<int>("getblockcount", new Dictionary<String, String>(), apiPort);
+                blockCount = SendRpcRequest<int>("getblockcount", new Dictionary<String, String>(), apiPort);
+            }
+            catch (WebException exTimeout)
+            {
+                node.APIConnectionBan = 50;
             }
             catch (Exception ex)
             {
@@ -43,11 +48,17 @@ namespace Stratis.CoinMasterAgent
             NodeStatus nodeStatus = null;
             try
             {
+                if (node.APIConnectionBan-- > 0) return nodeStatus;
                 int apiPort = GetApiPort(node);
-                string getInfoString = SendApiRequestAsync<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
+                string getInfoString = SendApiRequest<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
 
                 nodeStatus = JsonConvert.DeserializeObject<NodeStatus>(getInfoString);
-            } catch (Exception ex)
+            }
+            catch (WebException exTimeout)
+            {
+                node.APIConnectionBan = 50;
+            }
+            catch (Exception ex)
             {
                 logger.Trace("Cannot call api/Node/Status: " + ex.Message);
             }
@@ -56,15 +67,20 @@ namespace Stratis.CoinMasterAgent
 
         public static void Shutdown(SingleNode node)
         {
-            NodeStatus nodeStatus = null;
             try
             {
+                if (node.APIConnectionBan-- > 0) return;
                 int apiPort = GetApiPort(node);
-                string getInfoString = SendApiRequestAsync<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
+                
+                string getInfoString = SendApiRequest<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
+            }
+            catch (WebException exTimeout)
+            {
+                node.APIConnectionBan = 50;
             }
             catch (Exception ex)
             {
-                logger.Trace("Cannot call api/Node/Shutdown: " + ex.Message);
+                logger.Trace(ex, "Cannot call api/Node/Shutdown: " + ex.Message);
             }
         }
 
@@ -74,25 +90,25 @@ namespace Stratis.CoinMasterAgent
             string[] mempoolTransactions = new string[0];
             try
             {
+                if (node.APIConnectionBan-- > 0) return mempoolTransactions;
                 int apiPort = GetApiPort(node);
-                string mempoolTransactionsString = SendRpcRequestAsync<string>("getrawmempool", new Dictionary<String, String>(), apiPort);
+                string mempoolTransactionsString = SendRpcRequest<string>("getrawmempool", new Dictionary<String, String>(), apiPort);
                 mempoolTransactions = JsonConvert.DeserializeObject<string[]>(mempoolTransactionsString);
+            }
+            catch (WebException exTimeout)
+            {
+                node.APIConnectionBan = 50;
             }
             catch (Exception ex)
             {
-                logger.Trace("Cannot call RPC getrawmempool: " + ex.Message);
+                logger.Trace(ex, "Cannot call RPC getrawmempool: " + ex.Message);
             }
             return mempoolTransactions;
         }
 
-        private static T SendRpcRequestAsync<T>(string methodName, Dictionary<String, String> arguments, int port)
-        {
-            logger.Trace($"Calling RPC {methodName} on port {port}");
-            return SendRpcRequest<T>(methodName, arguments, port);
-        }
-
         private static T SendRpcRequest<T>(string methodName, Dictionary<String, String> arguments, int port)
         {
+            logger.Trace($"Calling RPC {methodName} on port {port}");
             string queryString = BuildQueryString(arguments);
             string url = $"http://localhost:{port}/api/RPC/callbyname?methodName={methodName}&{queryString}";
 
@@ -108,9 +124,9 @@ namespace Stratis.CoinMasterAgent
                 responseStream.Close();
                 webResponse.Close();
             }
-            catch
+            catch (Exception ex)
             {
-                logger.Debug($"Cannot connect to the API port {port}");
+                logger.Debug(ex, $"Cannot connect to the API port {port}");
             }
 
             try
@@ -122,12 +138,7 @@ namespace Stratis.CoinMasterAgent
                 return default(T);
             }
         }
-
-        private static T SendApiRequestAsync<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
-        {
-            logger.Trace($"Calling API {methodName} on port {port}");
-            return SendApiRequest<T>(methodDomain, methodName, arguments, payload, port);
-        }
+        
 
         private static T SendApiRequest<T>(string methodDomain, string methodName, Dictionary<String, String> arguments, string payload, int port)
         {
@@ -157,9 +168,15 @@ namespace Stratis.CoinMasterAgent
                 responseStream.Close();
                 webResponse.Close();
             }
-            catch
+            catch (WebException exTimeout)
             {
-                logger.Debug($"Cannot connect to the API port {port}");
+                if (exTimeout.Status == WebExceptionStatus.Timeout)
+                    throw exTimeout;
+                logger.Debug(exTimeout, $"Cannot connect to the API port {port}");
+            }
+            catch (Exception ex)
+            {
+                logger.Debug(ex, $"Cannot connect to the API port {port}");
             }
 
             try

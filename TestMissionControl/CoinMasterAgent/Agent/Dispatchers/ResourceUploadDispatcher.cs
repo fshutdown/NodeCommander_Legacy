@@ -15,10 +15,11 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
     public class ResourceUploadDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private Dictionary<Resource, FileStream> resourceStreams = new Dictionary<Resource, FileStream>();
+        private Dictionary<Resource, FileStream> resourceStreams;
         
         public ResourceUploadDispatcher(AgentSession session, double interval) : base(session, interval)
         {
+            resourceStreams = new Dictionary<Resource, FileStream>();
         }
 
         public override void Reset()
@@ -43,6 +44,8 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             {
                 fileStream.Close();
             }
+
+            resourceStreams.Clear();
         }
 
         public override void SendData()

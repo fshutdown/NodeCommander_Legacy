@@ -26,8 +26,9 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                 node.NodeOperationState = new NodeOperationState();
             }
 
-            Task checkNodeFilesTask = new Task(() => CheckNodeOperation(node));
-            tasks.Add(checkNodeFilesTask);
+            tasks.Add(Task.Run(() => GetNodeStatus(node)));
+            tasks.Add(Task.Run(() => GetBlockCount(node)));
+            tasks.Add(Task.Run(() => GetMemoryPoolTransactions(node)));
 
             return tasks;
         }
@@ -37,7 +38,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         }
 
-        private void CheckNodeOperation(SingleNode node)
+        private void GetNodeStatus(SingleNode node)
         {
             NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(node);
             if (nodeStatus == null)
@@ -60,16 +61,21 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             int maxInboundTipHeight = nodeStatus.InboundPeers.Any() ? nodeStatus.InboundPeers.Max(p => p.TipHeight) : 0;
             int maxOutboundTipHeight = nodeStatus.OutboundPeers.Any() ? nodeStatus.OutboundPeers.Max(p => p.TipHeight) : 0;
             node.NodeOperationState.NetworkHeight = Math.Max(maxInboundTipHeight, maxOutboundTipHeight);
-
-            node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(node);
-            string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(node);
-            node.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
-
         }
 
+        private void GetBlockCount(SingleNode node)
+        {
+            if (node.NodeOperationState.State != ProcessState.Running) return;
 
+            node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(node);
+        }
 
+        private void GetMemoryPoolTransactions(SingleNode node)
+        {
+            if (node.NodeOperationState.State != ProcessState.Running) return;
 
-
+            string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(node);
+            node.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
+        }
     }
 }

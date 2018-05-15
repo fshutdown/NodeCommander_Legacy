@@ -100,6 +100,8 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                     logger.Error(ex, $"Cannot get NodeDeploymentState");
                 }
             }
+
+            Task.WaitAll(updateTasks.ToArray());
         }
 
         

@@ -22,7 +22,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                 managedNodes.AgentHealthState = new AgentHealthState();
             }
 
-            Task checkNodeFilesTask = new Task(() => CheckAgentResources(managedNodes));
+            Task checkNodeFilesTask = Task.Run(() => CheckAgentResources(managedNodes));
             tasks.Add(checkNodeFilesTask);
 
             return tasks;

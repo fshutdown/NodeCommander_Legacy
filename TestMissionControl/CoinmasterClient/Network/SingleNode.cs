@@ -26,6 +26,8 @@ namespace Stratis.CoinmasterClient.Network
         public NodeOperationState NodeOperationState { get; set; }
         public NodeLogState NodeLogState { get; set; }
 
+        public int APIConnectionBan { get; set; }
+
         public bool OrphanNode { get; set; }
 
         public string NetworkDirectory

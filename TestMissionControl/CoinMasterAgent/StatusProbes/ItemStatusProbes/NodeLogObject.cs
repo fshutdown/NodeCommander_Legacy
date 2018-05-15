@@ -40,7 +40,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
             FileInfo logFile = new FileInfo(logFileFullName);
             if (!logFile.Exists) return;
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 if (logReader.EndOfStream) return;
 
@@ -61,6 +61,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
         public void Close()
         {
             logReader.Close();
+            logReaderStream = null;
         }
     }
 }
