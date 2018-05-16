@@ -2,37 +2,32 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Stratis.CoinmasterClient.FileDeployment;
-using Stratis.CoinmasterClient.Network;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Stratis.CoinmasterClient.Config
 {
     public class FullNodeConfig
     {
-        public static string ConfigFileName = "nodes.conf";
+        private String nodeConfigFileName;
+        private FileInfo nodeConfigFile;
 
-        public NodeNetwork Config;
+        public List<KeyValuePair<String, String>> Options = new List<KeyValuePair<String, String>>();
 
-        private FileInfo nodeConfig;
-        private Regex sectionNameRegex = new Regex("^\\[([A-Z0-9 _.-]+)\\]\\s*#?.*", RegexOptions.IgnoreCase);
-        private Regex commentRegEx = new Regex("\\s*#.*", RegexOptions.IgnoreCase);
-        private Regex parameterRegEx = new Regex("([A-Z0-9]+)=(.*)\\s*#?.*", RegexOptions.IgnoreCase);
-
-        public FullNodeConfig()
+        public FullNodeConfig(string nodeConfigFileName)
         {
-            Load();
+            this.nodeConfigFileName = nodeConfigFileName;
+            nodeConfigFile = new FileInfo(nodeConfigFileName);
+            if (!nodeConfigFile.Exists)
+                throw new Exception($"Node configuration file \"{nodeConfigFileName}\" doesn't exist.");
+
+            ReLoad();
         }
-    
-        public void Load()
+
+        public void ReLoad()
         {
-            Config = new NodeNetwork();
+            StreamReader configReader = new StreamReader(nodeConfigFile.FullName);
 
-            nodeConfig = new FileInfo(ConfigFileName);
-            StreamReader configReader = new StreamReader(nodeConfig.FullName);
-
-            string sectionName = string.Empty;
             int lineNumber = 1;
             while (!configReader.EndOfStream)
             {
@@ -43,171 +38,37 @@ namespace Stratis.CoinmasterClient.Config
                     continue;
                 }
 
-                if (sectionNameRegex.IsMatch(line))
+                if (!line.StartsWith("#"))
                 {
-                    sectionName = sectionNameRegex.Match(line).Groups[1].Value;
-                } else if (commentRegEx.IsMatch(line))
-                {
-                    //ignore comments
-                } else if (parameterRegEx.IsMatch(line))
-                {
-                    try
-                    {
-                        string key = parameterRegEx.Match(line).Groups[1].Value;
-                        string value = parameterRegEx.Match(line).Groups[2].Value;
+                    string[] lineParts = line.Split('=');
+                    if (lineParts.Length != 2)
+                        throw new Exception($"Unexpected configuration option at line {lineNumber}");
 
-                        if (sectionName == "Global" && key.ToLower() == "deploy")
-                        {
-                            AddToFileDeploymentList("Global", value);
-                        }
-                        else if (sectionName == "Global" && key.ToLower() != "deploy")
-                        {
-                            SetProperty(nodeConfig, key, value);
-                        }
-                        else
-                        {
-                            SingleNode nodeConfig;
-                            if (!Config.Nodes.ContainsKey(sectionName))
-                            {
-                                nodeConfig = new SingleNode(sectionName);
-                                Config.Nodes.Add(sectionName, nodeConfig);
-                            }
-                            else
-                            {
-                                nodeConfig = Config.Nodes[sectionName];
-                            }
+                    KeyValuePair<String, String> option = new KeyValuePair<string, string>(lineParts[0], lineParts[1]);
 
-                            if (key.ToLower() == "deploy")
-                            {
-                                AddToFileDeploymentList(sectionName, value);
-                            }
-                            else
-                            {
-                                SetProperty(nodeConfig, key, value);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ArgumentException($"Error reading node configuration file at line {lineNumber}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Incorrect configuration option at line: {lineNumber} (--> \"{line}\")");
+                    Options.Add(option);
                 }
 
                 lineNumber++;
             }
 
-            //Enumerate variables to resolve any parameter values
-            foreach (SingleNode node in Config.Nodes.Values)
-            {
-                Dictionary<String, String> variables = CreateEvaluationLookup(node);
-                foreach (string variableName in variables.Keys)
-                {
-                    string newValue = Evaluate(variables[variableName], variables);
-                    if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
-                        
-                    if (newValue != variables[variableName])
-                    {
-                        SetProperty(node, variableName, newValue);
-                        variables[variableName] = newValue;
-                    }
-                }
-
-                var fileDescriptors = Config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
-                foreach (FileDescriptor fileDescriptor in fileDescriptors)
-                {
-                    fileDescriptor.LocalPath = Evaluate(fileDescriptor.LocalPath, variables);
-                    fileDescriptor.RemotePath = Evaluate(fileDescriptor.RemotePath, variables);
-                    if (fileDescriptor.RemotePath.StartsWith(".")) fileDescriptor.RemotePath = Path.Combine(node.NetworkDirectory, fileDescriptor.RemotePath.Substring(1).Trim('\\'));
-                }
-            }
         }
 
-        private void AddToFileDeploymentList(string sectionName, string value)
+        public int GetApiPort()
         {
-            string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
-            if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
-            string source = fileDeploymentParts[0].Trim();
-            string destination = fileDeploymentParts[1].Trim();
+            bool optionExists = Options.Any(o => o.Key.ToLower() == "apiport");
+            if (!optionExists) return 500;
 
-            ResourceScope scope;
-            String fullNodeName = null;
-            if (sectionName.Equals("global", StringComparison.InvariantCultureIgnoreCase))
+            int apiPort;
+            string apiPortString = Options.First(o => o.Key.ToLower() == "apiport").Value;
+            if (!int.TryParse(apiPortString, out apiPort))
             {
-                scope = ResourceScope.Global;
-            }
-            else
-            {
-                scope = ResourceScope.Node;
-                fullNodeName = sectionName;
+                throw new Exception($"ApiPort is not a number. Please check node configuration file {nodeConfigFileName}");
             }
 
-            FileDescriptor fileDescriptor = new FileDescriptor(scope, fullNodeName)
-            {
-                LocalPath = source,
-                RemotePath = destination
-            };
-            Config.FileDeploy.Add(fileDescriptor);
-        }
-
-        private void SetProperty(object target, string propertyName, string value)
-        {
-            foreach (PropertyInfo property in target.GetType().GetProperties())
-            {
-                if (property.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    if (property.PropertyType == typeof(string))
-                        property.SetValue(target, value);
-                    else if (property.PropertyType == typeof(int))
-                        property.SetValue(target, int.Parse(value));
-                    else if (property.PropertyType == typeof(decimal))
-                        property.SetValue(target, decimal.Parse(value));
-                    else if (property.PropertyType == typeof(bool))
-                        property.SetValue(target, bool.Parse(value));
-                    break;
-                }
-            }
-        }
-
-        private static Dictionary<String, String> CreateEvaluationLookup(SingleNode node)
-        {
-            Dictionary<String, String> variableLookup = new Dictionary<string, string>();
-            foreach (PropertyInfo property in typeof(SingleNode).GetProperties())
-            {
-                if (property.PropertyType == typeof(String))
-                {
-                    string propertyName = property.Name;
-                    string propertyValue = property.GetValue(node) as String;
-
-                    variableLookup.Add(propertyName, propertyValue);
-                }
-            }
-
-            return variableLookup;
-        }
-
-        private static string Evaluate(String text, Dictionary<String, String> variableLookup)
-        {
-            string result = text;
-            foreach (String variableName in variableLookup.Keys)
-            {
-                if (variableLookup[variableName] != null) result = result.Replace($"${variableName}", variableLookup[variableName]);
-            }
-
-            return result;
-        }
-
-        public static string Evaluate(String text, SingleNode node)
-        {
-            Dictionary<String, String> variableLookup = CreateEvaluationLookup(node);
-
-            string newValue = Evaluate(text, variableLookup);
-            if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
-            return newValue;
+            return apiPort;
         }
 
     }
 }
+

@@ -53,10 +53,10 @@ namespace Stratis.CoinmasterClient.Network
             DisplayName = NodeEndpoint.NodeName;
         }
 
-        public NodeCommanderConfig GetNodeConfig()
+        public FullNodeConfig GetNodeConfig()
         {
             string nodeConfigPath = Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName, NodeConfig);
-            NodeCommanderConfig config = new NodeCommanderConfig(nodeConfigPath);
+            FullNodeConfig config = new FullNodeConfig(nodeConfigPath);
 
             return config;
         }

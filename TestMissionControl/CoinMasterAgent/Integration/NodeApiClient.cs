@@ -16,7 +16,7 @@ namespace Stratis.CoinMasterAgent.Integration
 
         private static int GetApiPort(SingleNode node)
         {
-            NodeCommanderConfig config = node.GetNodeConfig();
+            FullNodeConfig config = node.GetNodeConfig();
             int apiPort = config.GetApiPort();
             return apiPort;
         }

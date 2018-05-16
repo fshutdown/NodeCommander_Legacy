@@ -38,8 +38,16 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.4\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,8 +68,23 @@
     <Compile Include="Client\AgentState.cs" />
     <Compile Include="Client\ClientConnection.cs" />
     <Compile Include="Client\ClientConnectionManager.cs" />
-    <Compile Include="Config\FullNodeConfig.cs" />
+    <Compile Include="Client\ClientConnection_old.cs" />
+    <Compile Include="Client\ClientConnectionManager_old.cs" />
+    <Compile Include="Client\ClientSession.cs" />
+    <Compile Include="Client\Dispatchers\DispatcherBase.cs" />
+    <Compile Include="Client\Dispatchers\DispatcherItems\ResourceDeploymentItem.cs" />
+    <Compile Include="Client\Dispatchers\EventArgs\UpdateEventArgs.cs" />
+    <Compile Include="Client\Dispatchers\ClientRegistrationDispatcher.cs" />
+    <Compile Include="Client\Dispatchers\NodeActionDispatcher.cs" />
+    <Compile Include="Client\Dispatchers\NodeConfigurationDispatcher.cs" />
+    <Compile Include="Client\Dispatchers\ResourceDeploymentDispatcher.cs" />
+    <Compile Include="Client\Handlers\AgentRegistrationProcessor.cs" />
+    <Compile Include="Client\Handlers\EventArgs\RequestProcessorCompletedEventArgs.cs" />
+    <Compile Include="Client\Handlers\NodeDataProcessor.cs" />
+    <Compile Include="Client\Handlers\RequestProcessorBase.cs" />
+    <Compile Include="Client\Handlers\ResourceDownloadProcessor.cs" />
     <Compile Include="Config\NodeCommanderConfig.cs" />
+    <Compile Include="Config\FullNodeConfig.cs" />
     <Compile Include="Database\DatabaseConnection.cs" />
     <Compile Include="FileDeployment\FileDescriptor.cs" />
     <Compile Include="FileDeployment\ResourceScope.cs" />
@@ -84,5 +107,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

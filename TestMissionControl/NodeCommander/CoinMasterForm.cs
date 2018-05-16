@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Client;
+using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
@@ -29,7 +30,7 @@ namespace Stratis.NodeCommander
         private DataView dataGridViewAgentsDataView;
         private DataView dataGridViewBlockchainDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
-        private AgentConnectionManager agentConnectionManager;
+        private ClientConnectionManager agentConnectionManager;
 
         private List<BaseWorker> _workers = new List<BaseWorker>();
         private CryptoIdWorker cryptoIdWorker;
@@ -38,7 +39,7 @@ namespace Stratis.NodeCommander
         {
             InitializeComponent();
 
-            FullNodeConfig reader = new FullNodeConfig();
+            NodeCommanderConfig reader = new NodeCommanderConfig();
             network = reader.Config;
 
             //ToDo: Switch networks
@@ -62,12 +63,12 @@ namespace Stratis.NodeCommander
             //Start all workers
             foreach (BaseWorker worker in _workers) worker.Start();
 
-            agentConnectionManager = new AgentConnectionManager();
-            agentConnectionManager.CreateListOfAgents(network);
-            agentConnectionManager.ConnectionStatusChanged += connectionAddress => Invoke(new Action<string>(AgentDataTableUpdated), connectionAddress);
-            agentConnectionManager.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<AgentConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
-            agentConnectionManager.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
-            agentConnectionManager.ResourceDownloadUpdated += (agentConnection, resourceList) => Invoke(new Action<AgentConnection, List<Resource>>(ResourceDownloadUpdated), agentConnection, resourceList);
+            agentConnectionManager = new ClientConnectionManager();
+            agentConnectionManager.CreateListOfAgents();
+            agentConnectionManager.Session.ConnectionStatusChanged += (connectionAddress, message) => Invoke(new Action<string, string>(AgentDataTableUpdated), connectionAddress, message);
+            agentConnectionManager.Session.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<ClientConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
+            agentConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<ClientConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
+            agentConnectionManager.Session.ResourceDownloadUpdated += (agentConnection, resourceList) => Invoke(new Action<ClientConnection, List<Resource>>(ResourceDownloadUpdated), agentConnection, resourceList);
 
             agentConnectionManager.ConnectToAgents();
         }
@@ -171,11 +172,11 @@ namespace Stratis.NodeCommander
         private DataTable BuildAgentDataTable()
         {
             DataTable agentsData = new DataTable();
-            agentsData.Columns.Add("Address", typeof(AgentConnection));
+            agentsData.Columns.Add("Address", typeof(ClientConnection));
             agentsData.Columns.Add("Status");
             agentsData.Columns.Add("Info");
             
-            foreach (AgentConnection connection in agentConnectionManager.AgentConnectionList.Values)
+            foreach (ClientConnection connection in agentConnectionManager.Session.Clients.Values)
             {
                 agentsData.Rows.Add(connection, string.Empty, string.Empty);
             }
@@ -193,7 +194,7 @@ namespace Stratis.NodeCommander
             return blockchainData;
         }
 
-        private void AgentDataTableUpdated(string address)
+        private void AgentDataTableUpdated(string address, string message)
         {
             DataTable dataTable;
             if (dataGridViewAgents.DataSource == null)
@@ -216,22 +217,22 @@ namespace Stratis.NodeCommander
                 dataTable = dataGridViewAgentsDataView.Table;
             }
 
-            AgentConnection connection = agentConnectionManager.AgentConnectionList[address];
+            ClientConnection connection = agentConnectionManager.Session.Clients[address];
             foreach (DataRow row in dataTable.Rows)
             {
-                AgentConnection tableRecord = (AgentConnection) row["Address"];
+                ClientConnection tableRecord = (ClientConnection) row["Address"];
 
                 if (tableRecord.Address == address)
                 {
                     row["Status"] = connection.State;
-                    row["Info"] = connection.ConnectionInfo;
+                    row["Info"] = message;
 
                     break;
                 }
             }
         }
 
-        private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork networkSegment)
+        private void NodeDataUpdated(ClientConnection clientConnection, NodeNetwork networkSegment)
         {
             int performanceIsues = 0;
             if (dataGridViewNodes.DataSource == null)
@@ -268,12 +269,12 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void AgentRegistrationUpdated(AgentConnection agentConnection, AgentRegistration agentRegistration)
+        private void AgentRegistrationUpdated(ClientConnection clientConnection, AgentRegistration agentRegistration)
         {
 
         }
 
-        private void ResourceDownloadUpdated(AgentConnection agentConnection, List<Resource> resourceList)
+        private void ResourceDownloadUpdated(ClientConnection clientConnection, List<Resource> resourceList)
         {
             foreach (Resource resource in resourceList)
             {
@@ -452,7 +453,8 @@ namespace Stratis.NodeCommander
                 SingleNode node = (SingleNode)row.Cells["Node"].Value;
                 var agent = agentConnectionManager.GetAgent(node.Agent);
 
-                agent.ProcessFilesToDeploy(network, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
+                ResourceDeploymentDispatcher dispatcher = (ResourceDeploymentDispatcher)agent.Dispatchers[MessageType.DeployFile];
+                dispatcher.DeployFile(network, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             }
         }
 
@@ -465,7 +467,8 @@ namespace Stratis.NodeCommander
                 SingleNode node = (SingleNode)row.Cells["Node"].Value;
                 var agent = agentConnectionManager.GetAgent(node.Agent);
 
-                agent.StartNode(node);
+                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
+                dispatcher.StartNode(node);
             }
         }
 
@@ -478,7 +481,8 @@ namespace Stratis.NodeCommander
                 SingleNode node = (SingleNode)row.Cells["Node"].Value;
                 var agent = agentConnectionManager.GetAgent(node.Agent);
 
-                agent.StopNode(node);
+                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
+                dispatcher.StopNode(node);
             }
         }
 
@@ -491,7 +495,8 @@ namespace Stratis.NodeCommander
                 SingleNode node = (SingleNode)row.Cells["Node"].Value;
                 var agent = agentConnectionManager.GetAgent(node.Agent);
 
-                agent.RemoveFile(node, "$NetworkDirectory\\hello.txt");
+                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
+                dispatcher.RemoveFile(node, "$NetworkDirectory\\hello.txt");
             }
         }
 

@@ -1,117 +1,163 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Stratis.CoinmasterClient.Config;
+using NLog;
+using Stratis.CoinmasterClient.Client.Dispatchers;
+using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
+using Stratis.CoinmasterClient.Client.Handlers;
 using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
-using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Client
 {
-    public class AgentConnection
+    public class ClientConnection
     {
+        public ClientWebSocket SocketConnection { get; set; }
+        public AgentRegistration AgentRegistration { get; set; }
+        public Dictionary<MessageType, RequestProcessorBase> Processors { get; set; }
+        public Dictionary<MessageType, DispatcherBase> Dispatchers { get; set; }
+        public ClientSession Session { get; set; }
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public string Address => $"{ConnectionUri.Host}:{ConnectionUri.Port}";
+        public Uri ConnectionUri { get; set; }
+        
+        public AgentState State { get; set; }
+        public Action OnOpen { get; internal set; }
+        public Action OnClose { get; internal set; }
+        public Action<String> OnConnectionError { get; internal set; }
+        public Action<String> OnMessage { get; internal set; }
+
         private const int ReceiveChunkSize = 1024;
         private const int SendChunkSize = 1024;
 
-        private ClientWebSocket _ws;
-        private readonly Uri _uri;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly CancellationToken _cancellationToken;
 
-        private Action<AgentConnection> _onConnected;
-        private Action<string, AgentConnection> _onMessage;
-        private Action<AgentConnection> _onDisconnected;
-
-        public string Host { get; set; }
-        public string Port { get; set; }
-        public string Address
+        
+        public ClientConnection(string host, string port)
         {
-            get { return $"{Host}:{Port}"; }
-        }
-        public AgentState State { get; set; }
-        public string ConnectionInfo { get; set; }
-
-        public static AgentConnection Create(string address, string port)
-        {
-            return new AgentConnection(address, port);
-        }
-
-        protected AgentConnection(string host, string port)
-        {
-            Host = host;
-            Port = port;
-
-            _uri = new Uri($"ws://{host}:{port}");
+            ConnectionUri = new Uri($"ws://{host}:{port}");
             _cancellationToken = _cancellationTokenSource.Token;
+
+            Processors = new Dictionary<MessageType, RequestProcessorBase>();
+            Dispatchers = new Dictionary<MessageType, DispatcherBase>();
         }
 
-
-        /// <summary>
-        /// Connects to the WebSocket server.
-        /// </summary>
-        /// <returns></returns>
-        public AgentConnection Connect()
+        public async void Connect()
         {
-            _ws = new ClientWebSocket();
-            _ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
-            ConnectAsync();
-            return this;
-        }
+            SocketConnection = new ClientWebSocket();
+            SocketConnection.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
 
-        /// <summary>
-        /// Set the Action to call when the connection has been established.
-        /// </summary>
-        /// <param name="onConnect">The Action to call.</param>
-        /// <returns></returns>
-        public AgentConnection OnConnect(Action<AgentConnection> onConnect)
-        {
-            _onConnected = onConnect;
-            return this;
-        }
-
-        /// <summary>
-        /// Set the Action to call when the connection has been terminated.
-        /// </summary>
-        /// <param name="onDisconnect">The Action to call</param>
-        /// <returns></returns>
-        public AgentConnection OnDisconnect(Action<AgentConnection> onDisconnect)
-        {
-            _onDisconnected = onDisconnect;
-            return this;
-        }
-
-        /// <summary>
-        /// Set the Action to call when a messages has been received.
-        /// </summary>
-        /// <param name="onMessage">The Action to call.</param>
-        /// <returns></returns>
-        public AgentConnection OnMessage(Action<string, AgentConnection> onMessage)
-        {
-            _onMessage = onMessage;
-            return this;
-        }
-
-        /// <summary>
-        /// Send a message to the WebSocket server.
-        /// </summary>
-        /// <param name="message">The message to send</param>
-        public void SendMessage(string message)
-        {
-            SendMessageAsync(message);
-        }
-
-        public async Task SendMessageAsync(string message)
-        {
-            if (_ws.State != WebSocketState.Open)
+            try
             {
-                throw new Exception("Connection is not open.");
+                await SocketConnection.ConnectAsync(ConnectionUri, _cancellationToken);
+                
+                StartListen();
+                State = AgentState.Connected;
+                OnOpen();
+            }
+            catch (Exception ex)
+            {
+                State = AgentState.Error;
+                OnConnectionError(ex.Message);
+            }
+        }
+
+        private async void StartListen()
+        {
+            byte[] buffer = new byte[ReceiveChunkSize];
+
+            try
+            {
+                while (SocketConnection.State == WebSocketState.Open)
+                {
+                    var stringResult = new StringBuilder();
+
+
+                    WebSocketReceiveResult result;
+                    do
+                    {
+                        result = await SocketConnection.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken);
+
+                        if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            await
+                                SocketConnection.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                            OnClose();
+                        }
+                        else
+                        {
+                            var str = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                            stringResult.Append(str);
+                        }
+
+                    } while (!result.EndOfMessage);
+
+                    OnMessage(stringResult.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                OnClose();
+                OnConnectionError(ex.Message);
+            }
+            finally
+            {
+                SocketConnection.Dispose();
+            }
+        }
+
+        public void SendObject(DispatcherBase sender, UpdateEventArgs args)
+        {
+            SendObject(args.MessageType, args.Data, args.Scope, args.FullNodeName);
+        }
+
+        public async Task SendObject(MessageType messageType, object data, ResourceScope scope, string fullNodeName = null)
+        {
+            if (SocketConnection.State == WebSocketState.Closed)
+            {
+                Disconnect();
+                return;
             }
 
+            logger.Debug($"{Address}: Sending {messageType} message");
+
+            string payload;
+            try
+            {
+                logger.Debug($"{Address}: Preparing message {messageType} payload");
+
+                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
+                envelope.MessageType = messageType;
+                envelope.PayloadObject = data;
+
+                payload = JsonConvert.SerializeObject(envelope);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"{Address}: Error while generating message {messageType} payload");
+                return;
+            }
+
+            try
+            {
+                logger.Debug($"{Address}: Sending {messageType} data to the client ({payload.Length} bytes)");
+                await SendMessageAsync(payload);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"{Address}: Error while sending {messageType} data to the client");
+            }
+        }
+
+        private async Task SendMessageAsync(string message)
+        {
             var messageBuffer = Encoding.UTF8.GetBytes(message);
             var messagesCount = (int)Math.Ceiling((double)messageBuffer.Length / SendChunkSize);
 
@@ -126,187 +172,18 @@ namespace Stratis.CoinmasterClient.Client
                     count = messageBuffer.Length - offset;
                 }
 
-                await _ws.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken);
+                await SocketConnection.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken);
             }
         }
 
-        private async void ConnectAsync()
+        public void Disconnect()
         {
-            try
-            {
-                await _ws.ConnectAsync(_uri, _cancellationToken);
-                ClientRegistrationRequest clientRegistration = new ClientRegistrationRequest(3000);
-                MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Global);
-                envelope.MessageType = MessageType.ClientRegistration;
-                envelope.PayloadObject = clientRegistration;
-
-                SendMessage(JsonConvert.SerializeObject(envelope));
-                CallOnConnected();
-                StartListen();
-                ConnectionInfo = string.Empty;
-            }
-            catch (Exception ex)
-            {
-                State = AgentState.Error;
-                ConnectionInfo = ex.Message;
-            }
+            SocketConnection.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, _cancellationToken);
         }
-
-        private async void StartListen()
-        {
-            var buffer = new byte[ReceiveChunkSize];
-
-            try
-            {
-                while (_ws.State == WebSocketState.Open)
-                {
-                    var stringResult = new StringBuilder();
-
-
-                    WebSocketReceiveResult result;
-                    do
-                    {
-                        result = await _ws.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken);
-
-                        if (result.MessageType == WebSocketMessageType.Close)
-                        {
-                            await
-                                _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                            CallOnDisconnected();
-                            ConnectionInfo = string.Empty;
-                        }
-                        else
-                        {
-                            var str = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                            stringResult.Append(str);
-                        }
-
-                    } while (!result.EndOfMessage);
-
-                    CallOnMessage(stringResult);
-
-                }
-            }
-            catch (Exception)
-            {
-                CallOnDisconnected();
-                ConnectionInfo = string.Empty;
-            }
-            finally
-            {
-                _ws.Dispose();
-            }
-        }
-
-        private void CallOnMessage(StringBuilder stringResult)
-        {
-            if (_onMessage != null)
-                RunInTask(() => _onMessage(stringResult.ToString(), this));
-        }
-
-        private void CallOnDisconnected()
-        {
-            if (_onDisconnected != null)
-                RunInTask(() => _onDisconnected(this));
-        }
-
-        private void CallOnConnected()
-        {
-            if (_onConnected != null)
-                RunInTask(() => _onConnected(this));
-        }
-
-        private static void RunInTask(Action action)
-        {
-            Task.Factory.StartNew(action);
-        }
-
 
         public override string ToString()
         {
-            return Host;
-        }
-
-        public async void ProcessFilesToDeploy(NodeNetwork network, ResourceScope scope, String fullNodeName = null)
-        {
-            var filesInScope = from d in network.FileDeploy
-                               where d.Scope == scope && d.FullNodeName == fullNodeName
-                               select d;
-
-            foreach (FileDescriptor file in filesInScope)
-            {
-                FileInfo localFile = new FileInfo(file.LocalPath);
-
-                Resource deployFile = new Resource();
-                deployFile.FullNodeName = file.FullNodeName;
-                deployFile.FullName = Path.Combine(file.RemotePath, localFile.Name);
-                deployFile.Size = localFile.Length;
-
-                FileStream f = new FileStream(localFile.FullName, FileMode.Open);
-
-                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
-                envelope.MessageType = MessageType.DeployFile;
-                envelope.PayloadObject = deployFile;
-
-                int read;
-                int buffSize = 1024 * 256;
-                long totalBytesSent = 0;
-                deployFile.Data = new byte[buffSize];
-                while ((read = f.Read(deployFile.Data, 0, buffSize)) > 0)
-                {
-                    deployFile.Length = read;
-                    totalBytesSent += read;
-
-                    if (totalBytesSent == deployFile.Size) deployFile.EndOfData = true;
-
-                    //ToDO: Remove to increase performance
-                    Resource test_object = JsonConvert.DeserializeObject<Resource>(JsonConvert.SerializeObject(envelope.PayloadObject));
-
-                    await SendMessageAsync(JsonConvert.SerializeObject(envelope));
-                }
-
-                f.Close();
-            }
-        }
-
-        public void StartNode(SingleNode node)
-        {
-            ActionRequest action = new ActionRequest(ActionType.StartNode);
-            action.FullNodeName = node.NodeEndpoint.FullNodeName;
-
-            action.Parameters[ActionParameters.CompilerSwitches] = "--no-build";
-            action.Parameters[ActionParameters.RuntimeSwitches] = "";
-
-            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
-            envelope.MessageType = MessageType.ActionRequest;
-            envelope.PayloadObject = action;
-
-            SendMessage(JsonConvert.SerializeObject(envelope));
-        }
-
-        public void StopNode(SingleNode node)
-        {
-            ActionRequest action = new ActionRequest(ActionType.StopNode);
-            action.FullNodeName = node.NodeEndpoint.FullNodeName;
-
-            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
-            envelope.MessageType = MessageType.ActionRequest;
-            envelope.PayloadObject = action;
-
-            SendMessage(JsonConvert.SerializeObject(envelope));
-        }
-
-        public void RemoveFile(SingleNode node, string path)
-        {
-            ActionRequest action = new ActionRequest(ActionType.DeleteFile);
-            action.FullNodeName = node.NodeEndpoint.FullNodeName;
-            action.Parameters.Add(ActionParameters.Path, FullNodeConfig.Evaluate(path, node));
-
-            MessageEnvelope envelope = new MessageEnvelope(ResourceScope.Node, node.NodeEndpoint.FullNodeName);
-            envelope.MessageType = MessageType.ActionRequest;
-            envelope.PayloadObject = action;
-
-            SendMessage(JsonConvert.SerializeObject(envelope));
+            return Address;
         }
     }
 }
