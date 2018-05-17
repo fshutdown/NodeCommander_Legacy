@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using NLog;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs;
 
 namespace Stratis.CoinMasterAgent.Agent.Dispatchers

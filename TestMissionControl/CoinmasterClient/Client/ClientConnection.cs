@@ -10,7 +10,6 @@ using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
 using Stratis.CoinmasterClient.Client.Handlers;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 
 namespace Stratis.CoinmasterClient.Client
@@ -115,10 +114,10 @@ namespace Stratis.CoinmasterClient.Client
 
         public void SendObject(DispatcherBase sender, UpdateEventArgs args)
         {
-            SendObject(args.MessageType, args.Data, args.Scope, args.FullNodeName);
+            SendObject(args.MessageType, args.Data);
         }
 
-        public async Task SendObject(MessageType messageType, object data, ResourceScope scope, string fullNodeName = null)
+        public async Task SendObject(MessageType messageType, object data)
         {
             if (SocketConnection.State == WebSocketState.Closed)
             {
@@ -133,7 +132,7 @@ namespace Stratis.CoinmasterClient.Client
             {
                 logger.Debug($"{Address}: Preparing message {messageType} payload");
 
-                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
+                MessageEnvelope envelope = new MessageEnvelope();
                 envelope.MessageType = messageType;
                 envelope.PayloadObject = data;
 

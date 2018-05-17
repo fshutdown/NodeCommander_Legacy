@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 

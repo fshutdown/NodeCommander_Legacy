@@ -8,6 +8,7 @@ using NLog;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Client.Handlers
 {

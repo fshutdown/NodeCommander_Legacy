@@ -41,7 +41,8 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         private void GetNodeStatus(BlockchainNode node)
         {
-            NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(node);
+            int apiPort = node.GetNodeConfig().GetApiPort();
+            NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(apiPort, node.NodeEndpoint.FullNodeName);
             if (nodeStatus == null)
             {
                 node.NodeOperationState.State = ProcessState.Stopped;
@@ -68,14 +69,16 @@ namespace Stratis.CoinMasterAgent.StatusProbes
         {
             if (node.NodeOperationState.State != ProcessState.Running) return;
 
-            node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(node);
+            int apiPort = node.GetNodeConfig().GetApiPort();
+            node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(apiPort, node.NodeEndpoint.FullNodeName);
         }
 
         private void GetMemoryPoolTransactions(BlockchainNode node)
         {
             if (node.NodeOperationState.State != ProcessState.Running) return;
 
-            string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(node);
+            int apiPort = node.GetNodeConfig().GetApiPort();
+            string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(apiPort, node.NodeEndpoint.FullNodeName);
             node.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
         }
     }

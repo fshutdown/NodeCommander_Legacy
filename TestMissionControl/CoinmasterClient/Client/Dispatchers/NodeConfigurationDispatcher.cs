@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -39,7 +38,6 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             {
                 MessageType = MessageType.NodeData,
                 Data = nodeList.ToArray<BlockchainNode>(),
-                Scope = ResourceScope.Global
             };
             OnUpdate(this, args);
 

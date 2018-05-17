@@ -15,7 +15,7 @@ namespace Stratis.CoinmasterClient.Network
         public string NodeConfig { get; set; }
         public string DataDir { get; set; }
         public string CodeDirectory { get; set; }
-        public string ProjectFolder { get; set; }
+        public string ProjectDirectory { get; set; }
         public string Agent { get; set; }
         public bool Enabled { get; set; }
         #endregion

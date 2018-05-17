@@ -83,8 +83,8 @@ namespace Stratis.CoinmasterClient.Client
             //Configure dispatchers
             client.Dispatchers.Add(MessageType.ClientRegistration, new ClientRegistrationDispatcher(client, int.MaxValue));
             client.Dispatchers.Add(MessageType.NodeData, new NodeConfigurationDispatcher(client, int.MaxValue));
-            client.Dispatchers.Add(MessageType.ActionRequest, new NodeActionDispatcher(client, 500));
-            client.Dispatchers.Add(MessageType.DeployFile, new ResourceDeploymentDispatcher(client, 500));
+            client.Dispatchers.Add(MessageType.ActionRequest, new NodeActionDispatcher(client, 1000));
+            client.Dispatchers.Add(MessageType.DeployFile, new ResourceDeploymentDispatcher(client, 1000));
 
             foreach (DispatcherBase dispatcher in client.Dispatchers.Values)
             {

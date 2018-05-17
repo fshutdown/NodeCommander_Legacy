@@ -9,9 +9,9 @@ using System.Windows.Forms;
 using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
@@ -347,7 +347,7 @@ namespace Stratis.NodeCommander
 
             groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
             textBoxCodeDirectory.Text = node.CodeDirectory;
-            textBoxProjectDirectory.Text = node.ProjectFolder;
+            textBoxProjectDirectory.Text = node.ProjectDirectory;
             textBoxDataDirectory.Text = node.DataDir;
             textBoxNetworkDirectory.Text = node.NetworkDirectory;
             textBoxNodeConfig.Text = node.NodeConfig;

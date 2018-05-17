@@ -1,8 +1,8 @@
-﻿using Stratis.CoinmasterClient.FileDeployment;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Network
 {

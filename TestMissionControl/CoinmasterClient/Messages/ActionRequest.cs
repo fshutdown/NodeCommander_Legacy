@@ -7,7 +7,7 @@ namespace Stratis.CoinmasterClient.Messages
         public ActionType ActionType { get; set; }
         public Dictionary<ActionParameters, string> Parameters { get; set; }
         public string FullNodeName { get; set; }
-
+        
         public ActionRequest()
         {
             Parameters = new Dictionary<ActionParameters, string>();

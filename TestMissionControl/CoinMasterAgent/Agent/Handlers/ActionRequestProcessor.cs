@@ -38,11 +38,11 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
                 case ActionType.StartNode:
                     try
                     {
-                        StartNode();
+                        StartNode(); 
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, $"Cannot Start the node {Node.NodeEndpoint.FullNodeName}");
+                        logger.Error(ex, $"Cannot Start the node {ClientAction.FullNodeName}");
                     }
 
                     break;
@@ -53,7 +53,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, $"Cannot Stop the node {Node.NodeEndpoint.FullNodeName}");
+                        logger.Error(ex, $"Cannot Stop the node {ClientAction.FullNodeName}");
                     }
 
                     break;
@@ -65,7 +65,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
                     catch (Exception ex)
                     {
                         logger.Error(ex,
-                            $"Cannot delete resource at location {ClientAction.Parameters[ActionParameters.Path]} on {Node.NodeEndpoint.FullNodeName}");
+                            $"Cannot delete resource at location {ClientAction.Parameters[ActionParameters.Path]} on {ClientAction.FullNodeName}");
                     }
 
                     break;
@@ -77,11 +77,15 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             string compilerSwitches = ClientAction.Parameters[ActionParameters.CompilerSwitches];
             string runtimeSwitches = ClientAction.Parameters[ActionParameters.RuntimeSwitches];
 
-            string testnetSwitch = Node.NodeEndpoint.IsTestnet ? " -testnet" : "";
+            bool isTestNet = Boolean.Parse(ClientAction.Parameters[ActionParameters.IsTestNet]);
+            string dataDir = ClientAction.Parameters[ActionParameters.DataDir];
+            string workingDirectory = ClientAction.Parameters[ActionParameters.WorkingDirectory];
+
+            string testnetSwitch = isTestNet ? " -testnet" : "";
 
             ProcessStartInfo startInfo = new ProcessStartInfo("dotnet",
-                $"run {compilerSwitches}{testnetSwitch} -datadir={Node.DataDir}{runtimeSwitches}");
-            startInfo.WorkingDirectory = Path.Combine(Node.CodeDirectory, Node.ProjectFolder);
+                $"run {compilerSwitches}{testnetSwitch} -datadir={dataDir}{runtimeSwitches}");
+            startInfo.WorkingDirectory = workingDirectory;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
             Process process = new Process();
@@ -92,7 +96,8 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
         private void StopNode()
         {
-            NodeApiClient.Shutdown(Node);
+            int apiPort = Int32.Parse(ClientAction.Parameters[ActionParameters.ApiPort]);
+            NodeApiClient.Shutdown(apiPort, ClientAction.FullNodeName);
         }
 
         private void DeleteResource()

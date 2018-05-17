@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers
 {

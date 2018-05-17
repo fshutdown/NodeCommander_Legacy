@@ -13,26 +13,20 @@ namespace Stratis.CoinMasterAgent.Integration
     public static class NodeApiClient
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static Dictionary<string, int> apiConnectionBan = new Dictionary<string, int>();
 
-        private static int GetApiPort(BlockchainNode node)
-        {
-            FullNodeConfig config = node.GetNodeConfig();
-            int apiPort = config.GetApiPort();
-            return apiPort;
-        }
-
-        public static int GetBlockCount(BlockchainNode node)
+        public static int GetBlockCount(int apiPort, string fullNodeName)
         {
             int blockCount = 0;
             try
             {
-                if (node.APIConnectionBan-- > 0) return 0;
-                int apiPort = GetApiPort(node);
+                if (!apiConnectionBan.ContainsKey(fullNodeName)) apiConnectionBan.Add(fullNodeName, 0);
+                if (apiConnectionBan[fullNodeName]-- > 0) return 0;
                 blockCount = SendRpcRequest<int>("getblockcount", new Dictionary<String, String>(), apiPort);
             }
-            catch (WebException exTimeout)
+            catch (WebException)
             {
-                node.APIConnectionBan = 50;
+                apiConnectionBan[fullNodeName] = 50;
             }
             catch (Exception ex)
             {
@@ -41,20 +35,20 @@ namespace Stratis.CoinMasterAgent.Integration
             return blockCount;
         }
 
-        public static NodeStatus GetNodeStatus(BlockchainNode node)
+        public static NodeStatus GetNodeStatus(int apiPort, string fullNodeName)
         {
             NodeStatus nodeStatus = null;
             try
             {
-                if (node.APIConnectionBan-- > 0) return nodeStatus;
-                int apiPort = GetApiPort(node);
+                if (!apiConnectionBan.ContainsKey(fullNodeName)) apiConnectionBan.Add(fullNodeName, 0);
+                if (apiConnectionBan[fullNodeName]-- > 0) return nodeStatus;
                 string getInfoString = SendApiRequest<String>("Node", "status", new Dictionary<String, String>(), null, apiPort);
 
                 nodeStatus = JsonConvert.DeserializeObject<NodeStatus>(getInfoString);
             }
-            catch (WebException exTimeout)
+            catch (WebException)
             {
-                node.APIConnectionBan = 50;
+                apiConnectionBan[fullNodeName] = 50;
             }
             catch (Exception ex)
             {
@@ -63,18 +57,18 @@ namespace Stratis.CoinMasterAgent.Integration
             return nodeStatus;
         }
 
-        public static void Shutdown(BlockchainNode node)
+        public static void Shutdown(int apiPort, string fullNodeName)
         {
             try
             {
-                if (node.APIConnectionBan-- > 0) return;
-                int apiPort = GetApiPort(node);
-                
+                if (!apiConnectionBan.ContainsKey(fullNodeName)) apiConnectionBan.Add(fullNodeName, 0);
+                if (apiConnectionBan[fullNodeName]-- > 0) return;
+
                 string getInfoString = SendApiRequest<String>("Node", "shutdown", new Dictionary<String, String>(), string.Empty, apiPort);
             }
-            catch (WebException exTimeout)
+            catch (WebException)
             {
-                node.APIConnectionBan = 50;
+                apiConnectionBan[fullNodeName] = 50;
             }
             catch (Exception ex)
             {
@@ -83,19 +77,19 @@ namespace Stratis.CoinMasterAgent.Integration
         }
 
 
-        public static string[] GetMempoolTransactions(BlockchainNode node)
+        public static string[] GetMempoolTransactions(int apiPort, string fullNodeName)
         {
             string[] mempoolTransactions = new string[0];
             try
             {
-                if (node.APIConnectionBan-- > 0) return mempoolTransactions;
-                int apiPort = GetApiPort(node);
+                if (!apiConnectionBan.ContainsKey(fullNodeName)) apiConnectionBan.Add(fullNodeName, 0);
+                if (apiConnectionBan[fullNodeName]-- > 0) return mempoolTransactions;
                 string mempoolTransactionsString = SendRpcRequest<string>("getrawmempool", new Dictionary<String, String>(), apiPort);
                 mempoolTransactions = JsonConvert.DeserializeObject<string[]>(mempoolTransactionsString);
             }
-            catch (WebException exTimeout)
+            catch (WebException)
             {
-                node.APIConnectionBan = 50;
+                apiConnectionBan[fullNodeName] = 50;
             }
             catch (Exception ex)
             {
@@ -114,7 +108,7 @@ namespace Stratis.CoinMasterAgent.Integration
             try
             {
                 WebRequest webRequest = WebRequest.Create(url);
-                webRequest.Timeout = 2000;
+                webRequest.Timeout = 500;
                 WebResponse webResponse = webRequest.GetResponse();
                 StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
 
@@ -147,7 +141,7 @@ namespace Stratis.CoinMasterAgent.Integration
             try
             {
                 WebRequest webRequest = WebRequest.Create(url);
-                webRequest.Timeout = 2000;
+                webRequest.Timeout = 500;
                 if (payload != null)
                 {
                     webRequest.Method = "POST";

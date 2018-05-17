@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
 using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -40,8 +40,6 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
                 {
                     MessageType = MessageType.ActionRequest,
                     Data = actionRequest,
-                    Scope = ResourceScope.Node,
-                    FullNodeName = actionRequest.FullNodeName
                 };
                 OnUpdate(this, args);
             }
@@ -52,8 +50,11 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             ActionRequest action = new ActionRequest(ActionType.StartNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
 
-            action.Parameters[ActionParameters.CompilerSwitches] = "--no-build";
-            action.Parameters[ActionParameters.RuntimeSwitches] = "";
+            action.Parameters.Add(ActionParameters.CompilerSwitches, "--no-build");
+            action.Parameters.Add(ActionParameters.RuntimeSwitches, "");
+            action.Parameters.Add(ActionParameters.IsTestNet, node.NodeEndpoint.IsTestnet.ToString());
+            action.Parameters.Add(ActionParameters.DataDir, node.DataDir);
+            action.Parameters.Add(ActionParameters.WorkingDirectory, Path.Combine(node.CodeDirectory, node.ProjectDirectory));
 
             actionQueue.Enqueue(action);
         }
@@ -62,6 +63,9 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         {
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
+
+            int apiPort = node.GetNodeConfig().GetApiPort();
+            action.Parameters.Add(ActionParameters.ApiPort, apiPort.ToString());
 
             actionQueue.Enqueue(action);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NLog;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers

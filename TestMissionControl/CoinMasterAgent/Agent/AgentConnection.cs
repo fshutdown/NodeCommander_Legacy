@@ -6,9 +6,9 @@ using AbrarJahin.DiffMatchPatch;
 using Fleck;
 using Newtonsoft.Json;
 using NLog;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
 using Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs;
 using Stratis.CoinMasterAgent.Agent.Handlers;
@@ -57,7 +57,7 @@ namespace Stratis.CoinMasterAgent.Agent
             {
                 logger.Debug($"{SocketConnection.ConnectionInfo.Id}: Preparing message {messageType} payload");
 
-                MessageEnvelope envelope = new MessageEnvelope(scope, fullNodeName);
+                MessageEnvelope envelope = new MessageEnvelope();
                 envelope.MessageType = messageType;
                 envelope.PayloadObject = data;
 

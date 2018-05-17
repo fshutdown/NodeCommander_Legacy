@@ -10,6 +10,10 @@ namespace Stratis.CoinmasterClient.Messages
     {
         CompilerSwitches,
         RuntimeSwitches,
-        Path
+        Path,
+        IsTestNet,
+        DataDir,
+        WorkingDirectory,
+        ApiPort
     }
 }

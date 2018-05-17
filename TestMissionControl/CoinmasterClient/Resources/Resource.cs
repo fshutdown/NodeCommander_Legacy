@@ -1,11 +1,6 @@
-﻿using Stratis.CoinmasterClient.FileDeployment;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace Stratis.CoinmasterClient.Messages
+namespace Stratis.CoinmasterClient.Resources
 {
     public class Resource
     {

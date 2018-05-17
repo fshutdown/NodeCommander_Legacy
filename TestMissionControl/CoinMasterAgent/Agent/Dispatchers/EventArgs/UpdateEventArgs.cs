@@ -1,6 +1,6 @@
 ﻿using System;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs
 {

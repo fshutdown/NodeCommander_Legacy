@@ -6,7 +6,6 @@ using System.Threading;
 using Fleck;
 using Newtonsoft.Json;
 using NLog;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
@@ -28,10 +27,10 @@ namespace Stratis.CoinMasterAgent.Agent
 
             //Configure dispatchers
             Dispatchers = new List<DispatcherBase>();
-            NodeStatusChangeDispatcher nodeStatusChange = new NodeStatusChangeDispatcher(this, 500);
+            NodeStatusChangeDispatcher nodeStatusChange = new NodeStatusChangeDispatcher(this, 1000);
             Dispatchers.Add(nodeStatusChange);
 
-            ResourceUploadDispatcher resourceUpload = new ResourceUploadDispatcher(this, 500);
+            ResourceUploadDispatcher resourceUpload = new ResourceUploadDispatcher(this, 1000);
             Dispatchers.Add(resourceUpload);
             
             Clients = new List<AgentConnection>();

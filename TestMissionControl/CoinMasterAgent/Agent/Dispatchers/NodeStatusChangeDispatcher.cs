@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs;
 using Stratis.CoinMasterAgent.StatusProbes;
 

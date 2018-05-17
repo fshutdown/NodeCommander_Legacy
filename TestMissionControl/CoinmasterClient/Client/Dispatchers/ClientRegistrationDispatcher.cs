@@ -5,7 +5,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -37,7 +36,6 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             {
                 MessageType = MessageType.ClientRegistration,
                 Data = clientRegistration,
-                Scope = ResourceScope.Global
             };
             OnUpdate(this, args);
 

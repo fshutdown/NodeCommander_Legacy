@@ -10,9 +10,9 @@ using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.DispatcherItems;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
 using Stratis.CoinmasterClient.Config;
-using Stratis.CoinmasterClient.FileDeployment;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Client.Dispatchers
 {
@@ -59,8 +59,6 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
                     {
                         MessageType = MessageType.DeployFile,
                         Data = resource,
-                        Scope = resource.Scope,
-                        FullNodeName = resource.FullNodeName
                     };
                     OnUpdate(this, args);
                 }

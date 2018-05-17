@@ -9,7 +9,6 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
     {
         public AgentConnection Agent { get; set; }
         public MessageEnvelope Message { get; set; }
-        public string NodeName => Message.FullNodeName;
 
         public delegate void CompletedHandler(RequestProcessorCompletedEventArgs args);
 
@@ -18,15 +17,6 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         protected void OnCompleted(RequestProcessorCompletedEventArgs args)
         {
             Completed?.Invoke(args);
-        }
-
-        public BlockchainNode Node
-        {
-            get
-            {
-                BlockchainNode node = Agent.Session.ManagedNodes.Nodes.FirstOrDefault(n => n.Key == NodeName).Value;
-                return node;
-            }
         }
 
         public virtual void ProcessMessage(MessageEnvelope message)
