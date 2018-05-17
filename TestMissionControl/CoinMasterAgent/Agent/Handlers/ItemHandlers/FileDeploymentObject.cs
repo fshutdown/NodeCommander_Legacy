@@ -28,7 +28,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers
 
             if (deployFile.EndOfData)
             {
-                logger.Info($"{agent.SocketConnection.ConnectionInfo.Id} Closing file {deployFile.FullName}");
+                logger.Info($"{agent.SocketConnection.ConnectionInfo.Id} Closing file {deployFile.AgentPath}");
                 fileStream.Close();
                 fileStream = null;
             }
@@ -36,7 +36,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers
 
         private void OpenStream(Resource deployFile)
         {
-            FileInfo fileToDeplopy = new FileInfo(deployFile.FullName);
+            FileInfo fileToDeplopy = new FileInfo(deployFile.AgentPath);
             DirectoryInfo fileDirectory = new DirectoryInfo(fileToDeplopy.DirectoryName);
 
             logger.Info($"{agent.SocketConnection.ConnectionInfo.Id} Deploying file {fileToDeplopy.Name} to the node");

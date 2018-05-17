@@ -19,11 +19,11 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
     public class ResourceDeploymentDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private ConcurrentQueue<FileDescriptor> deploymentQueue;
+        private ConcurrentQueue<Resource> deploymentQueue;
 
         public ResourceDeploymentDispatcher(ClientConnection client, double interval) : base(client, interval)
         {
-            deploymentQueue = new ConcurrentQueue<FileDescriptor>();
+            deploymentQueue = new ConcurrentQueue<Resource>();
         }
 
         public override void Reset()
@@ -36,35 +36,31 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 
         public override void SendData()
         {
-            FileDescriptor fileDescriptor;
-            while (deploymentQueue.TryDequeue(out fileDescriptor))
+            Resource resource;
+            while (deploymentQueue.TryDequeue(out resource))
             {
-                FileInfo localFile = new FileInfo(fileDescriptor.LocalPath);
-
-                Resource deployFile = new Resource();
-                deployFile.FullNodeName = fileDescriptor.FullNodeName;
-                deployFile.FullName = Path.Combine(fileDescriptor.RemotePath, localFile.Name);
-                deployFile.Size = localFile.Length;
+                FileInfo localFile = new FileInfo(resource.ClientPath);
+                resource.Size = localFile.Length;
 
                 FileStream f = new FileStream(localFile.FullName, FileMode.Open);
 
                 int read;
                 int buffSize = 1024 * 256;
                 long totalBytesSent = 0;
-                deployFile.Data = new byte[buffSize];
-                while ((read = f.Read(deployFile.Data, 0, buffSize)) > 0)
+                resource.Data = new byte[buffSize];
+                while ((read = f.Read(resource.Data, 0, buffSize)) > 0)
                 {
-                    deployFile.Length = read;
+                    resource.Length = read;
                     totalBytesSent += read;
 
-                    if (totalBytesSent == deployFile.Size) deployFile.EndOfData = true;
+                    if (totalBytesSent == resource.Size) resource.EndOfData = true;
 
                     UpdateEventArgs args = new UpdateEventArgs()
                     {
                         MessageType = MessageType.DeployFile,
-                        Data = deployFile,
-                        Scope = fileDescriptor.Scope,
-                        FullNodeName = fileDescriptor.FullNodeName
+                        Data = resource,
+                        Scope = resource.Scope,
+                        FullNodeName = resource.FullNodeName
                     };
                     OnUpdate(this, args);
                 }
@@ -75,11 +71,11 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 
         public void DeployFile(NodeNetwork network, ResourceScope scope, String fullNodeName = null)
         {
-            IEnumerable<FileDescriptor> filesInScope = from d in Client.Session.ManagedNodes.FileDeploy
+            IEnumerable<Resource> resourcesInScope = from d in Client.Session.ManagedNodes.FileDeploy
                 where d.Scope == scope && d.FullNodeName == fullNodeName
                 select d;
 
-            foreach (FileDescriptor fileDescriptor in filesInScope)
+            foreach (Resource fileDescriptor in resourcesInScope)
             {
                 deploymentQueue.Enqueue(fileDescriptor);
             }

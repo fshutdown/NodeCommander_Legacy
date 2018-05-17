@@ -33,7 +33,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         {
             try
             {
-                string deploymentKey = Agent.SocketConnection.ConnectionInfo.Id + deployFile.FullName;
+                string deploymentKey = Agent.SocketConnection.ConnectionInfo.Id + deployFile.AgentPath;
 
                 FileDeploymentObject fileDeployment;
                 if (activeDeplopyments.ContainsKey(deploymentKey))

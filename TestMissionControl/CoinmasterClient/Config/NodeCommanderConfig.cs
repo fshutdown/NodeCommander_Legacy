@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Stratis.CoinmasterClient.FileDeployment;
+using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Config
@@ -119,11 +120,11 @@ namespace Stratis.CoinmasterClient.Config
                 }
 
                 var fileDescriptors = Config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
-                foreach (FileDescriptor fileDescriptor in fileDescriptors)
+                foreach (Resource resource in fileDescriptors)
                 {
-                    fileDescriptor.LocalPath = Evaluate(fileDescriptor.LocalPath, variables);
-                    fileDescriptor.RemotePath = Evaluate(fileDescriptor.RemotePath, variables);
-                    if (fileDescriptor.RemotePath.StartsWith(".")) fileDescriptor.RemotePath = Path.Combine(node.NetworkDirectory, fileDescriptor.RemotePath.Substring(1).Trim('\\'));
+                    resource.ClientPath = Evaluate(resource.ClientPath, variables);
+                    resource.AgentPath = Evaluate(resource.AgentPath, variables);
+                    if (resource.AgentPath.StartsWith(".")) resource.AgentPath = Path.Combine(node.NetworkDirectory, resource.AgentPath.Substring(1).Trim('\\'));
                 }
             }
         }
@@ -147,10 +148,10 @@ namespace Stratis.CoinmasterClient.Config
                 fullNodeName = sectionName;
             }
 
-            FileDescriptor fileDescriptor = new FileDescriptor(scope, fullNodeName)
+            Resource fileDescriptor = new Resource(ResourceType.ClientToAgentDeployment, scope, fullNodeName)
             {
-                LocalPath = source,
-                RemotePath = destination
+                ClientPath = source,
+                AgentPath = destination
             };
             Config.FileDeploy.Add(fileDescriptor);
         }

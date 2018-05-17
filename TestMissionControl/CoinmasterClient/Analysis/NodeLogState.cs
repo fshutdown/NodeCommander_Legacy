@@ -11,6 +11,7 @@ namespace Stratis.CoinmasterClient.Analysis
         public Guid WorkerId { get; set; }
         public LogLevel LogLevel {get; set; }
         public int ExceptionCount { get; set; }
+        public DateTime Timestamp { get; set; }
         public string HeadersHeight { get; set; }
         public string ConsensusHeight { get; set; }
         public string BlockStoreHeight { get; set; }

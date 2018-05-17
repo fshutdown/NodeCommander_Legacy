@@ -27,10 +27,9 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             foreach (BlockchainNode node in Session.ManagedNodes.Nodes.Values)
             {
                 if (!node.Resources.ContainsKey("nodeCommander.txt")) {
-                    Resource logResource = new Resource();
-                    logResource.FullNodeName = node.NodeEndpoint.FullNodeName;
+                    Resource logResource = new Resource(ResourceType.NodeCommanderLog, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
                     string logFilePath = Path.Combine(node.NetworkDirectory, "Logs", "nodeCommander.txt");
-                    logResource.FullName = logFilePath;
+                    logResource.AgentPath = logFilePath;
 
                     AddResource(logResource);
                     node.Resources.Add("nodeCommander.txt", logResource.ResourceId);
@@ -77,7 +76,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                 if (resourceStreams[resource] == null) resourceStreams[resource] = OpenFile(resource);
                 if (resourceStreams[resource] == null)
                 {
-                    logger.Debug($"Resource file {resource.FullName} doesn't exist");
+                    logger.Debug($"Resource file {resource.ResourceName} doesn't exist");
                     continue;
                 }
                 FileStream f = resourceStreams[resource];
@@ -99,13 +98,13 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             FileStream fileStream = null;
             try
             {
-                FileInfo resourceFile = new FileInfo(fileResource.FullName);
+                FileInfo resourceFile = new FileInfo(fileResource.AgentPath);
                 if (resourceFile.Exists)
-                    fileStream = new FileStream(fileResource.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    fileStream = new FileStream(fileResource.AgentPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             }
             catch (Exception ex)
             {
-                logger.Error($"Error opening resource file {fileResource.FullName}: {ex.Message}");
+                logger.Error(ex, $"Error opening resource {fileResource.ResourceName} in file {fileResource.AgentPath}: {ex.Message}");
             }
 
             return fileStream;

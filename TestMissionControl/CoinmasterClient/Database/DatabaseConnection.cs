@@ -52,7 +52,6 @@ namespace Stratis.CoinmasterClient.Database
 
                     t.TextInsert("TS_BlockchainHeight", blockchainHeight.Id.ToBytes(), blockchainHeight.FullNodeName);
 
-                    //Committing entry
                     t.Commit();
                 }
             }

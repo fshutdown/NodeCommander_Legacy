@@ -14,7 +14,7 @@ namespace Stratis.CoinmasterClient.Database.Model
         public string HeadersHeight { get; set; }
         public string ConsensusHeight { get; set; }
         public string BlockStoreHeight { get; set; }
-        public Dictionary<String, int?> WalletsHeight { get; set; }
+        public string WalletsHeight { get; set; }
 
     }
 }

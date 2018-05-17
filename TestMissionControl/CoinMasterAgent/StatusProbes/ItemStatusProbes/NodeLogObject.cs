@@ -40,11 +40,15 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
             FileInfo logFile = new FileInfo(logFileFullName);
             if (!logFile.Exists) return;
 
-            for (int i = 0; i < 10000; i++)
+            DateTime endTime = DateTime.Now.AddMilliseconds(800);
+            string timestampLine = string.Empty;
+            while (true)
             {
                 if (logReader.EndOfStream) return;
+                if (DateTime.Now > endTime) return;
 
                 string line = logReader.ReadLine().Trim();
+                if (line.StartsWith("[")) timestampLine = line;
                 if (line.StartsWith("Headers.Height:")) node.NodeLogState.HeadersHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 if (line.StartsWith("Consensus.Height:")) node.NodeLogState.ConsensusHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 if (line.StartsWith("BlockStore.Height:")) node.NodeLogState.BlockStoreHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
