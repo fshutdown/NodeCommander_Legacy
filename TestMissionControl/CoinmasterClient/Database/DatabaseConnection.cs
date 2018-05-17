@@ -26,7 +26,7 @@ namespace Stratis.CoinmasterClient.Database
             CustomSerializator.ByteArrayDeSerializator = (byte[] bt, Type t) => { return NetJSON.NetJSON.Deserialize(t, bt.UTF8_GetString()); };
         }
 
-        public void PersistHeight(BlockchainHeight blockchainHeight)
+        public void Persist(BlockchainHeight blockchainHeight)
         {
             try
             {
@@ -61,6 +61,75 @@ namespace Stratis.CoinmasterClient.Database
             }
         }
 
+        public void Persist(BlockchainMining miningEntry)
+        {
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    t.SynchronizeTables("Mining");
+
+                    bool newEntity = miningEntry.Id == 0;
+                    if (newEntity)
+                        miningEntry.Id = t.ObjectGetNewIdentity<long>("Mining");
+
+                    t.ObjectInsert("Mining", new DBreezeObject<BlockchainMining>
+                    {
+                        NewEntity = newEntity,
+                        Entity = miningEntry,
+                        Indexes = new List<DBreezeIndex>
+                        {
+                            new DBreezeIndex(1, miningEntry.Id) { PrimaryIndex = true },
+                            new DBreezeIndex(2, miningEntry.Timestamp),
+                            new DBreezeIndex(3, miningEntry.FullNodeName),
+                        }
+                    }, false);
+
+                    t.TextInsert("TS_Mining", miningEntry.Id.ToBytes(), miningEntry.FullNodeName);
+
+                    t.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void Persist(BlockchainReorg reorgEntry)
+        {
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    t.SynchronizeTables("Reorg");
+
+                    bool newEntity = reorgEntry.Id == 0;
+                    if (newEntity)
+                        reorgEntry.Id = t.ObjectGetNewIdentity<long>("Reorg");
+
+                    t.ObjectInsert("Reorg", new DBreezeObject<BlockchainReorg>
+                    {
+                        NewEntity = newEntity,
+                        Entity = reorgEntry,
+                        Indexes = new List<DBreezeIndex>
+                        {
+                            new DBreezeIndex(1, reorgEntry.Id) { PrimaryIndex = true },
+                            new DBreezeIndex(2, reorgEntry.Timestamp),
+                            new DBreezeIndex(3, reorgEntry.FullNodeName),
+                        }
+                    }, false);
+
+                    t.TextInsert("TS_Reorg", reorgEntry.Id.ToBytes(), reorgEntry.FullNodeName);
+
+                    t.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public String GetRecordCount(string fullNodeName)
         {
             int count = 0;
@@ -85,6 +154,57 @@ namespace Stratis.CoinmasterClient.Database
 
             return count.ToString();
         }
+
+        public int GetMinedBlockCount(string fullNodeName)
+        {
+            int count = 0;
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    foreach (byte[] doc in t.TextSearch("TS_Mining").BlockAnd(fullNodeName).GetDocumentIDs())
+                    {
+                        DBreezeObject<BlockchainMining> obj = t.Select<byte[], byte[]>("Mining", 1.ToIndex(doc)).ObjectGet<BlockchainMining>();
+                        if (obj != null)
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return count;
+        }
+
+        public int GetReorgCount(string fullNodeName)
+        {
+            int count = 0;
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    foreach (byte[] doc in t.TextSearch("TS_Reorg").BlockAnd(fullNodeName).GetDocumentIDs())
+                    {
+                        DBreezeObject<BlockchainReorg> obj = t.Select<byte[], byte[]>("Reorg", 1.ToIndex(doc)).ObjectGet<BlockchainReorg>();
+                        if (obj != null)
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return count;
+        }
+
     }
 }
 

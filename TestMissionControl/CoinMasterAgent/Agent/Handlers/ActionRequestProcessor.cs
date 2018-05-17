@@ -31,7 +31,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id} Received action {ClientAction.ToString()}");
         }
 
-        public override async void Process()
+        public override void Process()
         {
             switch (ClientAction.ActionType)
             {

@@ -164,6 +164,8 @@
     <Compile Include="Config\FullNodeConfig.cs" />
     <Compile Include="Database\DatabaseConnection.cs" />
     <Compile Include="Database\Model\BlockchainHeight.cs" />
+    <Compile Include="Database\Model\BlockchainMining.cs" />
+    <Compile Include="Database\Model\BlockchainReorg.cs" />
     <Compile Include="Resources\ResourceScope.cs" />
     <Compile Include="Resources\ResourceType.cs" />
     <Compile Include="Messages\ActionParameters.cs" />

@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 
 namespace Stratis.CoinmasterClient.Database.Model
 {
-    public class BlockchainHeight
+    public class BlockchainMining
     {
         public long Id { get; set; }
         public DateTime Timestamp { get; set; }
         public String FullNodeName { get; set; }
 
-        public string HeadersHeight { get; set; }
-        public string ConsensusHeight { get; set; }
-        public string BlockStoreHeight { get; set; }
-        public string WalletsHeight { get; set; }
-
+        public int BlockNumber { get; set; }
+        public string BlockHash { get; set; }
     }
 }

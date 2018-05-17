@@ -66,7 +66,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             }
             catch (Exception ex)
             {
-                logger.Error($"Cannot read the content of the PID file \"{pidFilePath}\"", ex);
+                logger.Error(ex, $"Cannot read the content of the PID file \"{pidFilePath}\"");
                 node.NodeProcessState.State = ProcessState.Stopped;
                 return;
             }
@@ -83,7 +83,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             }
             catch (Exception ex)
             {
-                logger.Debug($"Cannot find process with PID {pid}", ex);
+                logger.Debug(ex, $"Cannot find process with PID {pid}");
                 node.NodeProcessState.State = ProcessState.Stopped;
 
                 try
@@ -92,7 +92,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                 }
                 catch (Exception iex)
                 {
-                    logger.Warn($"Cannot delete PID file {pidFile.FullName}", iex);
+                    logger.Warn(iex, $"Cannot delete PID file {pidFile.FullName}");
                 }
                 return;
             }

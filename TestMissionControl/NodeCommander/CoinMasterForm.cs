@@ -312,7 +312,7 @@ namespace Stratis.NodeCommander
                         dataRow["Mempool"] = managedNodes.Nodes[fullNodeName].NodeOperationState.MempoolTransactionCount;
                         dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeOperationState.OutboundPeersCount}";
                         dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-                        dataRow["Messages"] = $"{clientConnectionManager.Session.Database.GetRecordCount(fullNodeName)} records";
+                        dataRow["Messages"] = $"Mined: {clientConnectionManager.Session.Database.GetMinedBlockCount(fullNodeName)} / Reorg: {clientConnectionManager.Session.Database.GetReorgCount(fullNodeName)}";
                     }
                 }
             }

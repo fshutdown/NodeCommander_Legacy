@@ -85,6 +85,22 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                 int buffSize = 1024 * 64;
                 resource.Data = new byte[buffSize];
                 resource.Length = f.Read(resource.Data, 0, buffSize);
+
+                //ToDo: Introduce Text/Binary mode to handle all kind of files
+                //Find the last new line character and trim the buffor to that size
+                for (int i = resource.Length-1; i >= 0; i--)
+                {
+                    if (resource.Data[i] == '\n')
+                    {
+                        int length = i + 1;
+                        byte[] newBuff = new byte[length];
+                        Array.Copy(resource.Data, newBuff, length);
+                        resource.Data = newBuff;
+                        f.Position -= resource.Length - length;
+                        resource.Length = length;
+                        break;
+                    }
+                }
             }
         }
 

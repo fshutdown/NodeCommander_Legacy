@@ -46,7 +46,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 blockchainHeight.BlockStoreHeight = node.NodeLogState.BlockStoreHeight;
                 //blockchainHeight.WalletsHeight = node.NodeLogState.WalletHeight;
 
-                Client.Session.Database.PersistHeight(blockchainHeight);
+                Client.Session.Database.Persist(blockchainHeight);
             }
 
 
