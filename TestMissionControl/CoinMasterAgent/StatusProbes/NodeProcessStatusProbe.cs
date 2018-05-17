@@ -15,7 +15,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public override List<Task> UpdateJob(SingleNode node)
+        public override List<Task> UpdateJob(BlockchainNode node)
         {
             List<Task> tasks = new List<Task>();
 
@@ -35,7 +35,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         }
 
-        private void CheckNodeProcessState(SingleNode node)
+        private void CheckNodeProcessState(BlockchainNode node)
         {
             string pidFilePath = Path.Combine(node.NetworkDirectory, "PID");
             FileInfo pidFile = new FileInfo(pidFilePath);

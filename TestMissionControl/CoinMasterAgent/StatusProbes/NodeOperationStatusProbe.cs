@@ -18,7 +18,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public override List<Task> UpdateJob(SingleNode node)
+        public override List<Task> UpdateJob(BlockchainNode node)
         {
             List<Task> tasks = new List<Task>();
 
@@ -39,7 +39,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         }
 
-        private void GetNodeStatus(SingleNode node)
+        private void GetNodeStatus(BlockchainNode node)
         {
             NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(node);
             if (nodeStatus == null)
@@ -64,14 +64,14 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             node.NodeOperationState.NetworkHeight = Math.Max(maxInboundTipHeight, maxOutboundTipHeight);
         }
 
-        private void GetBlockCount(SingleNode node)
+        private void GetBlockCount(BlockchainNode node)
         {
             if (node.NodeOperationState.State != ProcessState.Running) return;
 
             node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(node);
         }
 
-        private void GetMemoryPoolTransactions(SingleNode node)
+        private void GetMemoryPoolTransactions(BlockchainNode node)
         {
             if (node.NodeOperationState.State != ProcessState.Running) return;
 

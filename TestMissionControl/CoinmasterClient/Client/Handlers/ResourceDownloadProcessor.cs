@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -35,7 +37,15 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
-            Client.Session.OnResourceDownloadUpdated(Client, ResourceList);
+            foreach (Resource resource in ResourceList)
+            {
+                if (resource.Length == 0) continue;
+                string resourcePath = Path.Combine(NodeCommanderConfig.NodeCommanderDataDirectory, "Data", resource.ResourceId.ToString());
+
+                FileStream f = new FileStream(resourcePath, FileMode.Append);
+                f.Write(resource.Data, 0, resource.Length);
+                f.Close();
+            }
         }
     }
 }

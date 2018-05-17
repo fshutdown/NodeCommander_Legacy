@@ -37,7 +37,7 @@ namespace Stratis.CoinmasterClient.Client
 
         public void CreateListOfAgents()
         {
-            foreach (SingleNode node in Session.ManagedNodes.Nodes.Values)
+            foreach (BlockchainNode node in Session.ManagedNodes.Nodes.Values)
             {
                 string[] addressParts = node.Agent.Split(':');
                 ClientConnection newClient = new ClientConnection(addressParts[0], addressParts[1]);

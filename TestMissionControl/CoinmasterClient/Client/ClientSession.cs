@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,6 +10,7 @@ using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Client.Handlers;
 using Stratis.CoinmasterClient.Client.Handlers.EventArgs;
+using Stratis.CoinmasterClient.Database;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -22,8 +24,7 @@ namespace Stratis.CoinmasterClient.Client
         public event Action<string, string> ConnectionStatusChanged;
         public event Action<ClientConnection, NodeNetwork> NodeStatsUpdated;
         public event Action<ClientConnection, AgentRegistration> AgentRegistrationUpdated;
-        public event Action<ClientConnection, List<Resource>> ResourceDownloadUpdated;
-
+        public DatabaseConnection Database { get; set; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -42,14 +43,10 @@ namespace Stratis.CoinmasterClient.Client
             if (AgentRegistrationUpdated != null) AgentRegistrationUpdated.Invoke(clientConnection, registration);
         }
 
-        public void OnResourceDownloadUpdated(ClientConnection clientConnection, List<Resource> fileDownload)
-        {
-            if (ResourceDownloadUpdated != null) ResourceDownloadUpdated.Invoke(clientConnection, fileDownload);
-        }
-
         public ClientSession()
         {
             ManagedNodes = new NodeNetwork();
+            Database = new DatabaseConnection();
             
             Clients = new Dictionary<String, ClientConnection>();
         }

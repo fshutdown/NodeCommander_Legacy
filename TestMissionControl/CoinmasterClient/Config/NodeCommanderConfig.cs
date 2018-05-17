@@ -24,7 +24,9 @@ namespace Stratis.CoinmasterClient.Config
         {
             Load();
         }
-    
+
+        public static String NodeCommanderDataDirectory => new FileInfo(typeof(NodeCommanderConfig).Assembly.Location).DirectoryName;
+
         public void Load()
         {
             Config = new NodeNetwork();
@@ -66,10 +68,10 @@ namespace Stratis.CoinmasterClient.Config
                         }
                         else
                         {
-                            SingleNode nodeConfig;
+                            BlockchainNode nodeConfig;
                             if (!Config.Nodes.ContainsKey(sectionName))
                             {
-                                nodeConfig = new SingleNode(sectionName);
+                                nodeConfig = new BlockchainNode(sectionName);
                                 Config.Nodes.Add(sectionName, nodeConfig);
                             }
                             else
@@ -101,7 +103,7 @@ namespace Stratis.CoinmasterClient.Config
             }
 
             //Enumerate variables to resolve any parameter values
-            foreach (SingleNode node in Config.Nodes.Values)
+            foreach (BlockchainNode node in Config.Nodes.Values)
             {
                 Dictionary<String, String> variables = CreateEvaluationLookup(node);
                 foreach (string variableName in variables.Keys)
@@ -172,10 +174,10 @@ namespace Stratis.CoinmasterClient.Config
             }
         }
 
-        private static Dictionary<String, String> CreateEvaluationLookup(SingleNode node)
+        private static Dictionary<String, String> CreateEvaluationLookup(BlockchainNode node)
         {
             Dictionary<String, String> variableLookup = new Dictionary<string, string>();
-            foreach (PropertyInfo property in typeof(SingleNode).GetProperties())
+            foreach (PropertyInfo property in typeof(BlockchainNode).GetProperties())
             {
                 if (property.PropertyType == typeof(String))
                 {
@@ -200,7 +202,7 @@ namespace Stratis.CoinmasterClient.Config
             return result;
         }
 
-        public static string Evaluate(String text, SingleNode node)
+        public static string Evaluate(String text, BlockchainNode node)
         {
             Dictionary<String, String> variableLookup = CreateEvaluationLookup(node);
 

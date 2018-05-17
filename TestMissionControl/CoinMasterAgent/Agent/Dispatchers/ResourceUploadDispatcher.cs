@@ -24,7 +24,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 
         public override void Reset()
         {
-            foreach (SingleNode node in Session.ManagedNodes.Nodes.Values)
+            foreach (BlockchainNode node in Session.ManagedNodes.Nodes.Values)
             {
                 if (!node.Resources.ContainsKey("nodeCommander.txt")) {
                     Resource logResource = new Resource();

@@ -10,7 +10,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
     public class NodeLogObject
     {
         public bool IsClosed { get; set; }
-        private SingleNode node;
+        private BlockchainNode node;
         private String logFileFullName;
 
         private StreamReader logReaderStream = null;
@@ -29,7 +29,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
             }
         }
 
-        public NodeLogObject(SingleNode node, string logFileFullName)
+        public NodeLogObject(BlockchainNode node, string logFileFullName)
         {
             this.node = node;
             this.logFileFullName = logFileFullName;

@@ -11,7 +11,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 {
     public class NodeDeploymentStatusProbe : StatusProbeBase
     {
-        public override List<Task> UpdateJob(SingleNode node)
+        public override List<Task> UpdateJob(BlockchainNode node)
         {
             List<Task> tasks = new List<Task>();
 
@@ -26,7 +26,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             return tasks;
         }
 
-        private void CheckNodeFiles(SingleNode node)
+        private void CheckNodeFiles(BlockchainNode node)
         {
             DirectoryInfo nodeDataDir = new DirectoryInfo(node.DataDir);
             node.NodeDeploymentState.DirectoryExists = nodeDataDir.Exists;

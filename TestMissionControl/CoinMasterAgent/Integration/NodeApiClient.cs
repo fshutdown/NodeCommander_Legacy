@@ -14,14 +14,14 @@ namespace Stratis.CoinMasterAgent.Integration
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private static int GetApiPort(SingleNode node)
+        private static int GetApiPort(BlockchainNode node)
         {
             FullNodeConfig config = node.GetNodeConfig();
             int apiPort = config.GetApiPort();
             return apiPort;
         }
 
-        public static int GetBlockCount(SingleNode node)
+        public static int GetBlockCount(BlockchainNode node)
         {
             int blockCount = 0;
             try
@@ -41,7 +41,7 @@ namespace Stratis.CoinMasterAgent.Integration
             return blockCount;
         }
 
-        public static NodeStatus GetNodeStatus(SingleNode node)
+        public static NodeStatus GetNodeStatus(BlockchainNode node)
         {
             NodeStatus nodeStatus = null;
             try
@@ -63,7 +63,7 @@ namespace Stratis.CoinMasterAgent.Integration
             return nodeStatus;
         }
 
-        public static void Shutdown(SingleNode node)
+        public static void Shutdown(BlockchainNode node)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace Stratis.CoinMasterAgent.Integration
         }
 
 
-        public static string[] GetMempoolTransactions(SingleNode node)
+        public static string[] GetMempoolTransactions(BlockchainNode node)
         {
             string[] mempoolTransactions = new string[0];
             try

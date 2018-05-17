@@ -8,7 +8,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 {
     public abstract class StatusProbeBase
     {
-        public abstract List<Task> UpdateJob(SingleNode node);
+        public abstract List<Task> UpdateJob(BlockchainNode node);
         public abstract void Close();
     }
 }

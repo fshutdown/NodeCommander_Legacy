@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using AbrarJahin.DiffMatchPatch;
 using Fleck;
 using Newtonsoft.Json;
 using NLog;
@@ -22,6 +23,7 @@ namespace Stratis.CoinMasterAgent.Agent
         public Dictionary<MessageType, RequestProcessorBase> Processors { get; set; }
         public AgentSession Session { get; set; }
         public String Identity => $"{ SocketConnection.ConnectionInfo.ClientIpAddress}:{ SocketConnection.ConnectionInfo.ClientPort}";
+
         
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -33,6 +35,10 @@ namespace Stratis.CoinMasterAgent.Agent
 
         public void SendObject(DispatcherBase sender, UpdateEventArgs args)
         {
+            //ToDo: Make the patch work
+            //diff_match_patch patchMaker = new diff_match_patch();
+            //patchMaker.patch_make();
+
             SendObject(args.MessageType, args.Data, args.Scope, args.FullNodeName);
         }
 

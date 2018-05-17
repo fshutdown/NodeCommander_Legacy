@@ -50,10 +50,9 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         {
             logger.Debug($"Updating node measures");
             
-            //ToDo: Pause the loop if there are no active clients
             foreach (String nodeName in Session.ManagedNodes.Nodes.Keys.ToList())
             {
-                SingleNode node = Session.ManagedNodes.Nodes[nodeName];
+                BlockchainNode node = Session.ManagedNodes.Nodes[nodeName];
                 UpdateNodeData(node);
                 node.Initialized = true;
             }
@@ -85,7 +84,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         }
     
 
-        private void UpdateNodeData(SingleNode node)
+        private void UpdateNodeData(BlockchainNode node)
         {
             List<Task> updateTasks = new List<Task>();
 

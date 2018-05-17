@@ -7,14 +7,13 @@ namespace Stratis.CoinmasterClient.Network
 {
     public class NodeNetwork
     {
-        public Dictionary<string, SingleNode> Nodes;
-        public string Network { get; set; }
+        public Dictionary<string, BlockchainNode> Nodes;
         public List<FileDescriptor> FileDeploy { get; private set; }
         public AgentHealthState AgentHealthState { get; set; }
 
         public NodeNetwork()
         {
-            Nodes = new Dictionary<string, SingleNode>();
+            Nodes = new Dictionary<string, BlockchainNode>();
             FileDeploy = new List<FileDescriptor>();
         }
 

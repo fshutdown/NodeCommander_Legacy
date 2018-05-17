@@ -24,11 +24,11 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             Completed?.Invoke(args);
         }
 
-        public SingleNode Node
+        public BlockchainNode Node
         {
             get
             {
-                SingleNode node = Client.Session.ManagedNodes.Nodes.FirstOrDefault(n => n.Key == NodeName).Value;
+                BlockchainNode node = Client.Session.ManagedNodes.Nodes.FirstOrDefault(n => n.Key == NodeName).Value;
                 return node;
             }
         }

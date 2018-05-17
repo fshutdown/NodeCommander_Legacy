@@ -31,14 +31,14 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         {
             logger.Debug($"Preparing Node Configuration message");
 
-            List<SingleNode> nodeList = (from n in Client.Session.ManagedNodes.Nodes.Values
+            List<BlockchainNode> nodeList = (from n in Client.Session.ManagedNodes.Nodes.Values
                 where (n.Agent == Client.Address) && n.Enabled
                 select n).ToList();
 
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.NodeData,
-                Data = nodeList.ToArray<SingleNode>(),
+                Data = nodeList.ToArray<BlockchainNode>(),
                 Scope = ResourceScope.Global
             };
             OnUpdate(this, args);

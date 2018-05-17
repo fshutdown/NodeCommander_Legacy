@@ -7,7 +7,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
     public sealed class NodeConfigurationProcessor: RequestProcessorBase
     {
-        public SingleNode[] NodeList { get; set; }
+        public BlockchainNode[] NodeList { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public NodeConfigurationProcessor(AgentConnection agent) : base(agent)
@@ -18,7 +18,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         {
             try
             {
-                NodeList = Message.GetPayload<SingleNode[]>();
+                NodeList = Message.GetPayload<BlockchainNode[]>();
             }
             catch (Exception ex)
             {
@@ -34,10 +34,10 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
             if (Agent.ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
-                foreach (SingleNode node in Agent.Session.ManagedNodes.Nodes.Values)
+                foreach (BlockchainNode node in Agent.Session.ManagedNodes.Nodes.Values)
                     node.OrphanNode = true;
 
-                foreach (SingleNode node in NodeList)
+                foreach (BlockchainNode node in NodeList)
                 {
                     if (!Agent.Session.ManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
                         Agent.Session.ManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);

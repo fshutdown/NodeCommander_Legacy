@@ -47,7 +47,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             }
         }
 
-        public void StartNode(SingleNode node)
+        public void StartNode(BlockchainNode node)
         {
             ActionRequest action = new ActionRequest(ActionType.StartNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
@@ -58,7 +58,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void StopNode(SingleNode node)
+        public void StopNode(BlockchainNode node)
         {
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
@@ -66,7 +66,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void RemoveFile(SingleNode node, string path)
+        public void RemoveFile(BlockchainNode node, string path)
         {
             ActionRequest action = new ActionRequest(ActionType.DeleteFile);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;

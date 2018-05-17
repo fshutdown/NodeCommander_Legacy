@@ -29,7 +29,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             }
         }
 
-        public override List<Task> UpdateJob(SingleNode node)
+        public override List<Task> UpdateJob(BlockchainNode node)
         {
             List<Task> tasks = new List<Task>();
 
@@ -45,7 +45,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             return tasks;
         }
 
-        private void ProcessNodeLogs(SingleNode node, string logFileFullName)
+        private void ProcessNodeLogs(BlockchainNode node, string logFileFullName)
         {
             try
             {

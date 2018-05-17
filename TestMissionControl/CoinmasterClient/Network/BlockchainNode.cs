@@ -7,7 +7,7 @@ using Stratis.CoinmasterClient.Config;
 
 namespace Stratis.CoinmasterClient.Network
 {
-    public class SingleNode
+    public class BlockchainNode
     {
         #region Configuration Options
         public NodeEndpointName NodeEndpoint { get; set; }
@@ -41,13 +41,13 @@ namespace Stratis.CoinmasterClient.Network
         public Dictionary<String, Guid> Resources { get; set; }
 
 
-        public SingleNode()
+        public BlockchainNode()
         {
             Initialized = false;
             Resources = new Dictionary<string, Guid>();
         }
 
-        public SingleNode(string nodeFullName) : this()
+        public BlockchainNode(string nodeFullName) : this()
         {
             NodeEndpoint = new NodeEndpointName(nodeFullName);
             DisplayName = NodeEndpoint.NodeName;
