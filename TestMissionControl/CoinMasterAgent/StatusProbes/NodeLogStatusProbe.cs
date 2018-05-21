@@ -33,12 +33,12 @@ namespace Stratis.CoinMasterAgent.StatusProbes
         {
             List<Task> tasks = new List<Task>();
 
-            if (node.NodeLogState == null)
+            if (node.NodeState.NodeLogState == null)
             {
-                node.NodeLogState = new NodeLogState();
+                node.NodeState.NodeLogState = new NodeLogState();
             }
 
-            string logFileFullName =  Path.Combine(node.NetworkDirectory, "Logs", "node.txt");
+            string logFileFullName =  Path.Combine(node.NodeConfig.NetworkDirectory, "Logs", "node.txt");
             Task checkNodeFilesTask = Task.Run(() => ProcessNodeLogs(node, logFileFullName));
             tasks.Add(checkNodeFilesTask);
 

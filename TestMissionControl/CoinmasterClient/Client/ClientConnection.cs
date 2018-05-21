@@ -25,8 +25,8 @@ namespace Stratis.CoinmasterClient.Client
 
         public string Address => $"{ConnectionUri.Host}:{ConnectionUri.Port}";
         public Uri ConnectionUri { get; set; }
-        
-        public AgentState State { get; set; }
+
+        public WebSocketState State => SocketConnection?.State ?? WebSocketState.None;
         public Action OnOpen { get; internal set; }
         public Action OnClose { get; internal set; }
         public Action<String> OnConnectionError { get; internal set; }
@@ -58,12 +58,10 @@ namespace Stratis.CoinmasterClient.Client
                 await SocketConnection.ConnectAsync(ConnectionUri, _cancellationToken);
                 
                 StartListen();
-                State = AgentState.Connected;
                 OnOpen();
             }
             catch (Exception ex)
             {
-                State = AgentState.Error;
                 OnConnectionError(ex.Message);
             }
         }
@@ -112,9 +110,9 @@ namespace Stratis.CoinmasterClient.Client
             }
         }
 
-        public void SendObject(DispatcherBase sender, UpdateEventArgs args)
+        public async Task SendObject(DispatcherBase sender, UpdateEventArgs args)
         {
-            SendObject(args.MessageType, args.Data);
+            await SendObject(args.MessageType, args.Data);
         }
 
         public async Task SendObject(MessageType messageType, object data)
@@ -177,7 +175,14 @@ namespace Stratis.CoinmasterClient.Client
 
         public void Disconnect()
         {
-            SocketConnection.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, _cancellationToken);
+            try
+            {
+                SocketConnection.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, _cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.Warn(ex, $"{Address}: Error while closing agent connection: {ex.Message}");
+            }
         }
 
         public override string ToString()

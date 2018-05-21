@@ -43,7 +43,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             foreach (Resource resource in ResourceList)
             {
                 if (resource.Length == 0) continue;
-                string resourcePath = Path.Combine(NodeCommanderConfig.NodeCommanderDataDirectory, "Data", resource.ResourceId.ToString());
+                string resourcePath = Path.Combine(ClientConfigReader.NodeCommanderDataDirectory, "Data", resource.ResourceId.ToString());
 
                 if (resource.ResourceName == ResourceType.NodeCommanderLog)
                 {

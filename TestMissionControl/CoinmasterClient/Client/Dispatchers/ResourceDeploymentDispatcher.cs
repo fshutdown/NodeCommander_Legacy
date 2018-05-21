@@ -67,9 +67,9 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             }
         }
 
-        public void DeployFile(NodeNetwork network, ResourceScope scope, String fullNodeName = null)
+        public void DeployFile(ClientConfig config, ResourceScope scope, String fullNodeName = null)
         {
-            IEnumerable<Resource> resourcesInScope = from d in Client.Session.ManagedNodes.FileDeploy
+            IEnumerable<Resource> resourcesInScope = from d in config.FileDeploy
                 where d.Scope == scope && d.FullNodeName == fullNodeName
                 select d;
 

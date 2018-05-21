@@ -41,9 +41,9 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 BlockchainHeight blockchainHeight = new BlockchainHeight();
                 blockchainHeight.FullNodeName = node.NodeEndpoint.FullNodeName;
                 blockchainHeight.Timestamp = DateTime.Now;
-                blockchainHeight.HeadersHeight = node.NodeLogState.HeadersHeight;
-                blockchainHeight.ConsensusHeight = node.NodeLogState.ConsensusHeight;
-                blockchainHeight.BlockStoreHeight = node.NodeLogState.BlockStoreHeight;
+                blockchainHeight.HeadersHeight = node.NodeState.NodeLogState.HeadersHeight;
+                blockchainHeight.ConsensusHeight = node.NodeState.NodeLogState.ConsensusHeight;
+                blockchainHeight.BlockStoreHeight = node.NodeState.NodeLogState.BlockStoreHeight;
                 //blockchainHeight.WalletsHeight = node.NodeLogState.WalletHeight;
 
                 Client.Session.Database.Persist(blockchainHeight);

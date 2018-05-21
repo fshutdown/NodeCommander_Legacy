@@ -25,7 +25,8 @@ namespace Stratis.NodeCommander
             Exception
         }
 
-        private NodeNetwork network;
+        private ClientConfig clientConfig;
+        private NodeNetwork managedNodes;
         private DataView dataGridViewNodesDataView;
         private DataView dataGridViewAgentsDataView;
         private DataView dataGridViewBlockchainDataView;
@@ -38,12 +39,6 @@ namespace Stratis.NodeCommander
         public CoinMasterForm()
         {
             InitializeComponent();
-
-            NodeCommanderConfig reader = new NodeCommanderConfig();
-            network = reader.Config;
-
-            //ToDo: Switch networks
-            //...
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -63,7 +58,17 @@ namespace Stratis.NodeCommander
             //Start all workers
             foreach (BaseWorker worker in _workers) worker.Start();
 
-            clientConnectionManager = new ClientConnectionManager();
+
+            ClientConfigReader reader = new ClientConfigReader();
+            clientConfig = reader.ReadConfig();
+            this.managedNodes = new NodeNetwork();
+            foreach (string fullNodeName in clientConfig.NodeItems.Keys)
+            {
+                BlockchainNode blockchainNode = new BlockchainNode(clientConfig.NodeItems[fullNodeName]);
+                this.managedNodes.Nodes.Add(fullNodeName, blockchainNode);
+            }
+
+            clientConnectionManager = new ClientConnectionManager(managedNodes);
             clientConnectionManager.CreateListOfAgents();
             clientConnectionManager.Session.ConnectionStatusChanged += (connectionAddress, message) => Invoke(new Action<string, string>(AgentDataTableUpdated), connectionAddress, message);
             clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<ClientConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
@@ -156,9 +161,9 @@ namespace Stratis.NodeCommander
             nodesData.Columns.Add("Uptime");
             nodesData.Columns.Add("Messages");
 
-            foreach (string nodeName in network.Nodes.Keys)
+            foreach (string nodeName in managedNodes.Nodes.Keys)
             {
-                BlockchainNode node = network.Nodes[nodeName];
+                BlockchainNode node = managedNodes.Nodes[nodeName];
 
                 object[] rowData = new object[nodesData.Columns.Count];
                 rowData[0] = node;
@@ -258,8 +263,8 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.Columns["Messages"].Width = 80;
             }
 
-            MergeMeasuresIntoNode(network, networkSegment);
-            MergeMeasuresIntoDataTable(dataGridViewNodes, network);
+            MergeMeasuresIntoNode(managedNodes, networkSegment);
+            MergeMeasuresIntoDataTable(dataGridViewNodes, managedNodes);
 
             if (notifyAboutPerformanceIssuesToolStripMenuItem.Checked && performanceIsues > 0)
             {
@@ -300,18 +305,18 @@ namespace Stratis.NodeCommander
             {
                 foreach (DataRow dataRow in table.Rows)
                 {
-                    if (managedNodes.Nodes[fullNodeName].Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
+                    if (managedNodes.Nodes[fullNodeName].NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
                     {
                         dataRow["Node"] = managedNodes.Nodes[fullNodeName];
-                        dataRow["Status"] = managedNodes.Nodes[fullNodeName].NodeOperationState.State;
-                        dataRow["HeaderHeight"] = managedNodes.Nodes[fullNodeName].NodeLogState.HeadersHeight;
-                        dataRow["ConsensusHeight"] = managedNodes.Nodes[fullNodeName].NodeLogState.ConsensusHeight;
-                        dataRow["BlockHeight"] = managedNodes.Nodes[fullNodeName].NodeLogState.BlockStoreHeight;
-                        dataRow["WalletHeight"] = managedNodes.Nodes[fullNodeName].NodeLogState.WalletHeight;
-                        dataRow["NetworkHeight"] = managedNodes.Nodes[fullNodeName].NodeOperationState.NetworkHeight;
-                        dataRow["Mempool"] = managedNodes.Nodes[fullNodeName].NodeOperationState.MempoolTransactionCount;
-                        dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeOperationState.OutboundPeersCount}";
-                        dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
+                        dataRow["Status"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.State;
+                        dataRow["HeaderHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.HeadersHeight;
+                        dataRow["ConsensusHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.ConsensusHeight;
+                        dataRow["BlockHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.BlockStoreHeight;
+                        dataRow["WalletHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.WalletHeight;
+                        dataRow["NetworkHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.NetworkHeight;
+                        dataRow["Mempool"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.MempoolTransactionCount;
+                        dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.OutboundPeersCount}";
+                        dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
                         dataRow["Messages"] = $"Mined: {clientConnectionManager.Session.Database.GetMinedBlockCount(fullNodeName)} / Reorg: {clientConnectionManager.Session.Database.GetReorgCount(fullNodeName)}";
                     }
                 }
@@ -343,23 +348,23 @@ namespace Stratis.NodeCommander
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
 
             BlockchainNode node = (BlockchainNode) dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
-            if (!node.Initialized) return;
+            if (!node.NodeState.Initialized) return;
 
             groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
-            textBoxCodeDirectory.Text = node.CodeDirectory;
-            textBoxProjectDirectory.Text = node.ProjectDirectory;
-            textBoxDataDirectory.Text = node.DataDir;
-            textBoxNetworkDirectory.Text = node.NetworkDirectory;
-            textBoxNodeConfig.Text = node.NodeConfig;
-            labelUptime.Text = node.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
+            textBoxCodeDirectory.Text = node.NodeConfig.CodeDirectory;
+            textBoxProjectDirectory.Text = node.NodeConfig.ProjectDirectory;
+            textBoxDataDirectory.Text = node.NodeConfig.DataDir;
+            textBoxNetworkDirectory.Text = node.NodeConfig.NetworkDirectory;
+            textBoxNodeConfig.Text = node.NodeConfig.NodeConfig;
+            labelUptime.Text = node.NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
 
-            if (node.NodeDeploymentState.DirectoryExists)
+            if (node.NodeState.NodeDeploymentState.DirectoryExists)
             {
-                if (node.NodeDeploymentState.MemPoolFileExists)
-                    labelMempool.Text = node.NodeDeploymentState.MemPoolFileSize.ToString();
+                if (node.NodeState.NodeDeploymentState.MemPoolFileExists)
+                    labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize.ToString();
                 else labelMempool.Text = "No File";
-                if (node.NodeDeploymentState.PeersFileExists)
-                    labelPeers.Text = node.NodeDeploymentState.PeersFileExists.ToString();
+                if (node.NodeState.NodeDeploymentState.PeersFileExists)
+                    labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileExists.ToString();
                 else labelPeers.Text = "No File";
             }
             else
@@ -377,10 +382,10 @@ namespace Stratis.NodeCommander
             exceptions.Columns.Add("Message");
             dataGridViewNodeExceptions.DataSource = exceptions;
 
-            if (node.NodeLogState == null) return;
+            if (node.NodeState.NodeLogState == null) return;
 
             
-            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.Resources["nodeCommander.txt"].ToString());
+            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeConfig.Resources["nodeCommander.txt"].ToString());
             FileInfo resourceFile = new FileInfo(resourcePath);
             if (!resourceFile.Exists) return;
 
@@ -434,10 +439,10 @@ namespace Stratis.NodeCommander
             foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
             {
                 BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.Agent);
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 ResourceDeploymentDispatcher dispatcher = (ResourceDeploymentDispatcher)agent.Dispatchers[MessageType.DeployFile];
-                dispatcher.DeployFile(network, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
+                dispatcher.DeployFile(clientConfig, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             }
         }
 
@@ -448,7 +453,7 @@ namespace Stratis.NodeCommander
             foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
             {
                 BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.Agent);
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
                 dispatcher.StartNode(node);
@@ -462,7 +467,7 @@ namespace Stratis.NodeCommander
             foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
             {
                 BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.Agent);
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
                 dispatcher.StopNode(node);
@@ -476,7 +481,7 @@ namespace Stratis.NodeCommander
             foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
             {
                 BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.Agent);
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
                 dispatcher.RemoveFile(node, "$NetworkDirectory\\hello.txt");
@@ -486,22 +491,22 @@ namespace Stratis.NodeCommander
         private void dataGridViewNodes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             BlockchainNode node = (BlockchainNode)dataGridViewNodes.Rows[e.RowIndex].Cells[0].Value;
-            if (!node.Initialized) return;
+            if (!node.NodeState.Initialized) return;
 
             int maxHeight;
             int headersHeight;
-            if (!int.TryParse(node.NodeLogState.HeadersHeight, out headersHeight)) headersHeight = 0;
+            if (!int.TryParse(node.NodeState.NodeLogState.HeadersHeight, out headersHeight)) headersHeight = 0;
 
             int consensusHeight;
-            if (!int.TryParse(node.NodeLogState.ConsensusHeight, out consensusHeight)) consensusHeight = 0;
+            if (!int.TryParse(node.NodeState.NodeLogState.ConsensusHeight, out consensusHeight)) consensusHeight = 0;
 
             int blockstoreHeight;
-            if (!int.TryParse(node.NodeLogState.BlockStoreHeight, out blockstoreHeight)) blockstoreHeight = 0;
+            if (!int.TryParse(node.NodeState.NodeLogState.BlockStoreHeight, out blockstoreHeight)) blockstoreHeight = 0;
 
             int walletHeight;
-            if (!int.TryParse(node.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
+            if (!int.TryParse(node.NodeState.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
 
-            int networkHeight = node.NodeOperationState.NetworkHeight;
+            int networkHeight = node.NodeState.NodeOperationState.NetworkHeight;
 
             maxHeight = Math.Max(headersHeight, consensusHeight);
             maxHeight = Math.Max(maxHeight, blockstoreHeight);

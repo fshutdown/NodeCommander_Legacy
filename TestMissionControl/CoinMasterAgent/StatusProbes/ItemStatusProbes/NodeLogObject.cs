@@ -49,15 +49,15 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
 
                 string line = logReader.ReadLine().Trim();
                 if (line.StartsWith("[")) timestampLine = line;
-                if (line.StartsWith("Headers.Height:")) node.NodeLogState.HeadersHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
-                if (line.StartsWith("Consensus.Height:")) node.NodeLogState.ConsensusHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
-                if (line.StartsWith("BlockStore.Height:")) node.NodeLogState.BlockStoreHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
-                if (line.StartsWith("Wallet.Height:")) node.NodeLogState.WalletHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                if (line.StartsWith("Headers.Height:")) node.NodeState.NodeLogState.HeadersHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                if (line.StartsWith("Consensus.Height:")) node.NodeState.NodeLogState.ConsensusHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                if (line.StartsWith("BlockStore.Height:")) node.NodeState.NodeLogState.BlockStoreHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+                if (line.StartsWith("Wallet.Height:")) node.NodeState.NodeLogState.WalletHeight = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 if (line.StartsWith("MempoolSize:"))
                 {
                     string[] lineParts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    node.NodeLogState.DynamicSize = lineParts[3];
-                    node.NodeLogState.OrphanSize = lineParts[6];
+                    node.NodeState.NodeLogState.DynamicSize = lineParts[3];
+                    node.NodeState.NodeLogState.OrphanSize = lineParts[6];
                 }
             }
         }

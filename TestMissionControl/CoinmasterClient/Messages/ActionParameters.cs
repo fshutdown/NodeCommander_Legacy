@@ -14,6 +14,5 @@ namespace Stratis.CoinmasterClient.Messages
         IsTestNet,
         DataDir,
         WorkingDirectory,
-        ApiPort
     }
 }

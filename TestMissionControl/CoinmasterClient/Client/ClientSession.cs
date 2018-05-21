@@ -116,15 +116,9 @@ namespace Stratis.CoinmasterClient.Client
             OnConnectionStatusChanged(client.Address);
 
             client.Disconnect();
-            if (Clients.ContainsKey(client.Address))
-            {
-                Clients.Remove(client.Address);
-            }
 
-            foreach (DispatcherBase dispatcher in client.Dispatchers.Values)
-            {
-                dispatcher.Updated -= client.SendObject;
-            }
+            client.Dispatchers.Clear();
+            client.Processors.Clear();
 
             foreach (DispatcherBase dispatcher in client.Dispatchers.Values) dispatcher.Stop();
 

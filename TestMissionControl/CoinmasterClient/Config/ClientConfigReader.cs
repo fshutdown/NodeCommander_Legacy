@@ -10,30 +10,27 @@ using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Config
 {
-    public class NodeCommanderConfig
+    public class ClientConfigReader
     {
         public static string ConfigFileName = "nodes.conf";
 
-        public NodeNetwork Config;
-
-        private FileInfo nodeConfig;
+        private FileInfo nodeConfigFile;
         private Regex sectionNameRegex = new Regex("^\\[([A-Z0-9 _.-]+)\\]\\s*#?.*", RegexOptions.IgnoreCase);
         private Regex commentRegEx = new Regex("\\s*#.*", RegexOptions.IgnoreCase);
         private Regex parameterRegEx = new Regex("([A-Z0-9]+)=(.*)\\s*#?.*", RegexOptions.IgnoreCase);
 
-        public NodeCommanderConfig()
+        public ClientConfigReader()
         {
-            Load();
         }
 
-        public static String NodeCommanderDataDirectory => new FileInfo(typeof(NodeCommanderConfig).Assembly.Location).DirectoryName;
+        public static String NodeCommanderDataDirectory => new FileInfo(typeof(ClientConfigReader).Assembly.Location).DirectoryName;
 
-        public void Load()
+        public ClientConfig ReadConfig()
         {
-            Config = new NodeNetwork();
+            ClientConfig config = new ClientConfig();
 
-            nodeConfig = new FileInfo(ConfigFileName);
-            StreamReader configReader = new StreamReader(nodeConfig.FullName);
+            nodeConfigFile = new FileInfo(ConfigFileName);
+            StreamReader configReader = new StreamReader(nodeConfigFile.FullName);
 
             string sectionName = string.Empty;
             int lineNumber = 1;
@@ -61,28 +58,30 @@ namespace Stratis.CoinmasterClient.Config
 
                         if (sectionName == "Global" && key.ToLower() == "deploy")
                         {
-                            AddToFileDeploymentList("Global", value);
+                            Resource resource = CreateDeploymentResource("Global", value);
+                            config.FileDeploy.Add(resource);
                         }
                         else if (sectionName == "Global" && key.ToLower() != "deploy")
                         {
-                            SetProperty(nodeConfig, key, value);
+                            SetProperty(config, key, value);
                         }
                         else
                         {
-                            BlockchainNode nodeConfig;
-                            if (!Config.Nodes.ContainsKey(sectionName))
+                            ClientNodeConfig nodeConfig;
+                            if (!config.NodeItems.ContainsKey(sectionName))
                             {
-                                nodeConfig = new BlockchainNode(sectionName);
-                                Config.Nodes.Add(sectionName, nodeConfig);
+                                nodeConfig = new ClientNodeConfig(sectionName);
+                                config.NodeItems.Add(sectionName, nodeConfig);
                             }
                             else
                             {
-                                nodeConfig = Config.Nodes[sectionName];
+                                nodeConfig = config.NodeItems[sectionName];
                             }
 
                             if (key.ToLower() == "deploy")
                             {
-                                AddToFileDeploymentList(sectionName, value);
+                                Resource resource = CreateDeploymentResource(sectionName, value);
+                                config.FileDeploy.Add(resource);
                             }
                             else
                             {
@@ -104,7 +103,7 @@ namespace Stratis.CoinmasterClient.Config
             }
 
             //Enumerate variables to resolve any parameter values
-            foreach (BlockchainNode node in Config.Nodes.Values)
+            foreach (ClientNodeConfig node in config.NodeItems.Values)
             {
                 Dictionary<String, String> variables = CreateEvaluationLookup(node);
                 foreach (string variableName in variables.Keys)
@@ -119,17 +118,19 @@ namespace Stratis.CoinmasterClient.Config
                     }
                 }
 
-                var fileDescriptors = Config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
-                foreach (Resource resource in fileDescriptors)
+                var resourceList = config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
+                foreach (Resource resource in resourceList)
                 {
                     resource.ClientPath = Evaluate(resource.ClientPath, variables);
                     resource.AgentPath = Evaluate(resource.AgentPath, variables);
                     if (resource.AgentPath.StartsWith(".")) resource.AgentPath = Path.Combine(node.NetworkDirectory, resource.AgentPath.Substring(1).Trim('\\'));
                 }
             }
+
+            return config;
         }
 
-        private void AddToFileDeploymentList(string sectionName, string value)
+        private Resource CreateDeploymentResource(string sectionName, string value)
         {
             string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
             if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
@@ -148,12 +149,12 @@ namespace Stratis.CoinmasterClient.Config
                 fullNodeName = sectionName;
             }
 
-            Resource fileDescriptor = new Resource(ResourceType.ClientToAgentDeployment, scope, fullNodeName)
+            Resource resource = new Resource(ResourceType.ClientToAgentDeployment, scope, fullNodeName)
             {
                 ClientPath = source,
                 AgentPath = destination
             };
-            Config.FileDeploy.Add(fileDescriptor);
+            return resource;
         }
 
         private void SetProperty(object target, string propertyName, string value)
@@ -175,15 +176,15 @@ namespace Stratis.CoinmasterClient.Config
             }
         }
 
-        private static Dictionary<String, String> CreateEvaluationLookup(BlockchainNode node)
+        private static Dictionary<String, String> CreateEvaluationLookup(ClientNodeConfig nodeConfig)
         {
             Dictionary<String, String> variableLookup = new Dictionary<string, string>();
-            foreach (PropertyInfo property in typeof(BlockchainNode).GetProperties())
+            foreach (PropertyInfo property in typeof(ClientNodeConfig).GetProperties())
             {
                 if (property.PropertyType == typeof(String))
                 {
                     string propertyName = property.Name;
-                    string propertyValue = property.GetValue(node) as String;
+                    string propertyValue = property.GetValue(nodeConfig) as String;
 
                     variableLookup.Add(propertyName, propertyValue);
                 }
@@ -203,12 +204,12 @@ namespace Stratis.CoinmasterClient.Config
             return result;
         }
 
-        public static string Evaluate(String text, BlockchainNode node)
+        public static string Evaluate(String text, ClientNodeConfig nodeConfig)
         {
-            Dictionary<String, String> variableLookup = CreateEvaluationLookup(node);
+            Dictionary<String, String> variableLookup = CreateEvaluationLookup(nodeConfig);
 
             string newValue = Evaluate(text, variableLookup);
-            if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
+            if (newValue.StartsWith(".")) newValue = Path.Combine(nodeConfig.NetworkDirectory, newValue.Substring(1).Trim('\\'));
             return newValue;
         }
 

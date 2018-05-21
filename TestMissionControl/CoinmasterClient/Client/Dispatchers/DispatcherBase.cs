@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
 
@@ -6,7 +7,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 {
     public abstract class DispatcherBase
     {
-        public delegate void UpdateHandler(DispatcherBase sender, UpdateEventArgs args);
+        public delegate Task UpdateHandler(DispatcherBase sender, UpdateEventArgs args);
         public event UpdateHandler Updated;
         public ClientConnection Client { get; set; }
 

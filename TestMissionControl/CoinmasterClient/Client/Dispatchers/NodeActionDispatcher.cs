@@ -53,8 +53,8 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             action.Parameters.Add(ActionParameters.CompilerSwitches, "--no-build");
             action.Parameters.Add(ActionParameters.RuntimeSwitches, "");
             action.Parameters.Add(ActionParameters.IsTestNet, node.NodeEndpoint.IsTestnet.ToString());
-            action.Parameters.Add(ActionParameters.DataDir, node.DataDir);
-            action.Parameters.Add(ActionParameters.WorkingDirectory, Path.Combine(node.CodeDirectory, node.ProjectDirectory));
+            action.Parameters.Add(ActionParameters.DataDir, node.NodeConfig.DataDir);
+            action.Parameters.Add(ActionParameters.WorkingDirectory, Path.Combine(node.NodeConfig.CodeDirectory, node.NodeConfig.ProjectDirectory));
 
             actionQueue.Enqueue(action);
         }
@@ -64,9 +64,6 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
 
-            int apiPort = node.GetNodeConfig().GetApiPort();
-            action.Parameters.Add(ActionParameters.ApiPort, apiPort.ToString());
-
             actionQueue.Enqueue(action);
         }
 
@@ -74,7 +71,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         {
             ActionRequest action = new ActionRequest(ActionType.DeleteFile);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
-            action.Parameters.Add(ActionParameters.Path, NodeCommanderConfig.Evaluate(path, node));
+            action.Parameters.Add(ActionParameters.Path, ClientConfigReader.Evaluate(path, node.NodeConfig));
 
             actionQueue.Enqueue(action);
         }

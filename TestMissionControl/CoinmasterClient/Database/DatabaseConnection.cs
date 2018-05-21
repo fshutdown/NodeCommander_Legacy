@@ -18,12 +18,19 @@ namespace Stratis.CoinmasterClient.Database
         {
             EngineConfiguration = new DBreezeConfiguration()
             {
-                DBreezeDataFolderName = Path.Combine(NodeCommanderConfig.NodeCommanderDataDirectory, "dBreeze"),
+                DBreezeDataFolderName = Path.Combine(ClientConfigReader.NodeCommanderDataDirectory, "dBreeze"),
             };
             Engine = new DBreezeEngine(EngineConfiguration);
 
             CustomSerializator.ByteArraySerializator = (object o) => { return NetJSON.NetJSON.Serialize(o).To_UTF8Bytes(); };
             CustomSerializator.ByteArrayDeSerializator = (byte[] bt, Type t) => { return NetJSON.NetJSON.Deserialize(t, bt.UTF8_GetString()); };
+
+            Engine.Scheme.DeleteTable("BlockchainHeight");
+            Engine.Scheme.DeleteTable("TS_BlockchainHeight");
+            Engine.Scheme.DeleteTable("Mining");
+            Engine.Scheme.DeleteTable("TS_Mining");
+            Engine.Scheme.DeleteTable("Reorg");
+            Engine.Scheme.DeleteTable("TS_Reorg");
         }
 
         public void Persist(BlockchainHeight blockchainHeight)

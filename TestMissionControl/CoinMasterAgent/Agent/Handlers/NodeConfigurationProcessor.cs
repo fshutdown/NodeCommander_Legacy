@@ -35,13 +35,13 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             if (Agent.ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
                 foreach (BlockchainNode node in Agent.Session.ManagedNodes.Nodes.Values)
-                    node.OrphanNode = true;
+                    node.NodeState.OrphanNode = true;
 
                 foreach (BlockchainNode node in NodeList)
                 {
                     if (!Agent.Session.ManagedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
                         Agent.Session.ManagedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, node);
-                    node.OrphanNode = false;
+                    node.NodeState.OrphanNode = false;
                 }
             }
             else if (Agent.ClientRegistration.ClientRole == ClientRoleType.WatchOnly)

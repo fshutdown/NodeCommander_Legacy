@@ -27,7 +27,7 @@ namespace Stratis.CoinMasterAgent.Agent
 
             //Configure dispatchers
             Dispatchers = new List<DispatcherBase>();
-            NodeStatusChangeDispatcher nodeStatusChange = new NodeStatusChangeDispatcher(this, 1000);
+            NodeStatusChangeDispatcher nodeStatusChange = new NodeStatusChangeDispatcher(this, 3000);
             Dispatchers.Add(nodeStatusChange);
 
             ResourceUploadDispatcher resourceUpload = new ResourceUploadDispatcher(this, 1000);
@@ -75,8 +75,8 @@ namespace Stratis.CoinMasterAgent.Agent
             ActionRequestProcessor actionRequestProcessor = new ActionRequestProcessor(agent);
             agent.Processors.Add(MessageType.ActionRequest, actionRequestProcessor);
 
-            FileDeploymentProcessor fileDeploymentProcessor = new FileDeploymentProcessor(agent);
-            agent.Processors.Add(MessageType.DeployFile, fileDeploymentProcessor);
+            ResourceDeploymentProcessor resourceDeploymentProcessor = new ResourceDeploymentProcessor(agent);
+            agent.Processors.Add(MessageType.DeployFile, resourceDeploymentProcessor);
 
             foreach (DispatcherBase dispatcher in Dispatchers)
             {
@@ -103,7 +103,15 @@ namespace Stratis.CoinMasterAgent.Agent
         {
             logger.Info($"{agent.SocketConnection.ConnectionInfo.Id}: The connection is no longer available");
 
-            agent.Disconnect();
+            try
+            {
+                agent.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                logger.Debug(ex, $"Failed to send disconnection message: {ex.Message}");
+            }
+
             if (Clients.Contains(agent))
             {
                 Clients.Remove(agent);

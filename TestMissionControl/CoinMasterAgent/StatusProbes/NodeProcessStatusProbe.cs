@@ -19,9 +19,9 @@ namespace Stratis.CoinMasterAgent.StatusProbes
         {
             List<Task> tasks = new List<Task>();
 
-            if (node.NodeProcessState == null)
+            if (node.NodeState.NodeProcessState == null)
             {
-                node.NodeProcessState = new NodeProcessState();
+                node.NodeState.NodeProcessState = new NodeProcessState();
             }
 
             Task checkNodeFilesTask = Task.Run(() => CheckNodeProcessState(node));
@@ -37,12 +37,12 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         private void CheckNodeProcessState(BlockchainNode node)
         {
-            string pidFilePath = Path.Combine(node.NetworkDirectory, "PID");
+            string pidFilePath = Path.Combine(node.NodeConfig.NetworkDirectory, "PID");
             FileInfo pidFile = new FileInfo(pidFilePath);
 
             if (!pidFile.Exists)
             {
-                node.NodeProcessState.State = ProcessState.Stopped;
+                node.NodeState.NodeProcessState.State = ProcessState.Stopped;
                 return;
             }
 
@@ -56,18 +56,18 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                     logger.Warn(
                         $"PID file \"{pidFilePath}\" contains value which is not an integer number. Please remove the file manually.");
 
-                    node.NodeProcessState.State = ProcessState.Stopped;
+                    node.NodeState.NodeProcessState.State = ProcessState.Stopped;
                     return;
                 }
                 else
                 {
-                    node.NodeProcessState.ProcesPid = pid;
+                    node.NodeState.NodeProcessState.ProcesPid = pid;
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex, $"Cannot read the content of the PID file \"{pidFilePath}\"");
-                node.NodeProcessState.State = ProcessState.Stopped;
+                node.NodeState.NodeProcessState.State = ProcessState.Stopped;
                 return;
             }
             finally
@@ -79,12 +79,12 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             try
             {
                 process = Process.GetProcessById(pid);
-                node.NodeProcessState.State = ProcessState.Running;
+                node.NodeState.NodeProcessState.State = ProcessState.Running;
             }
             catch (Exception ex)
             {
                 logger.Debug(ex, $"Cannot find process with PID {pid}");
-                node.NodeProcessState.State = ProcessState.Stopped;
+                node.NodeState.NodeProcessState.State = ProcessState.Stopped;
 
                 try
                 {
@@ -97,8 +97,8 @@ namespace Stratis.CoinMasterAgent.StatusProbes
                 return;
             }
 
-            node.NodeProcessState.Cpu = process.UserProcessorTime.Milliseconds;
-            node.NodeProcessState.PrivateMemorySize = process.PrivateMemorySize64;
+            node.NodeState.NodeProcessState.Cpu = process.UserProcessorTime.Milliseconds;
+            node.NodeState.NodeProcessState.PrivateMemorySize = process.PrivateMemorySize64;
 
         }
 

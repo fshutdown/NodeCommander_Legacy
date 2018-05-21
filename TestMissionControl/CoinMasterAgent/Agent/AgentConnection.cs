@@ -39,10 +39,10 @@ namespace Stratis.CoinMasterAgent.Agent
             //diff_match_patch patchMaker = new diff_match_patch();
             //patchMaker.patch_make();
 
-            SendObject(args.MessageType, args.Data, args.Scope, args.FullNodeName);
+            SendObject(args.MessageType, args.Data);
         }
 
-        public void SendObject(MessageType messageType, object data, ResourceScope scope, string fullNodeName = null)
+        public void SendObject(MessageType messageType, object data)
         {
             if (!SocketConnection.IsAvailable)
             {

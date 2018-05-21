@@ -31,7 +31,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             logger.Debug($"Preparing Node Configuration message");
 
             List<BlockchainNode> nodeList = (from n in Client.Session.ManagedNodes.Nodes.Values
-                where (n.Agent == Client.Address) && n.Enabled
+                where (n.NodeConfig.Agent == Client.Address) && n.NodeConfig.Enabled
                 select n).ToList();
 
             UpdateEventArgs args = new UpdateEventArgs()

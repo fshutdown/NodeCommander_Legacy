@@ -9,6 +9,7 @@ using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 using System.Threading.Tasks;
 using NLog;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinMasterAgent.Integration;
 using Stratis.CoinMasterAgent.NodeJsonObjects;
 
@@ -22,9 +23,9 @@ namespace Stratis.CoinMasterAgent.StatusProbes
         {
             List<Task> tasks = new List<Task>();
 
-            if (node.NodeOperationState == null)
+            if (node.NodeState.NodeOperationState == null)
             {
-                node.NodeOperationState = new NodeOperationState();
+                node.NodeState.NodeOperationState = new NodeOperationState();
             }
 
             tasks.Add(Task.Run(() => GetNodeStatus(node)));
@@ -41,45 +42,49 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         private void GetNodeStatus(BlockchainNode node)
         {
-            int apiPort = node.GetNodeConfig().GetApiPort();
+            BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
+            int apiPort = config.GetApiPort();
+
             NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(apiPort, node.NodeEndpoint.FullNodeName);
             if (nodeStatus == null)
             {
-                node.NodeOperationState.State = ProcessState.Stopped;
+                node.NodeState.NodeOperationState.State = ProcessState.Stopped;
                 return;
             }
 
-            node.NodeOperationState.State = ProcessState.Running;
+            node.NodeState.NodeOperationState.State = ProcessState.Running;
 
-            node.NodeOperationState.AgentName = nodeStatus.Agent;
-            node.NodeOperationState.Version = nodeStatus.Version;
-            node.NodeOperationState.Network = nodeStatus.Network;
-            node.NodeOperationState.ConsensusHeight = nodeStatus.ConsensusHeight;
-            node.NodeOperationState.InboundPeersCount = nodeStatus.InboundPeers != null ? nodeStatus.InboundPeers.Count : 0;
-            node.NodeOperationState.OutboundPeersCount = nodeStatus.OutboundPeers != null ? nodeStatus.OutboundPeers.Count : 0;
-            node.NodeOperationState.DataDirectory = nodeStatus.DataDirectoryPath;
-            node.NodeOperationState.Uptime = nodeStatus.RunningTime;
+            node.NodeState.NodeOperationState.AgentName = nodeStatus.Agent;
+            node.NodeState.NodeOperationState.Version = nodeStatus.Version;
+            node.NodeState.NodeOperationState.Network = nodeStatus.Network;
+            node.NodeState.NodeOperationState.ConsensusHeight = nodeStatus.ConsensusHeight;
+            node.NodeState.NodeOperationState.InboundPeersCount = nodeStatus.InboundPeers != null ? nodeStatus.InboundPeers.Count : 0;
+            node.NodeState.NodeOperationState.OutboundPeersCount = nodeStatus.OutboundPeers != null ? nodeStatus.OutboundPeers.Count : 0;
+            node.NodeState.NodeOperationState.DataDirectory = nodeStatus.DataDirectoryPath;
+            node.NodeState.NodeOperationState.Uptime = nodeStatus.RunningTime;
 
             int maxInboundTipHeight = nodeStatus.InboundPeers.Any() ? nodeStatus.InboundPeers.Max(p => p.TipHeight) : 0;
             int maxOutboundTipHeight = nodeStatus.OutboundPeers.Any() ? nodeStatus.OutboundPeers.Max(p => p.TipHeight) : 0;
-            node.NodeOperationState.NetworkHeight = Math.Max(maxInboundTipHeight, maxOutboundTipHeight);
+            node.NodeState.NodeOperationState.NetworkHeight = Math.Max(maxInboundTipHeight, maxOutboundTipHeight);
         }
 
         private void GetBlockCount(BlockchainNode node)
         {
-            if (node.NodeOperationState.State != ProcessState.Running) return;
+            if (node.NodeState.NodeOperationState.State != ProcessState.Running) return;
 
-            int apiPort = node.GetNodeConfig().GetApiPort();
-            node.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(apiPort, node.NodeEndpoint.FullNodeName);
+            BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
+            int apiPort = config.GetApiPort();
+            node.NodeState.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(apiPort, node.NodeEndpoint.FullNodeName);
         }
 
         private void GetMemoryPoolTransactions(BlockchainNode node)
         {
-            if (node.NodeOperationState.State != ProcessState.Running) return;
+            if (node.NodeState.NodeOperationState.State != ProcessState.Running) return;
 
-            int apiPort = node.GetNodeConfig().GetApiPort();
+            BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
+            int apiPort = config.GetApiPort();
             string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(apiPort, node.NodeEndpoint.FullNodeName);
-            node.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
+            node.NodeState.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
         }
     }
 }

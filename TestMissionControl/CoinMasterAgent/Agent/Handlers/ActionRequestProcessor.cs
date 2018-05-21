@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using NLog;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
+using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Integration;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers
@@ -96,7 +98,15 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
         private void StopNode()
         {
-            int apiPort = Int32.Parse(ClientAction.Parameters[ActionParameters.ApiPort]);
+            BlockchainNode node = Agent.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
+            if (node == null)
+            {
+                logger.Error($"Cannot find node {ClientAction.FullNodeName}");
+                return;
+            }
+
+            BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
+            int apiPort = config.GetApiPort();
             NodeApiClient.Shutdown(apiPort, ClientAction.FullNodeName);
         }
 

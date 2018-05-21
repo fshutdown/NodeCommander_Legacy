@@ -54,7 +54,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             {
                 BlockchainNode node = Session.ManagedNodes.Nodes[nodeName];
                 UpdateNodeData(node);
-                node.Initialized = true;
+                node.NodeState.Initialized = true;
             }
             UpdateAgentData();
 
