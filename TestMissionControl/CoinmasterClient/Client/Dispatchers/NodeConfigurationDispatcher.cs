@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -30,14 +31,14 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         {
             logger.Debug($"Preparing Node Configuration message");
 
-            List<BlockchainNode> nodeList = (from n in Client.Session.ManagedNodes.Nodes.Values
+            List<ClientNodeConfig> nodeConfigurationList = (from n in Client.Session.ManagedNodes.Nodes.Values
                 where (n.NodeConfig.Agent == Client.Address) && n.NodeConfig.Enabled
-                select n).ToList();
+                select n.NodeConfig).ToList();
 
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.NodeConfiguration,
-                Data = nodeList.ToArray<BlockchainNode>(),
+                Data = nodeConfigurationList.ToArray<ClientNodeConfig>(),
             };
             OnUpdate(this, args);
 

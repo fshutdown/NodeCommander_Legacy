@@ -42,9 +42,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
         {
             try
             {
-                Stopwatch watch = Stopwatch.StartNew();
                 responseString = RequestCaller.SendApiRequest(MethodDomain, MethodName, Arguments, Payload, ApiPort);
-                logger.Warn($"Took {watch.ElapsedMilliseconds} ms to call API {RequestType}");
             }
             catch (Exception ex)
             {
