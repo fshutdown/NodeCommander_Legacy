@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Integration.RequestCache;
+using Stratis.CoinMasterAgent.Integration.RequestItems;
 using Stratis.CoinMasterAgent.NodeJsonObjects;
 
 namespace Stratis.CoinMasterAgent.Integration

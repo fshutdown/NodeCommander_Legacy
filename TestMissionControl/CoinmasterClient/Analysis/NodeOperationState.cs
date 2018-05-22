@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 
 namespace Stratis.CoinmasterClient.Analysis
 {

@@ -24,7 +24,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
         public ApiRequest(RequestType requestType, string methodDomain, string methodName, string payload, int apiPort, string fullNodeName, bool synchronous)
         {
             FullNodeName = fullNodeName;
-            Integration.RequestType = requestType;
+            RequestType = requestType;
             MethodDomain = methodDomain;
             MethodName = methodName;
             Payload = payload;
@@ -44,11 +44,11 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
             {
                 Stopwatch watch = Stopwatch.StartNew();
                 responseString = RequestCaller.SendApiRequest(MethodDomain, MethodName, Arguments, Payload, ApiPort);
-                logger.Warn($"Took {watch.ElapsedMilliseconds} ms to call API {Integration.RequestType}");
+                logger.Warn($"Took {watch.ElapsedMilliseconds} ms to call API {RequestType}");
             }
             catch (Exception ex)
             {
-                logger.Debug(ex, $"Call to API method {Integration.RequestType} failed: {ex.Message}");
+                logger.Debug(ex, $"Call to API method {RequestType} failed: {ex.Message}");
             }
         }
 
@@ -75,7 +75,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
             }
             catch (Exception ex)
             {
-                logger.Warn(ex, $"Cannot deserialize object received in the {Integration.RequestType} request: {ex.Message}");
+                logger.Warn(ex, $"Cannot deserialize object received in the {RequestType} request: {ex.Message}");
                 return default(T);
             }
 

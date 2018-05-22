@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
+using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinMasterAgent.StatusProbes

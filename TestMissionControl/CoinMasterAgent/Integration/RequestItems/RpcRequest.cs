@@ -21,7 +21,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
         public RpcRequest(RequestType requestType, string methodName, int apiPort, string fullNodeName, bool synchronous)
         {
             FullNodeName = fullNodeName;
-            Integration.RequestType = requestType;
+            RequestType = requestType;
             MethodName = methodName;
             ApiPort = apiPort;
             Synchronous = synchronous;
@@ -41,7 +41,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
             }
             catch (Exception ex)
             {
-                logger.Debug(ex, $"Call to RPC method {Integration.RequestType} failed: {ex.Message}");
+                logger.Debug(ex, $"Call to RPC method {RequestType} failed: {ex.Message}");
             }
         }
 
@@ -68,7 +68,7 @@ namespace Stratis.CoinMasterAgent.Integration.RequestItems
             }
             catch (Exception ex)
             {
-                logger.Warn(ex, $"Cannot deserialize object received in the {Integration.RequestType} request: {ex.Message}");
+                logger.Warn(ex, $"Cannot deserialize object received in the {RequestType} request: {ex.Message}");
                 return default(T);
             }
 
