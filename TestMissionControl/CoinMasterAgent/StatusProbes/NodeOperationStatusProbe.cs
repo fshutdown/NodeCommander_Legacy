@@ -10,6 +10,7 @@ using Stratis.CoinmasterClient.Network;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
+using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinMasterAgent.Integration;
 using Stratis.CoinMasterAgent.NodeJsonObjects;

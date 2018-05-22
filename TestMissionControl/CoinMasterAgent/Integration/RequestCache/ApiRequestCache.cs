@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Stratis.CoinMasterAgent.Integration
+namespace Stratis.CoinMasterAgent.Integration.RequestCache
 {
     public class ApiRequestCache : Dictionary<RequestType, ApiRequest>
     {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Stratis.CoinMasterAgent.Integration.RequestItems;
 
-namespace Stratis.CoinMasterAgent.Integration
+namespace Stratis.CoinMasterAgent.Integration.RequestCache
 {
     public class RpcRequestCache : Dictionary<RequestType, RpcRequest>
     {
