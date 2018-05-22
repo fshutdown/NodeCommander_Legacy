@@ -20,5 +20,10 @@ namespace Stratis.CoinmasterClient.Network
 
             NodeEndpoint = nodeConfig.NodeEndpoint;
         }
+
+        public override string ToString()
+        {
+            return NodeConfig.DisplayName;
+        }
     }
 }

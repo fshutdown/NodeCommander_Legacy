@@ -10,7 +10,6 @@ namespace Stratis.CoinmasterClient.Network
     public class NodeNetwork
     {
         public Dictionary<string, BlockchainNode> Nodes;
-        public AgentHealthState AgentHealthState { get; set; }
 
         public NodeNetwork()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinMasterAgent.StatusProbes

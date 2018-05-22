@@ -135,14 +135,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\NodeManagement.cs" />
     <Compile Include="Analysis\NodeDeploymentState.cs" />
-    <Compile Include="Analysis\LogLevel.cs" />
+    <Compile Include="Analysis\SupportingTypes\LogLevel.cs" />
     <Compile Include="Analysis\AgentHealthState.cs" />
     <Compile Include="Analysis\NodeLogState.cs" />
     <Compile Include="Analysis\NodeOperationState.cs" />
     <Compile Include="Analysis\NodeProcessState.cs" />
-    <Compile Include="Analysis\ProcessState.cs" />
+    <Compile Include="Analysis\SupportingTypes\ProcessState.cs" />
     <Compile Include="ClientConnection.cs" />
     <Compile Include="Client\AgentState.cs" />
     <Compile Include="Client\ClientConnection.cs" />
@@ -157,6 +156,7 @@
     <Compile Include="Client\Dispatchers\ResourceDeploymentDispatcher.cs" />
     <Compile Include="Client\Handlers\AgentRegistrationProcessor.cs" />
     <Compile Include="Client\Handlers\EventArgs\RequestProcessorCompletedEventArgs.cs" />
+    <Compile Include="Client\Handlers\AgentHealthcheckProcessor.cs" />
     <Compile Include="Client\Handlers\NodeDataProcessor.cs" />
     <Compile Include="Client\Handlers\RequestProcessorBase.cs" />
     <Compile Include="Client\Handlers\ResourceDownloadProcessor.cs" />

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
+using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Client.Handlers;
 using Stratis.CoinmasterClient.Client.Handlers.EventArgs;
@@ -21,7 +22,7 @@ namespace Stratis.CoinmasterClient.Client
         public Dictionary<String, ClientConnection> Clients { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
 
-        public event Action<string, string> ConnectionStatusChanged;
+        public event Action<ClientConnection, AgentHealthState, String> AgentHealthcheckStatsUpdated;
         public event Action<ClientConnection, NodeNetwork> NodeStatsUpdated;
         public event Action<ClientConnection, AgentRegistration> AgentRegistrationUpdated;
         public DatabaseConnection Database { get; set; }
@@ -29,10 +30,11 @@ namespace Stratis.CoinmasterClient.Client
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
-        public void OnConnectionStatusChanged(string connectionAddress, string message = "")
+        public void OnAgentHealthcheckStatsUpdated(ClientConnection clientConnection, AgentHealthState agentHealthState, string message)
         {
-            if (ConnectionStatusChanged != null) ConnectionStatusChanged.Invoke(connectionAddress, message);
+            if (AgentHealthcheckStatsUpdated != null) AgentHealthcheckStatsUpdated.Invoke(clientConnection, agentHealthState, message);
         }
+
         public void OnNodeStatsUpdated(ClientConnection clientConnection, NodeNetwork networkSegment)
         {
             if (NodeStatsUpdated != null) NodeStatsUpdated.Invoke(clientConnection, networkSegment);
@@ -79,6 +81,7 @@ namespace Stratis.CoinmasterClient.Client
             client.Processors.Add(MessageType.AgentRegistration, new AgentRegistrationProcessor(client));
             client.Processors.Add(MessageType.NodeData, new NodeDataProcessor(client));
             client.Processors.Add(MessageType.FileDownload, new ResourceDownloadProcessor(client));
+            client.Processors.Add(MessageType.AgentHealthcheck, new AgentHealthcheckProcessor(client));
 
             //Configure dispatchers
             client.Dispatchers.Add(MessageType.ClientRegistration, new ClientRegistrationDispatcher(client, int.MaxValue));
@@ -100,20 +103,20 @@ namespace Stratis.CoinmasterClient.Client
             foreach (DispatcherBase dispatcher in client.Dispatchers.Values) dispatcher.Start();
 
             logger.Info($"Connection opened for client {client.Address}");
-            OnConnectionStatusChanged(client.Address);
+            OnAgentHealthcheckStatsUpdated(client, null, string.Empty);
         }
 
 
         private void ConnectionError(ClientConnection client, string message)
         {
             logger.Info($"Failed to connect to agent {client.Address}");
-            OnConnectionStatusChanged(client.Address, message);
+            OnAgentHealthcheckStatsUpdated(client, null, message);
         }
 
         private void ConnectionClose(ClientConnection client)
         {
             logger.Info($"The connection is no longer available");
-            OnConnectionStatusChanged(client.Address);
+            OnAgentHealthcheckStatsUpdated(client, null, string.Empty);
 
             client.Disconnect();
 

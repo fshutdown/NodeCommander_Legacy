@@ -21,18 +21,21 @@ namespace Stratis.CoinmasterClient.Config
         public static BlockchainNodeConfig GetNodeConfig(string blockchainConfigFullName, bool forceReload = false)
         {
             BlockchainNodeConfig blockchainConfig = null;
-            if (!cache.ContainsKey(blockchainConfigFullName))
-            {
-                blockchainConfig = ReadConfig(blockchainConfigFullName);
-                cache.Add(blockchainConfigFullName, blockchainConfig);
-            }
-            else
-            {
-                blockchainConfig = cache[blockchainConfigFullName];
 
-                if (forceReload) cache[blockchainConfigFullName] = ReadConfig(blockchainConfigFullName);
-            }
+            lock (cache)
+            {
+                if (!cache.ContainsKey(blockchainConfigFullName))
+                {
+                    blockchainConfig = ReadConfig(blockchainConfigFullName);
+                    cache.Add(blockchainConfigFullName, blockchainConfig);
+                }
+                else
+                {
+                    blockchainConfig = cache[blockchainConfigFullName];
 
+                    if (forceReload) cache[blockchainConfigFullName] = ReadConfig(blockchainConfigFullName);
+                }
+            }
             return blockchainConfig;
         }
 

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
@@ -70,7 +71,7 @@ namespace Stratis.NodeCommander
 
             clientConnectionManager = new ClientConnectionManager(managedNodes);
             clientConnectionManager.CreateListOfAgents();
-            clientConnectionManager.Session.ConnectionStatusChanged += (connectionAddress, message) => Invoke(new Action<string, string>(AgentDataTableUpdated), connectionAddress, message);
+            clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<ClientConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
             clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<ClientConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
             clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<ClientConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
 
@@ -160,6 +161,7 @@ namespace Stratis.NodeCommander
             nodesData.Columns.Add("Peers");
             nodesData.Columns.Add("Uptime");
             nodesData.Columns.Add("Messages");
+            nodesData.Columns.Add("Agent");
 
             foreach (string nodeName in managedNodes.Nodes.Keys)
             {
@@ -179,6 +181,7 @@ namespace Stratis.NodeCommander
             agentsData.Columns.Add("Address", typeof(ClientConnection));
             agentsData.Columns.Add("Status");
             agentsData.Columns.Add("Info");
+            agentsData.Columns.Add("LastUpdate");
             
             foreach (ClientConnection connection in clientConnectionManager.Session.Clients.Values)
             {
@@ -198,7 +201,7 @@ namespace Stratis.NodeCommander
             return blockchainData;
         }
 
-        private void AgentDataTableUpdated(string address, string message)
+        private void AgentDataTableUpdated(ClientConnection clientConnection, AgentHealthState state, string message)
         {
             DataTable dataTable;
             if (dataGridViewAgents.DataSource == null)
@@ -215,21 +218,23 @@ namespace Stratis.NodeCommander
                 dataGridViewAgents.Columns["Address"].Width = 10;
                 dataGridViewAgents.Columns["Status"].Width = 10;
                 dataGridViewAgents.Columns["Info"].Width = 60;
+                dataGridViewAgents.Columns["LastUpdate"].Width = 60;
+
             }
             else
             {
                 dataTable = dataGridViewAgentsDataView.Table;
             }
 
-            ClientConnection connection = clientConnectionManager.Session.Clients[address];
             foreach (DataRow row in dataTable.Rows)
             {
                 ClientConnection tableRecord = (ClientConnection) row["Address"];
 
-                if (tableRecord.Address == address)
+                if (tableRecord.Address == clientConnection.Address)
                 {
-                    row["Status"] = connection.State;
+                    row["Status"] = clientConnection.State;
                     row["Info"] = message;
+                    row["LastUpdate"] = $"L: {state?.LastUpdate} / C: {state?.UpdateCount}";
 
                     break;
                 }
@@ -261,6 +266,7 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.Columns["Peers"].Width = 80;
                 dataGridViewNodes.Columns["Uptime"].Width = 80;
                 dataGridViewNodes.Columns["Messages"].Width = 80;
+                dataGridViewNodes.Columns["Agent"].Width = 80;
             }
 
             MergeMeasuresIntoNode(managedNodes, networkSegment);
@@ -283,7 +289,6 @@ namespace Stratis.NodeCommander
         private void MergeMeasuresIntoNode(NodeNetwork network, NodeNetwork networkSegment)
         {
             if (networkSegment == null) return;
-            network.AgentHealthState = networkSegment.AgentHealthState;
 
             foreach (string nodeName in network.Nodes.Keys.ToList())
             {
@@ -318,6 +323,7 @@ namespace Stratis.NodeCommander
                         dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.OutboundPeersCount}";
                         dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
                         dataRow["Messages"] = $"Mined: {clientConnectionManager.Session.Database.GetMinedBlockCount(fullNodeName)} / Reorg: {clientConnectionManager.Session.Database.GetReorgCount(fullNodeName)}";
+                        dataRow["Agent"] = $"-";
                     }
                 }
             }
@@ -380,6 +386,8 @@ namespace Stratis.NodeCommander
             exceptions.Columns.Add("Level");
             exceptions.Columns.Add("Source");
             exceptions.Columns.Add("Message");
+            exceptions.Columns.Add("ExceptionMessage");
+            exceptions.Columns.Add("Stacktrace");
             dataGridViewNodeExceptions.DataSource = exceptions;
 
             if (node.NodeState.NodeLogState == null) return;

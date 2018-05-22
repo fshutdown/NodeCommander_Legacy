@@ -107,7 +107,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
             BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
             int apiPort = config.GetApiPort();
-            NodeApiClient.Shutdown(apiPort, ClientAction.FullNodeName);
+            BufferedRequestCaller.GetApiResult<string>(RequestType.ApiNodeShutdown, ClientAction.FullNodeName, apiPort);
         }
 
         private void DeleteResource()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,13 +20,10 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         
         private List<StatusProbeBase> statusProbes { get; set; }
-        private AgentHealthStatusProbe agentHealthStatusProbe;
 
         public NodeStatusChangeDispatcher(AgentSession session, double interval) : base(session, interval)
         {
             statusProbes = new List<StatusProbeBase>();
-
-            agentHealthStatusProbe = new AgentHealthStatusProbe();
 
             statusProbes.Add(new NodeLogStatusProbe());
             statusProbes.Add(new NodeOperationStatusProbe());
@@ -49,14 +47,17 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         public override void SendData()
         {
             logger.Debug($"Updating node measures");
-            
+            List<Task> updateTasks = new List<Task>();
             foreach (String nodeName in Session.ManagedNodes.Nodes.Keys.ToList())
             {
                 BlockchainNode node = Session.ManagedNodes.Nodes[nodeName];
-                UpdateNodeData(node);
+                updateTasks.AddRange(UpdateNodeData(node));
                 node.NodeState.Initialized = true;
             }
-            UpdateAgentData();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            Task.WaitAll(updateTasks.ToArray());
+            logger.Info($"Waiting for tasks to finish {stopwatch.ElapsedMilliseconds} ms");
 
             UpdateEventArgs args = new UpdateEventArgs()
             {
@@ -67,24 +68,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             OnUpdate(this, args);
         }
 
-
-        private void UpdateAgentData()
-        {
-            List<Task> updateTasks = new List<Task>();
-
-            try
-            {
-                List<Task> tasks = agentHealthStatusProbe.UpdateJob(Session.ManagedNodes);
-                updateTasks.AddRange(tasks);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, $"Cannot get AgentHealth");
-            }
-        }
-    
-
-        private void UpdateNodeData(BlockchainNode node)
+        private List<Task> UpdateNodeData(BlockchainNode node)
         {
             List<Task> updateTasks = new List<Task>();
 
@@ -101,7 +85,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                 }
             }
 
-            Task.WaitAll(updateTasks.ToArray());
+            return updateTasks;
         }
 
         

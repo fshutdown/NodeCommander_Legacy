@@ -14,6 +14,7 @@ namespace Stratis.CoinmasterClient.Messages
         ActionRequest,
         DeployFile,
         FileDownload,
-        
+
+        AgentHealthcheck
     }
 }

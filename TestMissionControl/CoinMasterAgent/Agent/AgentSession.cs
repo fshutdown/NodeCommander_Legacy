@@ -27,11 +27,9 @@ namespace Stratis.CoinMasterAgent.Agent
 
             //Configure dispatchers
             Dispatchers = new List<DispatcherBase>();
-            NodeStatusChangeDispatcher nodeStatusChange = new NodeStatusChangeDispatcher(this, 3000);
-            Dispatchers.Add(nodeStatusChange);
-
-            ResourceUploadDispatcher resourceUpload = new ResourceUploadDispatcher(this, 1000);
-            Dispatchers.Add(resourceUpload);
+            Dispatchers.Add(new AgentStatusChangeDispatcher(this, 5000));
+            Dispatchers.Add(new NodeStatusChangeDispatcher(this, 3000));
+            Dispatchers.Add(new ResourceUploadDispatcher(this, 1000));
             
             Clients = new List<AgentConnection>();
         }

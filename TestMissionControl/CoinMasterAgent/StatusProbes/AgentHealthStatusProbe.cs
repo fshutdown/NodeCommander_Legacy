@@ -13,25 +13,29 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 {
     public class AgentHealthStatusProbe
     {
-        public List<Task> UpdateJob(NodeNetwork managedNodes)
+        public AgentHealthState AgentHealthState { get; set; }
+
+        public List<Task> UpdateJob()
         {
             List<Task> tasks = new List<Task>();
 
-            if (managedNodes.AgentHealthState == null)
+            if (AgentHealthState == null)
             {
-                managedNodes.AgentHealthState = new AgentHealthState();
+                AgentHealthState = new AgentHealthState();
             }
 
-            Task checkNodeFilesTask = Task.Run(() => CheckAgentResources(managedNodes));
+            Task checkNodeFilesTask = Task.Run(() => CheckAgentResources());
             tasks.Add(checkNodeFilesTask);
 
             return tasks;
         }
 
-        private void CheckAgentResources(NodeNetwork managedNodes)
+        private void CheckAgentResources()
         {
-            managedNodes.AgentHealthState.ThreadCount = Process.GetCurrentProcess().Threads.Count;
-            managedNodes.AgentHealthState.MemoryUsageMb = (int)(GC.GetTotalMemory(false) / 1024 / 1024);
+            AgentHealthState.LastUpdate = DateTime.Now;
+            AgentHealthState.UpdateCount++;
+            AgentHealthState.ThreadCount = Process.GetCurrentProcess().Threads.Count;
+            AgentHealthState.MemoryUsageMb = (int)(GC.GetTotalMemory(false) / 1024 / 1024);
         }
     }
 }

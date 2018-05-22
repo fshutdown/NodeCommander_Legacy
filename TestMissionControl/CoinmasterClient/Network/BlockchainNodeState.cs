@@ -17,8 +17,6 @@ namespace Stratis.CoinmasterClient.Network
 
         public bool Initialized { get; set; }
 
-        public int APIConnectionBan { get; set; }
-
         public bool OrphanNode { get; set; }
 
         public BlockchainNodeState(NodeEndpointName nodeEndpoint)

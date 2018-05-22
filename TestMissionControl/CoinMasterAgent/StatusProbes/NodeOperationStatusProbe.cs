@@ -8,6 +8,7 @@ using System.Threading;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinMasterAgent.Integration;
@@ -45,7 +46,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
             int apiPort = config.GetApiPort();
 
-            NodeStatus nodeStatus = NodeApiClient.GetNodeStatus(apiPort, node.NodeEndpoint.FullNodeName);
+            NodeStatus nodeStatus = BufferedRequestCaller.GetApiResult<NodeStatus>(RequestType.ApiNodeStatus, node.NodeEndpoint.FullNodeName, apiPort);
             if (nodeStatus == null)
             {
                 node.NodeState.NodeOperationState.State = ProcessState.Stopped;
@@ -74,7 +75,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
             BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
             int apiPort = config.GetApiPort();
-            node.NodeState.NodeOperationState.BlockHeight = NodeApiClient.GetBlockCount(apiPort, node.NodeEndpoint.FullNodeName);
+            node.NodeState.NodeOperationState.BlockHeight = BufferedRequestCaller.GetRpcResult<int>(RequestType.RpcGetBlockCount, node.NodeEndpoint.FullNodeName, apiPort);
         }
 
         private void GetMemoryPoolTransactions(BlockchainNode node)
@@ -83,7 +84,13 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
             BlockchainNodeConfig config = BlockchainConfig.GetNodeConfig(node.NodeConfig.NodeConfigFullName);
             int apiPort = config.GetApiPort();
-            string[] mempoolTransactions = NodeApiClient.GetMempoolTransactions(apiPort, node.NodeEndpoint.FullNodeName);
+            string[] mempoolTransactions = BufferedRequestCaller.GetRpcResult<string[]>(RequestType.RpcGetRawMempool, node.NodeEndpoint.FullNodeName, apiPort);
+            if (mempoolTransactions == null)
+            {
+                node.NodeState.NodeOperationState.MempoolTransactionCount = 0;
+                return;
+            }
+
             node.NodeState.NodeOperationState.MempoolTransactionCount = mempoolTransactions != null ? mempoolTransactions.Length : 0;
         }
     }
