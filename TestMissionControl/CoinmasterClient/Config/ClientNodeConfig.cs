@@ -18,16 +18,13 @@ namespace Stratis.CoinmasterClient.Config
         public string ProjectDirectory { get; set; }
         public string Agent { get; set; }
         public bool Enabled { get; set; }
-
-        public Dictionary<String, Guid> Resources { get; set; }
-
+        
         public string NetworkDirectory => Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName);
 
         public string NodeConfigFullName => Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName, NodeConfig);
 
         public ClientNodeConfig()
         {
-            Resources = new Dictionary<string, Guid>();
         }
 
         public ClientNodeConfig(string nodeFullName) : this()

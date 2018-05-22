@@ -72,7 +72,7 @@ namespace Stratis.NodeCommander
             clientConnectionManager = new ClientConnectionManager(managedNodes);
             clientConnectionManager.CreateListOfAgents();
             clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<ClientConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
-            clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, networkSegment) => Invoke(new Action<ClientConnection, NodeNetwork>(NodeDataUpdated), agentConnection, networkSegment);
+            clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, nodesStates) => Invoke(new Action<ClientConnection, BlockchainNodeState[]>(NodeDataUpdated), agentConnection, nodesStates);
             clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<ClientConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
 
             clientConnectionManager.ConnectToAgents();
@@ -241,7 +241,7 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void NodeDataUpdated(ClientConnection clientConnection, NodeNetwork networkSegment)
+        private void NodeDataUpdated(ClientConnection clientConnection, BlockchainNodeState[] nodesStates)
         {
             int performanceIsues = 0;
             if (dataGridViewNodes.DataSource == null)
@@ -269,7 +269,7 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.Columns["Agent"].Width = 80;
             }
 
-            MergeMeasuresIntoNode(managedNodes, networkSegment);
+            MergeMeasuresIntoNode(managedNodes, nodesStates);
             MergeMeasuresIntoDataTable(dataGridViewNodes, managedNodes);
 
             if (notifyAboutPerformanceIssuesToolStripMenuItem.Checked && performanceIsues > 0)
@@ -286,15 +286,15 @@ namespace Stratis.NodeCommander
 
 
 
-        private void MergeMeasuresIntoNode(NodeNetwork network, NodeNetwork networkSegment)
+        private void MergeMeasuresIntoNode(NodeNetwork network, BlockchainNodeState[] nodesStates)
         {
-            if (networkSegment == null) return;
+            if (nodesStates == null || nodesStates.Length == 0) return;
 
-            foreach (string nodeName in network.Nodes.Keys.ToList())
+            foreach (BlockchainNodeState nodeState in nodesStates)
             {
-                if (networkSegment.Nodes.ContainsKey(nodeName))
+                if (network.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
                 {
-                    network.Nodes[nodeName] = networkSegment.Nodes[nodeName];
+                    network.Nodes[nodeState.NodeEndpoint.FullNodeName].NodeState = nodeState;
                 }
             }
         }
@@ -393,7 +393,7 @@ namespace Stratis.NodeCommander
             if (node.NodeState.NodeLogState == null) return;
 
             
-            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeConfig.Resources["nodeCommander.txt"].ToString());
+            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeState.Resources["nodeCommander.txt"].ToString());
             FileInfo resourceFile = new FileInfo(resourcePath);
             if (!resourceFile.Exists) return;
 

@@ -15,6 +15,8 @@ namespace Stratis.CoinmasterClient.Network
         public NodeOperationState NodeOperationState { get; set; }
         public NodeLogState NodeLogState { get; set; }
 
+        public Dictionary<String, Guid> Resources { get; set; }
+
         public bool Initialized { get; set; }
 
         public bool OrphanNode { get; set; }
@@ -23,6 +25,7 @@ namespace Stratis.CoinmasterClient.Network
         {
             NodeEndpoint = nodeEndpoint;
             Initialized = false;
+            Resources = new Dictionary<string, Guid>();
         }
 
     }

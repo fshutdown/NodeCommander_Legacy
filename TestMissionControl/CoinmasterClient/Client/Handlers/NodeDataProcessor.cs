@@ -12,7 +12,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 {
     public class NodeDataProcessor : RequestProcessorBase
     {
-        public NodeNetwork NetworkSegment { get; set; }
+        public BlockchainNodeState[] NodesStates { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public NodeDataProcessor(ClientConnection client) : base(client)
@@ -23,7 +23,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         {
             try
             {
-                NetworkSegment = Message.GetPayload<NodeNetwork>();
+                NodesStates = Message.GetPayload<BlockchainNodeState[]>();
             }
             catch (Exception ex)
             {
@@ -36,21 +36,21 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
-            foreach (BlockchainNode node in NetworkSegment.Nodes.Values)
+            foreach (BlockchainNodeState state in NodesStates)
             {
                 BlockchainHeight blockchainHeight = new BlockchainHeight();
-                blockchainHeight.FullNodeName = node.NodeEndpoint.FullNodeName;
+                blockchainHeight.FullNodeName = state.NodeEndpoint.FullNodeName;
                 blockchainHeight.Timestamp = DateTime.Now;
-                blockchainHeight.HeadersHeight = node.NodeState.NodeLogState.HeadersHeight;
-                blockchainHeight.ConsensusHeight = node.NodeState.NodeLogState.ConsensusHeight;
-                blockchainHeight.BlockStoreHeight = node.NodeState.NodeLogState.BlockStoreHeight;
+                blockchainHeight.HeadersHeight = state.NodeLogState.HeadersHeight;
+                blockchainHeight.ConsensusHeight = state.NodeLogState.ConsensusHeight;
+                blockchainHeight.BlockStoreHeight = state.NodeLogState.BlockStoreHeight;
                 //blockchainHeight.WalletsHeight = node.NodeLogState.WalletHeight;
 
                 Client.Session.Database.Persist(blockchainHeight);
             }
 
 
-            Client.Session.OnNodeStatsUpdated(Client, NetworkSegment);
+            Client.Session.OnNodeStatsUpdated(Client, NodesStates);
         }
     }
 }

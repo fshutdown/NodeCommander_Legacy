@@ -26,13 +26,13 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         {
             foreach (BlockchainNode node in Session.ManagedNodes.Nodes.Values)
             {
-                if (!node.NodeConfig.Resources.ContainsKey("nodeCommander.txt")) {
+                if (!node.NodeState.Resources.ContainsKey("nodeCommander.txt")) {
                     Resource logResource = new Resource(ResourceType.NodeCommanderLog, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
                     string logFilePath = Path.Combine(node.NodeConfig.NetworkDirectory, "Logs", "nodeCommander.txt");
                     logResource.AgentPath = logFilePath;
 
                     AddResource(logResource);
-                    node.NodeConfig.Resources.Add("nodeCommander.txt", logResource.ResourceId);
+                    node.NodeState.Resources.Add("nodeCommander.txt", logResource.ResourceId);
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace Stratis.CoinmasterClient.Client
         public NodeNetwork ManagedNodes { get; set; }
 
         public event Action<ClientConnection, AgentHealthState, String> AgentHealthcheckStatsUpdated;
-        public event Action<ClientConnection, NodeNetwork> NodeStatsUpdated;
+        public event Action<ClientConnection, BlockchainNodeState[]> NodeStatsUpdated;
         public event Action<ClientConnection, AgentRegistration> AgentRegistrationUpdated;
         public DatabaseConnection Database { get; set; }
 
@@ -35,9 +35,9 @@ namespace Stratis.CoinmasterClient.Client
             if (AgentHealthcheckStatsUpdated != null) AgentHealthcheckStatsUpdated.Invoke(clientConnection, agentHealthState, message);
         }
 
-        public void OnNodeStatsUpdated(ClientConnection clientConnection, NodeNetwork networkSegment)
+        public void OnNodeStatsUpdated(ClientConnection clientConnection, BlockchainNodeState[] nodesStates)
         {
-            if (NodeStatsUpdated != null) NodeStatsUpdated.Invoke(clientConnection, networkSegment);
+            if (NodeStatsUpdated != null) NodeStatsUpdated.Invoke(clientConnection, nodesStates);
         }
 
         public void OnAgentRegistrationUpdated(ClientConnection clientConnection, AgentRegistration registration)
