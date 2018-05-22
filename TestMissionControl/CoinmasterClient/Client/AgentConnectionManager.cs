@@ -12,38 +12,31 @@ using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Client
 {
-    public class ClientConnectionManager
+    public class AgentConnectionManager
     {
         public ClientSession Session { get; set; }
 
-        public ClientConnectionManager(NodeNetwork managedNodes)
+        public AgentConnectionManager(NodeNetwork managedNodes)
         {
             Session = new ClientSession();
             Session.ManagedNodes = managedNodes;
         }
         
 
-        public ClientConnection GetAgent(string agentAddress)
+        public AgentConnection GetAgent(string agentAddress)
         {
-            ClientConnection client = Session.Clients.FirstOrDefault(a => a.Key == agentAddress).Value;
+            AgentConnection client = Session.Agents.FirstOrDefault(a => a.Key == agentAddress).Value;
             return client;
         }
 
-        public void CreateListOfAgents()
+        public void ConnectToAgents(List<String> agentList)
         {
-            foreach (BlockchainNode node in Session.ManagedNodes.Nodes.Values)
+            foreach (string agentAddress in agentList)
             {
-                string[] addressParts = node.NodeConfig.Agent.Split(':');
-                ClientConnection newClient = new ClientConnection(addressParts[0], addressParts[1]);
+                string[] addressParts = agentAddress.Split(':');
+                AgentConnection client = new AgentConnection(addressParts[0], addressParts[1]);
+                Session.AddClient(client);
 
-                Session.AddClient(newClient);
-            }
-        }
-
-        public void ConnectToAgents()
-        {
-            foreach (ClientConnection client in Session.Clients.Values)
-            {
                 Timer reconnectionTimer = new Timer
                 {
                     AutoReset = true,
@@ -53,7 +46,7 @@ namespace Stratis.CoinmasterClient.Client
                 {
                     if (client.State == WebSocketState.None || client.State == WebSocketState.Aborted || client.State == WebSocketState.Closed)
                     {
-                        Session.ConnectClient(client);
+                        Session.ConnectAgent(client);
                     }
                 };
                 reconnectionTimer.Start();

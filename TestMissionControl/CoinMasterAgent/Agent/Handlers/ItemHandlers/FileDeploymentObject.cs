@@ -11,11 +11,11 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers
 
         private FileStream fileStream = null;
 
-        private AgentConnection agent;
+        private ClientConnection agent;
 
         public bool IsClosed => fileStream == null;
 
-        public FileDeploymentObject(AgentConnection agent)
+        public FileDeploymentObject(ClientConnection agent)
         {
             this.agent = agent;
         }

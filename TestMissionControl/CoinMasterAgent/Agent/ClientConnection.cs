@@ -16,7 +16,7 @@ using Stratis.CoinMasterAgent.StatusProbes;
 
 namespace Stratis.CoinMasterAgent.Agent
 {
-    public class AgentConnection
+    public class ClientConnection
     {
         public IWebSocketConnection SocketConnection { get; set; }
         public ClientRegistrationRequest ClientRegistration { get; set; }
@@ -27,7 +27,7 @@ namespace Stratis.CoinMasterAgent.Agent
         
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public AgentConnection(IWebSocketConnection socket)
+        public ClientConnection(IWebSocketConnection socket)
         {
             Processors = new Dictionary<MessageType, RequestProcessorBase>();
             this.SocketConnection = socket;

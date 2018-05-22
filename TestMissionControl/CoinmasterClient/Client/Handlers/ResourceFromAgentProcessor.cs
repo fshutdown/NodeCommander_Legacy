@@ -14,12 +14,12 @@ using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Client.Handlers
 {
-    public class ResourceDownloadProcessor : RequestProcessorBase
+    public class ResourceFromAgentProcessor : RequestProcessorBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public List<Resource> ResourceList { get; set; }
 
-        public ResourceDownloadProcessor(ClientConnection client) : base(client)
+        public ResourceFromAgentProcessor(AgentConnection client) : base(client)
         {
         }
 

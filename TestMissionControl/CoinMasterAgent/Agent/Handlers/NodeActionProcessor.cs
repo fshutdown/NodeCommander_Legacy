@@ -9,12 +9,12 @@ using Stratis.CoinMasterAgent.Integration;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
-    public sealed class ActionRequestProcessor : RequestProcessorBase
+    public sealed class NodeActionProcessor : RequestProcessorBase
     {
         public ActionRequest ClientAction;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public ActionRequestProcessor(AgentConnection agent) : base(agent)
+        public NodeActionProcessor(ClientConnection agent) : base(agent)
         {
         }
 

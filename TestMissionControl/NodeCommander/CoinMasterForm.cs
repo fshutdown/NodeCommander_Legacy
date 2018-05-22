@@ -32,7 +32,7 @@ namespace Stratis.NodeCommander
         private DataView dataGridViewAgentsDataView;
         private DataView dataGridViewBlockchainDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
-        private ClientConnectionManager clientConnectionManager;
+        private AgentConnectionManager clientConnectionManager;
 
         private List<BaseWorker> _workers = new List<BaseWorker>();
         private CryptoIdWorker cryptoIdWorker;
@@ -62,6 +62,7 @@ namespace Stratis.NodeCommander
 
             ClientConfigReader reader = new ClientConfigReader();
             clientConfig = reader.ReadConfig();
+            List<String> agentList = clientConfig.GetAgentList();
             this.managedNodes = new NodeNetwork();
             foreach (string fullNodeName in clientConfig.NodeItems.Keys)
             {
@@ -69,13 +70,13 @@ namespace Stratis.NodeCommander
                 this.managedNodes.Nodes.Add(fullNodeName, blockchainNode);
             }
 
-            clientConnectionManager = new ClientConnectionManager(managedNodes);
-            clientConnectionManager.CreateListOfAgents();
-            clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<ClientConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
-            clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, nodesStates) => Invoke(new Action<ClientConnection, BlockchainNodeState[]>(NodeDataUpdated), agentConnection, nodesStates);
-            clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<ClientConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
+            clientConnectionManager = new AgentConnectionManager(managedNodes);
+            
+            clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<AgentConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
+            clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, nodesStates) => Invoke(new Action<AgentConnection, BlockchainNodeState[]>(NodeDataUpdated), agentConnection, nodesStates);
+            clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
 
-            clientConnectionManager.ConnectToAgents();
+            clientConnectionManager.ConnectToAgents(agentList);
         }
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
@@ -178,12 +179,12 @@ namespace Stratis.NodeCommander
         private DataTable BuildAgentDataTable()
         {
             DataTable agentsData = new DataTable();
-            agentsData.Columns.Add("Address", typeof(ClientConnection));
+            agentsData.Columns.Add("Address", typeof(AgentConnection));
             agentsData.Columns.Add("Status");
             agentsData.Columns.Add("Info");
             agentsData.Columns.Add("LastUpdate");
             
-            foreach (ClientConnection connection in clientConnectionManager.Session.Clients.Values)
+            foreach (AgentConnection connection in clientConnectionManager.Session.Agents.Values)
             {
                 agentsData.Rows.Add(connection, string.Empty, string.Empty);
             }
@@ -201,7 +202,7 @@ namespace Stratis.NodeCommander
             return blockchainData;
         }
 
-        private void AgentDataTableUpdated(ClientConnection clientConnection, AgentHealthState state, string message)
+        private void AgentDataTableUpdated(AgentConnection clientConnection, AgentHealthState state, string message)
         {
             DataTable dataTable;
             if (dataGridViewAgents.DataSource == null)
@@ -228,7 +229,7 @@ namespace Stratis.NodeCommander
 
             foreach (DataRow row in dataTable.Rows)
             {
-                ClientConnection tableRecord = (ClientConnection) row["Address"];
+                AgentConnection tableRecord = (AgentConnection) row["Address"];
 
                 if (tableRecord.Address == clientConnection.Address)
                 {
@@ -241,7 +242,7 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void NodeDataUpdated(ClientConnection clientConnection, BlockchainNodeState[] nodesStates)
+        private void NodeDataUpdated(AgentConnection clientConnection, BlockchainNodeState[] nodesStates)
         {
             int performanceIsues = 0;
             if (dataGridViewNodes.DataSource == null)
@@ -279,7 +280,7 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void AgentRegistrationUpdated(ClientConnection clientConnection, AgentRegistration agentRegistration)
+        private void AgentRegistrationUpdated(AgentConnection clientConnection, AgentRegistration agentRegistration)
         {
 
         }
@@ -449,7 +450,7 @@ namespace Stratis.NodeCommander
                 BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
                 var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
-                ResourceDeploymentDispatcher dispatcher = (ResourceDeploymentDispatcher)agent.Dispatchers[MessageType.DeployFile];
+                ResourceFromClientDispatcher dispatcher = (ResourceFromClientDispatcher)agent.Dispatchers[MessageType.ResourceFromClient];
                 dispatcher.DeployFile(clientConfig, ResourceScope.Node, node.NodeEndpoint.FullNodeName);
             }
         }

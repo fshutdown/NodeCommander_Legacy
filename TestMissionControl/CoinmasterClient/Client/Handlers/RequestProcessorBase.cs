@@ -11,7 +11,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 {
     public abstract class RequestProcessorBase
     {
-        public ClientConnection Client { get; set; }
+        public AgentConnection Client { get; set; }
         public MessageEnvelope Message { get; set; }
 
         public delegate void CompletedHandler(RequestProcessorCompletedEventArgs args);
@@ -40,7 +40,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         public abstract void OpenEnvelope();
         public abstract void Process();
 
-        public RequestProcessorBase(ClientConnection client)
+        public RequestProcessorBase(AgentConnection client)
         {
             this.Client = client;
         }

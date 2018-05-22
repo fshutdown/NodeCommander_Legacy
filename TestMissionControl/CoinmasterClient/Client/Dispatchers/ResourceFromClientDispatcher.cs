@@ -16,12 +16,12 @@ using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Client.Dispatchers
 {
-    public class ResourceDeploymentDispatcher : DispatcherBase
+    public class ResourceFromClientDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private ConcurrentQueue<Resource> deploymentQueue;
 
-        public ResourceDeploymentDispatcher(ClientConnection client, double interval) : base(client, interval)
+        public ResourceFromClientDispatcher(AgentConnection client, double interval) : base(client, interval)
         {
             deploymentQueue = new ConcurrentQueue<Resource>();
         }
@@ -57,7 +57,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 
                     UpdateEventArgs args = new UpdateEventArgs()
                     {
-                        MessageType = MessageType.DeployFile,
+                        MessageType = MessageType.ResourceFromClient,
                         Data = resource,
                     };
                     OnUpdate(this, args);

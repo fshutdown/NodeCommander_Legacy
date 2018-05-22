@@ -16,8 +16,8 @@ namespace Stratis.CoinmasterClient.Messages
         NodeConfiguration,
 
         ActionRequest,
-        DeployFile,
-        FileDownload,
+        ResourceFromClient,
+        ResourceFromAgent,
 
 
 

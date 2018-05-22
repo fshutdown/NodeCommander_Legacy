@@ -7,14 +7,14 @@ using Stratis.CoinMasterAgent.Agent.Handlers.ItemHandlers;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
-    public sealed class ResourceDeploymentProcessor : RequestProcessorBase
+    public sealed class ResourceFromClientProcessor : RequestProcessorBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private Dictionary<string, FileDeploymentObject> activeDeplopyments = new Dictionary<string, FileDeploymentObject>();
 
         private Resource deployFile { get; set; }
 
-        public ResourceDeploymentProcessor(AgentConnection agent) : base(agent)
+        public ResourceFromClientProcessor(ClientConnection agent) : base(agent)
         {
         }
 

@@ -11,7 +11,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         public ClientNodeConfig[] NodeConfigurationList { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeConfigurationProcessor(AgentConnection agent) : base(agent)
+        public NodeConfigurationProcessor(ClientConnection agent) : base(agent)
         {
         }
 

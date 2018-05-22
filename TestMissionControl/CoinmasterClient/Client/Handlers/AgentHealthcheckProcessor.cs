@@ -16,7 +16,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         public AgentHealthState AgentHealthState { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public AgentHealthcheckProcessor(ClientConnection client) : base(client)
+        public AgentHealthcheckProcessor(AgentConnection client) : base(client)
         {
         }
 

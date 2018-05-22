@@ -9,7 +9,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
     {
         public delegate Task UpdateHandler(DispatcherBase sender, UpdateEventArgs args);
         public event UpdateHandler Updated;
-        public ClientConnection Client { get; set; }
+        public AgentConnection Client { get; set; }
 
         protected Timer _jobScheduler;
         protected double _interval;
@@ -25,7 +25,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             }
         }
 
-        public DispatcherBase(ClientConnection client, double interval)
+        public DispatcherBase(AgentConnection client, double interval)
         {
             Client = client;
 

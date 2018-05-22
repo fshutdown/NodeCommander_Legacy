@@ -16,7 +16,7 @@ namespace Stratis.CoinMasterAgent.Agent
 {
     public class AgentSession
     {
-        public List<AgentConnection> Clients { get; set; }
+        public List<ClientConnection> Clients { get; set; }
         public List<DispatcherBase> Dispatchers { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -27,27 +27,27 @@ namespace Stratis.CoinMasterAgent.Agent
 
             //Configure dispatchers
             Dispatchers = new List<DispatcherBase>();
-            Dispatchers.Add(new AgentStatusChangeDispatcher(this, 5000));
-            Dispatchers.Add(new NodeStatusChangeDispatcher(this, 3000));
-            Dispatchers.Add(new ResourceUploadDispatcher(this, 1000));
+            Dispatchers.Add(new AgentHealthcheckDispatcher(this, 5000));
+            Dispatchers.Add(new NodeStatusDispatcher(this, 3000));
+            Dispatchers.Add(new ResourceFromAgentDispatcher(this, 1000));
             
-            Clients = new List<AgentConnection>();
+            Clients = new List<ClientConnection>();
         }
 
-        public void ConnectAgent(AgentConnection agent)
+        public void ConnectClient(ClientConnection client)
         {
-            agent.Session = this;
-            Clients.Add(agent);
+            client.Session = this;
+            Clients.Add(client);
 
-            Thread clientConnection = new Thread(() => InitializeAgentConnection(agent));
+            Thread clientConnection = new Thread(() => InitializeClientConnection(client));
             clientConnection.Start();
 
             NotifyDispathers();
         }
 
-        public void DisconnectAgent(AgentConnection agent)
+        public void DisconnectClient(ClientConnection client)
         {
-            agent.Disconnect();
+            client.Disconnect();
         }
 
         private void NotifyDispathers()
@@ -56,37 +56,37 @@ namespace Stratis.CoinMasterAgent.Agent
             else foreach (DispatcherBase dispatcher in Dispatchers) dispatcher.Stop();
         }
 
-        private void InitializeAgentConnection(AgentConnection agent)
+        private void InitializeClientConnection(ClientConnection client)
         {
-            agent.SocketConnection.OnOpen += () => ConnectionOpen(agent);
-            agent.SocketConnection.OnClose += () => ConnectionClose(agent);
-            agent.SocketConnection.OnMessage += (payload) => MessageReceived(agent, payload);
+            client.SocketConnection.OnOpen += () => ConnectionOpen(client);
+            client.SocketConnection.OnClose += () => ConnectionClose(client);
+            client.SocketConnection.OnMessage += (payload) => MessageReceived(client, payload);
 
             //Configure processors
-            ClientRegistrationProcessor clientRegistrationProcessor = new ClientRegistrationProcessor(agent);
-            agent.Processors.Add(MessageType.ClientRegistration, clientRegistrationProcessor);
+            ClientRegistrationProcessor clientRegistrationProcessor = new ClientRegistrationProcessor(client);
+            client.Processors.Add(MessageType.ClientRegistration, clientRegistrationProcessor);
 
-            NodeConfigurationProcessor nodeConfigurationProcessor = new NodeConfigurationProcessor(agent);
+            NodeConfigurationProcessor nodeConfigurationProcessor = new NodeConfigurationProcessor(client);
             nodeConfigurationProcessor.Completed += ClientRegistered;
-            agent.Processors.Add(MessageType.NodeConfiguration, nodeConfigurationProcessor);
+            client.Processors.Add(MessageType.NodeConfiguration, nodeConfigurationProcessor);
 
-            ActionRequestProcessor actionRequestProcessor = new ActionRequestProcessor(agent);
-            agent.Processors.Add(MessageType.ActionRequest, actionRequestProcessor);
+            NodeActionProcessor actionRequestProcessor = new NodeActionProcessor(client);
+            client.Processors.Add(MessageType.ActionRequest, actionRequestProcessor);
 
-            ResourceDeploymentProcessor resourceDeploymentProcessor = new ResourceDeploymentProcessor(agent);
-            agent.Processors.Add(MessageType.DeployFile, resourceDeploymentProcessor);
+            ResourceFromClientProcessor resourceDeploymentProcessor = new ResourceFromClientProcessor(client);
+            client.Processors.Add(MessageType.ResourceFromClient, resourceDeploymentProcessor);
 
             foreach (DispatcherBase dispatcher in Dispatchers)
             {
-                dispatcher.Updated += agent.SendObject;
+                dispatcher.Updated += client.SendObject;
             }
 
-            logger.Debug($"Connected agent {agent.Identity}");
+            logger.Debug($"Connected client {client.Identity}");
         }
 
-        private void ConnectionOpen(AgentConnection agent)
+        private void ConnectionOpen(ClientConnection client)
         {
-            logger.Info($"{agent.SocketConnection.ConnectionInfo.Id} Connection opened for client {agent.Identity}");
+            logger.Info($"{client.SocketConnection.ConnectionInfo.Id} Connection opened for client {client.Identity}");
         }
 
         public void ClientRegistered(RequestProcessorCompletedEventArgs args)
@@ -97,34 +97,34 @@ namespace Stratis.CoinMasterAgent.Agent
             }
         }
 
-        private void ConnectionClose(AgentConnection agent)
+        private void ConnectionClose(ClientConnection client)
         {
-            logger.Info($"{agent.SocketConnection.ConnectionInfo.Id}: The connection is no longer available");
+            logger.Info($"{client.SocketConnection.ConnectionInfo.Id}: The connection is no longer available");
 
             try
             {
-                agent.Disconnect();
+                client.Disconnect();
             }
             catch (Exception ex)
             {
                 logger.Debug(ex, $"Failed to send disconnection message: {ex.Message}");
             }
 
-            if (Clients.Contains(agent))
+            if (Clients.Contains(client))
             {
-                Clients.Remove(agent);
+                Clients.Remove(client);
             }
 
             foreach (DispatcherBase dispatcher in Dispatchers)
             {
-                dispatcher.Updated -= agent.SendObject;
+                dispatcher.Updated -= client.SendObject;
             }
             NotifyDispathers();
 
-            logger.Info($"{agent.SocketConnection.ConnectionInfo.Id} Connection closed for client {agent.Identity}");
+            logger.Info($"{client.SocketConnection.ConnectionInfo.Id} Connection closed for client {client.Identity}");
         }
 
-        private void MessageReceived(AgentConnection agent, string payload)
+        private void MessageReceived(ClientConnection client, string payload)
         {
             MessageEnvelope envelope;
             try
@@ -133,25 +133,25 @@ namespace Stratis.CoinMasterAgent.Agent
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize message envelope");
+                logger.Error(ex, $"{client.SocketConnection.ConnectionInfo.Id} Cannot deserialize message envelope");
                 return;
             }
 
             try
             {
-                logger.Trace($"{agent.SocketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
-                if (!agent.Processors.ContainsKey(envelope.MessageType))
+                logger.Trace($"{client.SocketConnection.ConnectionInfo.Id} Processing {envelope.MessageType} message");
+                if (!client.Processors.ContainsKey(envelope.MessageType))
                 {
-                    logger.Fatal($"{agent.SocketConnection.ConnectionInfo.Id} Unknown message type {envelope.MessageType}");
+                    logger.Fatal($"{client.SocketConnection.ConnectionInfo.Id} Unknown message type {envelope.MessageType}");
                     return;
                 }
 
-                var processor = agent.Processors[envelope.MessageType];
+                var processor = client.Processors[envelope.MessageType];
                 processor.ProcessMessage(envelope);
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{agent.SocketConnection.ConnectionInfo.Id} Cannot process {envelope.MessageType} message");
+                logger.Error(ex, $"{client.SocketConnection.ConnectionInfo.Id} Cannot process {envelope.MessageType} message");
             }
         }
 

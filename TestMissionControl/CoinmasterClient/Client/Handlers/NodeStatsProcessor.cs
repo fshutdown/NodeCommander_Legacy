@@ -10,12 +10,12 @@ using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Client.Handlers
 {
-    public class NodeDataProcessor : RequestProcessorBase
+    public class NodeStatsProcessor : RequestProcessorBase
     {
         public BlockchainNodeState[] NodesStates { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeDataProcessor(ClientConnection client) : base(client)
+        public NodeStatsProcessor(AgentConnection client) : base(client)
         {
         }
 

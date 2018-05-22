@@ -9,7 +9,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         public AgentRegistration AgentRegistration { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public AgentRegistrationProcessor(ClientConnection client) : base(client)
+        public AgentRegistrationProcessor(AgentConnection client) : base(client)
         {
         }
 

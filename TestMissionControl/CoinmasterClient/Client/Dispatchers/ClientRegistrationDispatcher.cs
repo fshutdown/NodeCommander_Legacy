@@ -14,7 +14,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         
-        public ClientRegistrationDispatcher(ClientConnection client, double interval) : base(client, interval)
+        public ClientRegistrationDispatcher(AgentConnection client, double interval) : base(client, interval)
         {
         }
 

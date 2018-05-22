@@ -12,6 +12,7 @@ using Stratis.CoinmasterClient;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent;
+using ClientConnection = Stratis.CoinMasterAgent.Agent.ClientConnection;
 
 namespace Stratis.CoinMasterAgent
 {
@@ -55,8 +56,8 @@ namespace Stratis.CoinMasterAgent
         private static void ConfigureEvents(IWebSocketConnection socket)
         {
             logger.Debug($"{socket.ConnectionInfo.Id} Received client connection from {socket.ConnectionInfo.ClientIpAddress}:{socket.ConnectionInfo.ClientPort}");
-            AgentConnection connection = new AgentConnection(socket);
-            session.ConnectAgent(connection);
+            ClientConnection connection = new ClientConnection(socket);
+            session.ConnectClient(connection);
         }
 
 

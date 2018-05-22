@@ -2,6 +2,6 @@
 {
     public class RequestProcessorCompletedEventArgs
     {
-        public AgentConnection Agent { get; set; }
+        public ClientConnection Agent { get; set; }
     }
 }

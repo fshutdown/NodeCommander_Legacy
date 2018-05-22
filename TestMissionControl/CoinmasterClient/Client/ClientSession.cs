@@ -19,28 +19,28 @@ namespace Stratis.CoinmasterClient.Client
 {
     public class ClientSession
     {
-        public Dictionary<String, ClientConnection> Clients { get; set; }
+        public Dictionary<String, AgentConnection> Agents { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
 
-        public event Action<ClientConnection, AgentHealthState, String> AgentHealthcheckStatsUpdated;
-        public event Action<ClientConnection, BlockchainNodeState[]> NodeStatsUpdated;
-        public event Action<ClientConnection, AgentRegistration> AgentRegistrationUpdated;
+        public event Action<AgentConnection, AgentHealthState, String> AgentHealthcheckStatsUpdated;
+        public event Action<AgentConnection, BlockchainNodeState[]> NodeStatsUpdated;
+        public event Action<AgentConnection, AgentRegistration> AgentRegistrationUpdated;
         public DatabaseConnection Database { get; set; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
-        public void OnAgentHealthcheckStatsUpdated(ClientConnection clientConnection, AgentHealthState agentHealthState, string message)
+        public void OnAgentHealthcheckStatsUpdated(AgentConnection clientConnection, AgentHealthState agentHealthState, string message)
         {
             if (AgentHealthcheckStatsUpdated != null) AgentHealthcheckStatsUpdated.Invoke(clientConnection, agentHealthState, message);
         }
 
-        public void OnNodeStatsUpdated(ClientConnection clientConnection, BlockchainNodeState[] nodesStates)
+        public void OnNodeStatsUpdated(AgentConnection clientConnection, BlockchainNodeState[] nodesStates)
         {
             if (NodeStatsUpdated != null) NodeStatsUpdated.Invoke(clientConnection, nodesStates);
         }
 
-        public void OnAgentRegistrationUpdated(ClientConnection clientConnection, AgentRegistration registration)
+        public void OnAgentRegistrationUpdated(AgentConnection clientConnection, AgentRegistration registration)
         {
             if (AgentRegistrationUpdated != null) AgentRegistrationUpdated.Invoke(clientConnection, registration);
         }
@@ -50,10 +50,10 @@ namespace Stratis.CoinmasterClient.Client
             ManagedNodes = new NodeNetwork();
             Database = new DatabaseConnection();
             
-            Clients = new Dictionary<String, ClientConnection>();
+            Agents = new Dictionary<String, AgentConnection>();
         }
 
-        public void AddClient(ClientConnection client)
+        public void AddClient(AgentConnection client)
         {
             client.Session = this;
             client.OnOpen += () => ConnectionOpen(client);
@@ -61,74 +61,74 @@ namespace Stratis.CoinmasterClient.Client
             client.OnConnectionError += (message) => ConnectionError(client, message);
             client.OnMessage += (payload) => MessageReceived(client, payload);
 
-            if (!Clients.ContainsKey(client.Address))
-                Clients.Add(client.Address, client);
+            if (!Agents.ContainsKey(client.Address))
+                Agents.Add(client.Address, client);
         }
 
-        public void ConnectClient(ClientConnection client)
+        public void ConnectAgent(AgentConnection agent)
         {
-            client.Connect();
+            agent.Connect();
         }
 
-        public void DisconnectClient(ClientConnection client)
+        public void DisconnectAgent(AgentConnection agent)
         {
-            client.Disconnect();
+            agent.Disconnect();
         }
         
-        private void InitializeClientConnection(ClientConnection client)
+        private void InitializeClientConnection(AgentConnection agent)
         {
             //Configure processors
-            client.Processors.Add(MessageType.AgentRegistration, new AgentRegistrationProcessor(client));
-            client.Processors.Add(MessageType.NodeStatistics, new NodeDataProcessor(client));
-            client.Processors.Add(MessageType.FileDownload, new ResourceDownloadProcessor(client));
-            client.Processors.Add(MessageType.AgentHealthcheck, new AgentHealthcheckProcessor(client));
+            agent.Processors.Add(MessageType.AgentRegistration, new AgentRegistrationProcessor(agent));
+            agent.Processors.Add(MessageType.NodeStatistics, new NodeStatsProcessor(agent));
+            agent.Processors.Add(MessageType.ResourceFromAgent, new ResourceFromAgentProcessor(agent));
+            agent.Processors.Add(MessageType.AgentHealthcheck, new AgentHealthcheckProcessor(agent));
 
             //Configure dispatchers
-            client.Dispatchers.Add(MessageType.ClientRegistration, new ClientRegistrationDispatcher(client, int.MaxValue));
-            client.Dispatchers.Add(MessageType.NodeConfiguration, new NodeConfigurationDispatcher(client, int.MaxValue));
-            client.Dispatchers.Add(MessageType.ActionRequest, new NodeActionDispatcher(client, 1000));
-            client.Dispatchers.Add(MessageType.DeployFile, new ResourceDeploymentDispatcher(client, 1000));
+            agent.Dispatchers.Add(MessageType.ClientRegistration, new ClientRegistrationDispatcher(agent, int.MaxValue));
+            agent.Dispatchers.Add(MessageType.NodeConfiguration, new NodeConfigurationDispatcher(agent, int.MaxValue));
+            agent.Dispatchers.Add(MessageType.ActionRequest, new NodeActionDispatcher(agent, 1000));
+            agent.Dispatchers.Add(MessageType.ResourceFromClient, new ResourceFromClientDispatcher(agent, 1000));
 
-            foreach (DispatcherBase dispatcher in client.Dispatchers.Values)
+            foreach (DispatcherBase dispatcher in agent.Dispatchers.Values)
             {
-                dispatcher.Updated += client.SendObject;
+                dispatcher.Updated += agent.SendObject;
             }
 
-            logger.Debug($"Connected Client {client.Address}");
+            logger.Debug($"Connected Client {agent.Address}");
         }
 
-        private void ConnectionOpen(ClientConnection client)
+        private void ConnectionOpen(AgentConnection agent)
         {
-            InitializeClientConnection(client);
-            foreach (DispatcherBase dispatcher in client.Dispatchers.Values) dispatcher.Start();
+            InitializeClientConnection(agent);
+            foreach (DispatcherBase dispatcher in agent.Dispatchers.Values) dispatcher.Start();
 
-            logger.Info($"Connection opened for client {client.Address}");
-            OnAgentHealthcheckStatsUpdated(client, null, string.Empty);
+            logger.Info($"Connection opened for agent {agent.Address}");
+            OnAgentHealthcheckStatsUpdated(agent, null, string.Empty);
         }
 
 
-        private void ConnectionError(ClientConnection client, string message)
+        private void ConnectionError(AgentConnection agent, string message)
         {
-            logger.Info($"Failed to connect to agent {client.Address}");
-            OnAgentHealthcheckStatsUpdated(client, null, message);
+            logger.Info($"Failed to connect to agent {agent.Address}");
+            OnAgentHealthcheckStatsUpdated(agent, null, message);
         }
 
-        private void ConnectionClose(ClientConnection client)
+        private void ConnectionClose(AgentConnection agent)
         {
             logger.Info($"The connection is no longer available");
-            OnAgentHealthcheckStatsUpdated(client, null, string.Empty);
+            OnAgentHealthcheckStatsUpdated(agent, null, string.Empty);
 
-            client.Disconnect();
+            agent.Disconnect();
 
-            client.Dispatchers.Clear();
-            client.Processors.Clear();
+            agent.Dispatchers.Clear();
+            agent.Processors.Clear();
 
-            foreach (DispatcherBase dispatcher in client.Dispatchers.Values) dispatcher.Stop();
+            foreach (DispatcherBase dispatcher in agent.Dispatchers.Values) dispatcher.Stop();
 
-            logger.Info($"Connection closed for agent {client.Address}");
+            logger.Info($"Connection closed for agent {agent.Address}");
         }
 
-        private void MessageReceived(ClientConnection client, string payload)
+        private void MessageReceived(AgentConnection agent, string payload)
         {
             MessageEnvelope envelope;
             try
@@ -137,25 +137,25 @@ namespace Stratis.CoinmasterClient.Client
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Cannot deserialize message envelope from agent {client.Address}");
+                logger.Error(ex, $"Cannot deserialize message envelope from agent {agent.Address}");
                 return;
             }
 
             try
             {
                 logger.Trace($"Processing {envelope.MessageType} message");
-                if (!client.Processors.ContainsKey(envelope.MessageType))
+                if (!agent.Processors.ContainsKey(envelope.MessageType))
                 {
-                    logger.Fatal($"Unknown message type {envelope.MessageType} from agent {client.Address}");
+                    logger.Fatal($"Unknown message type {envelope.MessageType} from agent {agent.Address}");
                     return;
                 }
 
-                var processor = client.Processors[envelope.MessageType];
+                var processor = agent.Processors[envelope.MessageType];
                 processor.ProcessMessage(envelope);
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Cannot process {envelope.MessageType} message from agent {client.Address}");
+                logger.Error(ex, $"Cannot process {envelope.MessageType} message from agent {agent.Address}");
             }
         }
     }

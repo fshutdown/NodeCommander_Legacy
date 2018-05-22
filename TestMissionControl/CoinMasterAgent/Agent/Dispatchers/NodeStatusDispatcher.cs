@@ -15,13 +15,13 @@ using Stratis.CoinMasterAgent.StatusProbes;
 
 namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 {
-    public class NodeStatusChangeDispatcher : DispatcherBase
+    public class NodeStatusDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         
         private List<StatusProbeBase> statusProbes { get; set; }
 
-        public NodeStatusChangeDispatcher(AgentSession session, double interval) : base(session, interval)
+        public NodeStatusDispatcher(AgentSession session, double interval) : base(session, interval)
         {
             statusProbes = new List<StatusProbeBase>();
 

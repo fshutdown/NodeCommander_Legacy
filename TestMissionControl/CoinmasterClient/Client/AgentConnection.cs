@@ -14,7 +14,7 @@ using Stratis.CoinmasterClient.Messages;
 
 namespace Stratis.CoinmasterClient.Client
 {
-    public class ClientConnection
+    public class AgentConnection
     {
         public ClientWebSocket SocketConnection { get; set; }
         public AgentRegistration AgentRegistration { get; set; }
@@ -37,9 +37,9 @@ namespace Stratis.CoinmasterClient.Client
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly CancellationToken _cancellationToken;
-
+        private static SemaphoreSlim requestSemaphore = new SemaphoreSlim(1,1);
         
-        public ClientConnection(string host, string port)
+        public AgentConnection(string host, string port)
         {
             ConnectionUri = new Uri($"ws://{host}:{port}");
             _cancellationToken = _cancellationTokenSource.Token;
@@ -75,7 +75,6 @@ namespace Stratis.CoinmasterClient.Client
                 while (SocketConnection.State == WebSocketState.Open)
                 {
                     var stringResult = new StringBuilder();
-
 
                     WebSocketReceiveResult result;
                     do
@@ -144,12 +143,20 @@ namespace Stratis.CoinmasterClient.Client
 
             try
             {
-                logger.Debug($"{Address}: Sending {messageType} data to the client ({payload.Length} bytes)");
-                await SendMessageAsync(payload);
+                logger.Warn($"{Address}: Sending {messageType} data to the agent ({payload.Length} bytes)");
+                await requestSemaphore.WaitAsync();
+                try
+                {
+                    await SendMessageAsync(payload);
+                }
+                finally
+                {
+                    requestSemaphore.Release();
+                }
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Address}: Error while sending {messageType} data to the client");
+                logger.Error(ex, $"{Address}: Error while sending {messageType} data to the agent");
             }
         }
 

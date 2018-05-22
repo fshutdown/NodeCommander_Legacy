@@ -18,7 +18,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private ConcurrentQueue<ActionRequest> actionQueue;
 
-        public NodeActionDispatcher(ClientConnection client, double interval) : base(client, interval)
+        public NodeActionDispatcher(AgentConnection client, double interval) : base(client, interval)
         {
             actionQueue = new ConcurrentQueue<ActionRequest>();
         }

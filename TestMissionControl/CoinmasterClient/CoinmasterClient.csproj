@@ -144,8 +144,8 @@
     <Compile Include="Analysis\SupportingTypes\ProcessState.cs" />
     <Compile Include="ClientConnection.cs" />
     <Compile Include="Client\AgentState.cs" />
-    <Compile Include="Client\ClientConnection.cs" />
-    <Compile Include="Client\ClientConnectionManager.cs" />
+    <Compile Include="Client\AgentConnection.cs" />
+    <Compile Include="Client\AgentConnectionManager.cs" />
     <Compile Include="Client\ClientSession.cs" />
     <Compile Include="Client\Dispatchers\DispatcherBase.cs" />
     <Compile Include="Client\Dispatchers\DispatcherItems\ResourceDeploymentItem.cs" />
@@ -153,13 +153,13 @@
     <Compile Include="Client\Dispatchers\ClientRegistrationDispatcher.cs" />
     <Compile Include="Client\Dispatchers\NodeActionDispatcher.cs" />
     <Compile Include="Client\Dispatchers\NodeConfigurationDispatcher.cs" />
-    <Compile Include="Client\Dispatchers\ResourceDeploymentDispatcher.cs" />
+    <Compile Include="Client\Dispatchers\ResourceFromClientDispatcher.cs" />
     <Compile Include="Client\Handlers\AgentRegistrationProcessor.cs" />
     <Compile Include="Client\Handlers\EventArgs\RequestProcessorCompletedEventArgs.cs" />
     <Compile Include="Client\Handlers\AgentHealthcheckProcessor.cs" />
-    <Compile Include="Client\Handlers\NodeDataProcessor.cs" />
+    <Compile Include="Client\Handlers\NodeStatsProcessor.cs" />
     <Compile Include="Client\Handlers\RequestProcessorBase.cs" />
-    <Compile Include="Client\Handlers\ResourceDownloadProcessor.cs" />
+    <Compile Include="Client\Handlers\ResourceFromAgentProcessor.cs" />
     <Compile Include="Config\BlockchainNodeConfig.cs" />
     <Compile Include="Config\ClientConfig.cs" />
     <Compile Include="Config\ClientNodeConfig.cs" />

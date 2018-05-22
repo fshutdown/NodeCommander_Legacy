@@ -12,12 +12,12 @@ using Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs;
 
 namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 {
-    public class ResourceUploadDispatcher : DispatcherBase
+    public class ResourceFromAgentDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private Dictionary<Resource, FileStream> resourceStreams;
         
-        public ResourceUploadDispatcher(AgentSession session, double interval) : base(session, interval)
+        public ResourceFromAgentDispatcher(AgentSession session, double interval) : base(session, interval)
         {
             resourceStreams = new Dictionary<Resource, FileStream>();
         }
@@ -54,7 +54,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             ReadData();
             UpdateEventArgs args = new UpdateEventArgs()
             {
-                MessageType = MessageType.FileDownload,
+                MessageType = MessageType.ResourceFromAgent,
                 Data = GetResources(),
                 Scope = ResourceScope.Global
             };
