@@ -10,13 +10,13 @@ namespace Stratis.CoinmasterClient.Analysis
     {
         public Guid WorkerId { get; set; }
         public int UpdateCount { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public DateTime LastUpdateTimestamp { get; set; }
         public int MemoryUsageMb { get; set; }
         public int ThreadCount { get; set; }
 
         public AgentHealthState()
         {
-            LastUpdate = DateTime.MinValue;
+            LastUpdateTimestamp = DateTime.MinValue;
         }
 
         public AgentHealthState(Guid workerId) : this()

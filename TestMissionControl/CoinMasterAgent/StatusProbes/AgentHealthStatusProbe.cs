@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Agent.Dispatchers;
 
 
 namespace Stratis.CoinMasterAgent.StatusProbes
@@ -32,8 +33,8 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         private void CheckAgentResources()
         {
-            AgentHealthState.LastUpdate = DateTime.Now;
-            AgentHealthState.UpdateCount++;
+            AgentHealthState.LastUpdateTimestamp = NodeStatusDispatcher.LastUpdateTimestamp;
+            AgentHealthState.UpdateCount = NodeStatusDispatcher.UpdateCount;
             AgentHealthState.ThreadCount = Process.GetCurrentProcess().Threads.Count;
             AgentHealthState.MemoryUsageMb = (int)(GC.GetTotalMemory(false) / 1024 / 1024);
         }

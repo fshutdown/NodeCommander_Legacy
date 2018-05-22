@@ -18,7 +18,9 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
     public class NodeStatusDispatcher : DispatcherBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        
+        public static DateTime LastUpdateTimestamp { get; set; }
+        public static int UpdateCount { get; set; }
+
         private List<StatusProbeBase> statusProbes { get; set; }
 
         public NodeStatusDispatcher(AgentSession session, double interval) : base(session, interval)
@@ -56,6 +58,8 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             }
 
             Task.WaitAll(updateTasks.ToArray());
+            LastUpdateTimestamp = DateTime.Now;
+            UpdateCount++;
 
             BlockchainNodeState[] nodesStatistics = (from n in Session.ManagedNodes.Nodes
                 select n.Value.NodeState).ToArray();

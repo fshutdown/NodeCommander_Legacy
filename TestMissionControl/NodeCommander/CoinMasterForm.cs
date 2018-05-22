@@ -13,6 +13,7 @@ using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.Resources;
+using Stratis.NodeCommander.Forms;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
@@ -235,7 +236,7 @@ namespace Stratis.NodeCommander
                 {
                     row["Status"] = clientConnection.State;
                     row["Info"] = message;
-                    row["LastUpdate"] = $"L: {state?.LastUpdate} / C: {state?.UpdateCount}";
+                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount}";
 
                     break;
                 }
@@ -552,6 +553,12 @@ namespace Stratis.NodeCommander
             
 
 
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            RemoveResourceForm removeResourceForm = new RemoveResourceForm();
+            removeResourceForm.Show();
         }
     }
 }
