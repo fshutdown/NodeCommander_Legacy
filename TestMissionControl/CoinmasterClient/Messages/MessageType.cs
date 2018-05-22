@@ -10,11 +10,16 @@ namespace Stratis.CoinmasterClient.Messages
     {
         ClientRegistration,
         AgentRegistration,
-        NodeData,
+        AgentHealthcheck,
+
+        NodeStatistics,
+        NodeConfiguration,
+
         ActionRequest,
         DeployFile,
         FileDownload,
 
-        AgentHealthcheck
+
+
     }
 }

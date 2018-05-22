@@ -68,7 +68,7 @@ namespace Stratis.CoinMasterAgent.Agent
 
             NodeConfigurationProcessor nodeConfigurationProcessor = new NodeConfigurationProcessor(agent);
             nodeConfigurationProcessor.Completed += ClientRegistered;
-            agent.Processors.Add(MessageType.NodeData, nodeConfigurationProcessor);
+            agent.Processors.Add(MessageType.NodeConfiguration, nodeConfigurationProcessor);
 
             ActionRequestProcessor actionRequestProcessor = new ActionRequestProcessor(agent);
             agent.Processors.Add(MessageType.ActionRequest, actionRequestProcessor);

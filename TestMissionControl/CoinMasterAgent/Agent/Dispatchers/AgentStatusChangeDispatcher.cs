@@ -41,9 +41,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             List<Task> updateTasks = new List<Task>();
             updateTasks.AddRange(UpdateAgentData());
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
             Task.WaitAll(updateTasks.ToArray());
-            logger.Info($"Waiting for tasks to finish {stopwatch.ElapsedMilliseconds} ms");
 
             UpdateEventArgs args = new UpdateEventArgs()
             {

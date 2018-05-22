@@ -55,13 +55,11 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                 node.NodeState.Initialized = true;
             }
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
             Task.WaitAll(updateTasks.ToArray());
-            logger.Info($"Waiting for tasks to finish {stopwatch.ElapsedMilliseconds} ms");
 
             UpdateEventArgs args = new UpdateEventArgs()
             {
-                MessageType = MessageType.NodeData,
+                MessageType = MessageType.NodeStatistics,
                 Scope = ResourceScope.Global,
                 Data = Session.ManagedNodes
             };

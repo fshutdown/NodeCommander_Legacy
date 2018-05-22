@@ -36,7 +36,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 
             UpdateEventArgs args = new UpdateEventArgs()
             {
-                MessageType = MessageType.NodeData,
+                MessageType = MessageType.NodeConfiguration,
                 Data = nodeList.ToArray<BlockchainNode>(),
             };
             OnUpdate(this, args);

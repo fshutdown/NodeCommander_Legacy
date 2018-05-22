@@ -79,13 +79,13 @@ namespace Stratis.CoinmasterClient.Client
         {
             //Configure processors
             client.Processors.Add(MessageType.AgentRegistration, new AgentRegistrationProcessor(client));
-            client.Processors.Add(MessageType.NodeData, new NodeDataProcessor(client));
+            client.Processors.Add(MessageType.NodeStatistics, new NodeDataProcessor(client));
             client.Processors.Add(MessageType.FileDownload, new ResourceDownloadProcessor(client));
             client.Processors.Add(MessageType.AgentHealthcheck, new AgentHealthcheckProcessor(client));
 
             //Configure dispatchers
             client.Dispatchers.Add(MessageType.ClientRegistration, new ClientRegistrationDispatcher(client, int.MaxValue));
-            client.Dispatchers.Add(MessageType.NodeData, new NodeConfigurationDispatcher(client, int.MaxValue));
+            client.Dispatchers.Add(MessageType.NodeConfiguration, new NodeConfigurationDispatcher(client, int.MaxValue));
             client.Dispatchers.Add(MessageType.ActionRequest, new NodeActionDispatcher(client, 1000));
             client.Dispatchers.Add(MessageType.DeployFile, new ResourceDeploymentDispatcher(client, 1000));
 
