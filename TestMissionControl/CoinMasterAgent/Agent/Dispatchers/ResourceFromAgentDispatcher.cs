@@ -41,7 +41,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         {
             foreach (FileStream fileStream in resourceStreams.Values)
             {
-                fileStream.Close();
+                fileStream?.Close();
             }
 
             resourceStreams.Clear();

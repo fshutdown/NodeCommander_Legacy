@@ -169,6 +169,7 @@
     <Compile Include="Database\Model\BlockchainHeight.cs" />
     <Compile Include="Database\Model\BlockchainMining.cs" />
     <Compile Include="Database\Model\BlockchainReorg.cs" />
+    <Compile Include="Git\GitRepositoryInfo.cs" />
     <Compile Include="Network\BlockchainNodeState.cs" />
     <Compile Include="Resources\ResourceScope.cs" />
     <Compile Include="Resources\ResourceType.cs" />

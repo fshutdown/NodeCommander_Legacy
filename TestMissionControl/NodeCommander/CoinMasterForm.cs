@@ -52,7 +52,7 @@ namespace Stratis.NodeCommander
             };
 
             //Create workers
-            cryptoIdWorker = new CryptoIdWorker(10000, new NodeEndpointName("Stratis", "StratisTest"));
+            cryptoIdWorker = new CryptoIdWorker(60000, new NodeEndpointName("Stratis", "StratisTest"));
             cryptoIdWorker.StateChange += DashboardWorkerStateChanged;
             cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
             _workers.Add(cryptoIdWorker);
@@ -236,7 +236,7 @@ namespace Stratis.NodeCommander
                 {
                     row["Status"] = clientConnection.State;
                     row["Info"] = message;
-                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount}";
+                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount} / {state?.GitRepositoryInfo[0].CurrentBranchName} / {state?.GitRepositoryInfo[0].LatestLocalCommitDateTime} / {state?.GitRepositoryInfo[0].CommitDifference} / {state?.GitRepositoryInfo[0].RepositoryFullName} / {state?.GitRepositoryInfo[0].RepositoryUrl}";
 
                     break;
                 }

@@ -64,7 +64,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes.ItemStatusProbes
 
         public void Close()
         {
-            logReader.Close();
+            logReaderStream?.Close();
             logReaderStream = null;
         }
     }

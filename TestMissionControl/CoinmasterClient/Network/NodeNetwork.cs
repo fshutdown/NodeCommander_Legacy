@@ -21,5 +21,13 @@ namespace Stratis.CoinmasterClient.Network
             if (Nodes.ContainsKey(fullNodeName)) return Nodes[fullNodeName];
             else return null;
         }
+
+        public List<String> GetCodeDirectoryList()
+        {
+            List<String> codeDirectoryList = (from n in Nodes.Values
+                select n.NodeConfig.CodeDirectory).Distinct().ToList();
+
+            return codeDirectoryList;
+        }
     }
 }

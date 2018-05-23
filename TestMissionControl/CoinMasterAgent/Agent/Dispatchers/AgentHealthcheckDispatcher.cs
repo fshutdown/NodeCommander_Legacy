@@ -17,12 +17,12 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 {
     public class AgentHealthcheckDispatcher : DispatcherBase
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();        
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();    
         private AgentHealthStatusProbe agentHealthStatusProbe;
 
         public AgentHealthcheckDispatcher(AgentSession session, double interval) : base(session, interval)
         {
-            agentHealthStatusProbe = new AgentHealthStatusProbe();
+            agentHealthStatusProbe = new AgentHealthStatusProbe(session);
         }
 
         public override void Reset()
@@ -32,7 +32,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 
         public override void Close()
         {
-
+            agentHealthStatusProbe.Stop();
         }
 
         public override void SendData()

@@ -6,6 +6,7 @@ using System.Threading;
 using Fleck;
 using Newtonsoft.Json;
 using NLog;
+using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
@@ -19,6 +20,7 @@ namespace Stratis.CoinMasterAgent.Agent
         public List<ClientConnection> Clients { get; set; }
         public List<DispatcherBase> Dispatchers { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
+
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public AgentSession()

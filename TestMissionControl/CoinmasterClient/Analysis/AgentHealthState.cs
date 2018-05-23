@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stratis.CoinmasterClient.Git;
 
 namespace Stratis.CoinmasterClient.Analysis
 {
@@ -13,6 +14,8 @@ namespace Stratis.CoinmasterClient.Analysis
         public DateTime LastUpdateTimestamp { get; set; }
         public int MemoryUsageMb { get; set; }
         public int ThreadCount { get; set; }
+
+        public List<GitRepositoryInfo> GitRepositoryInfo { get; set; }
 
         public AgentHealthState()
         {
