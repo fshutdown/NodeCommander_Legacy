@@ -88,7 +88,7 @@ namespace Stratis.CoinMasterAgent.Git
 
         private void SetRepositoryUrl()
         {
-            string gitCommandOutput;
+            string gitCommandOutput = string.Empty;
             try
             {
                 gitCommandOutput = RunProcess("git", "config --get remote.origin.url");

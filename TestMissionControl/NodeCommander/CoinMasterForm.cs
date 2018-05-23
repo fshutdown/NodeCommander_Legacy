@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Analysis;
+using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
@@ -14,6 +15,7 @@ using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.Resources;
 using Stratis.NodeCommander.Forms;
+using Stratis.NodeCommander.Properties;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
@@ -38,9 +40,17 @@ namespace Stratis.NodeCommander
         private List<BaseWorker> _workers = new List<BaseWorker>();
         private CryptoIdWorker cryptoIdWorker;
 
+        private Bitmap redCircle;
+        private Bitmap greenCircle;
+        private Bitmap grayCircle;
+        
+
         public CoinMasterForm()
         {
             InitializeComponent();
+            redCircle = CreateStatusButmaps(Color.Crimson);
+            greenCircle = CreateStatusButmaps(Color.Green);
+            grayCircle = CreateStatusButmaps(Color.Gray);
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -78,6 +88,20 @@ namespace Stratis.NodeCommander
             clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
 
             clientConnectionManager.ConnectToAgents(agentList);
+        }
+
+        
+
+        public Bitmap CreateStatusButmaps(Color color)
+        {
+            Bitmap circleBitmap = new Bitmap(16, 16);
+            Graphics graphics = Graphics.FromImage(circleBitmap);
+            Brush backgroundBrush = new SolidBrush(color);
+            Brush foregroundBrush = new SolidBrush(Color.White);
+            graphics.FillEllipse(backgroundBrush, 1, 1, 14, 14);
+            graphics.FillEllipse(foregroundBrush, 5, 5, 7, 7);
+
+            return circleBitmap;
         }
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
@@ -149,33 +173,7 @@ namespace Stratis.NodeCommander
             //Refresh();
         }
 
-        private DataTable BuildNodeDataTable()
-        {
-            DataTable nodesData = new DataTable();
-            nodesData.Columns.Add("Node", typeof(BlockchainNode));
-            nodesData.Columns.Add("Status");
-            nodesData.Columns.Add("HeaderHeight");
-            nodesData.Columns.Add("ConsensusHeight");
-            nodesData.Columns.Add("BlockHeight");
-            nodesData.Columns.Add("WalletHeight");
-            nodesData.Columns.Add("NetworkHeight");
-            nodesData.Columns.Add("Mempool");
-            nodesData.Columns.Add("Peers");
-            nodesData.Columns.Add("Uptime");
-            nodesData.Columns.Add("Messages");
-            nodesData.Columns.Add("Agent");
 
-            foreach (string nodeName in managedNodes.Nodes.Keys)
-            {
-                BlockchainNode node = managedNodes.Nodes[nodeName];
-
-                object[] rowData = new object[nodesData.Columns.Count];
-                rowData[0] = node;
-                nodesData.Rows.Add(rowData);
-            }
-
-            return nodesData;
-        }
 
         private DataTable BuildAgentDataTable()
         {
@@ -243,6 +241,41 @@ namespace Stratis.NodeCommander
             }
         }
 
+        private void AgentRegistrationUpdated(AgentConnection clientConnection, AgentRegistration agentRegistration)
+        {
+
+        }
+
+        private DataTable BuildNodeDataTable()
+        {
+            DataTable nodesData = new DataTable();
+
+            nodesData.Columns.Add("Status", typeof(Bitmap));
+            nodesData.Columns.Add("Node", typeof(BlockchainNode));
+            nodesData.Columns.Add("HeaderHeight");
+            nodesData.Columns.Add("ConsensusHeight");
+            nodesData.Columns.Add("BlockHeight");
+            nodesData.Columns.Add("WalletHeight");
+            nodesData.Columns.Add("NetworkHeight");
+            nodesData.Columns.Add("Mempool");
+            nodesData.Columns.Add("Peers");
+            nodesData.Columns.Add("Uptime");
+            nodesData.Columns.Add("Messages");
+            nodesData.Columns.Add("Agent");
+
+            foreach (string nodeName in managedNodes.Nodes.Keys)
+            {
+                BlockchainNode node = managedNodes.Nodes[nodeName];
+
+                object[] rowData = new object[nodesData.Columns.Count];
+                rowData[0] = grayCircle;
+                rowData[1] = node;
+                nodesData.Rows.Add(rowData);
+            }
+
+            return nodesData;
+        }
+
         private void NodeDataUpdated(AgentConnection clientConnection, BlockchainNodeState[] nodesStates)
         {
             int performanceIsues = 0;
@@ -257,17 +290,18 @@ namespace Stratis.NodeCommander
                 dataGridViewNodes.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 dataGridViewNodes.AutoGenerateColumns = false;
 
+                dataGridViewNodes.Columns["Status"].Width = 16;
                 dataGridViewNodes.Columns["Node"].Width = 80;
-                dataGridViewNodes.Columns["Status"].Width = 80;
-                dataGridViewNodes.Columns["HeaderHeight"].Width = 60;
-                dataGridViewNodes.Columns["ConsensusHeight"].Width = 60;
-                dataGridViewNodes.Columns["BlockHeight"].Width = 60;
-                dataGridViewNodes.Columns["WalletHeight"].Width = 60;
+                dataGridViewNodes.Columns["Status"].HeaderText = string.Empty;
+                dataGridViewNodes.Columns["HeaderHeight"].Width = 50;
+                dataGridViewNodes.Columns["ConsensusHeight"].Width = 50;
+                dataGridViewNodes.Columns["BlockHeight"].Width = 50;
+                dataGridViewNodes.Columns["WalletHeight"].Width = 50;
                 dataGridViewNodes.Columns["NetworkHeight"].Width = 60;
-                dataGridViewNodes.Columns["Mempool"].Width = 60;
+                dataGridViewNodes.Columns["Mempool"].Width = 50;
                 dataGridViewNodes.Columns["Peers"].Width = 80;
                 dataGridViewNodes.Columns["Uptime"].Width = 80;
-                dataGridViewNodes.Columns["Messages"].Width = 80;
+                dataGridViewNodes.Columns["Messages"].Width = 200;
                 dataGridViewNodes.Columns["Agent"].Width = 80;
             }
 
@@ -280,13 +314,6 @@ namespace Stratis.NodeCommander
                 ShowNotifier("Dashboard", message, NotificationType.PerformanceIssue);
             }
         }
-
-        private void AgentRegistrationUpdated(AgentConnection clientConnection, AgentRegistration agentRegistration)
-        {
-
-        }
-
-
 
         private void MergeMeasuresIntoNode(NodeNetwork network, BlockchainNodeState[] nodesStates)
         {
@@ -315,7 +342,24 @@ namespace Stratis.NodeCommander
                     if (managedNodes.Nodes[fullNodeName].NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
                     {
                         dataRow["Node"] = managedNodes.Nodes[fullNodeName];
-                        dataRow["Status"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.State;
+                        switch (managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.State)
+                        {
+                            case ProcessState.Unknown:
+                                dataRow["Status"] = grayCircle;
+                                break;
+                            case ProcessState.Stopped:
+                                dataRow["Status"] = redCircle;
+                                break;
+                            case ProcessState.Running:
+                                dataRow["Status"] = greenCircle;
+                                break;
+                            case ProcessState.Starting:
+                                dataRow["Status"] = greenCircle;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
                         dataRow["HeaderHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.HeadersHeight;
                         dataRow["ConsensusHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.ConsensusHeight;
                         dataRow["BlockHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.BlockStoreHeight;
@@ -341,6 +385,8 @@ namespace Stratis.NodeCommander
             dataGridViewNodesDataView.RowFilter = string.Join(" AND ", filterCriteria);
             dataGridViewNodes.DataSource = dataGridViewNodesDataView;
         }
+
+
         private void dataGridViewAgents_Filter()
         {
             dataGridViewAgents.DataSource = dataGridViewAgentsDataView;
@@ -500,7 +546,7 @@ namespace Stratis.NodeCommander
 
         private void dataGridViewNodes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            BlockchainNode node = (BlockchainNode)dataGridViewNodes.Rows[e.RowIndex].Cells[0].Value;
+            BlockchainNode node = (BlockchainNode)dataGridViewNodes.Rows[e.RowIndex].Cells["Node"].Value;
             if (!node.NodeState.Initialized) return;
 
             int maxHeight;
