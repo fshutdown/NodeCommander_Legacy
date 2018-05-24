@@ -68,6 +68,41 @@ namespace Stratis.CoinmasterClient.Database
             }
         }
 
+        public void Persist(NodeLogMessage logMessage)
+        {
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    t.SynchronizeTables("LogMessage");
+
+                    bool newEntity = logMessage.Id == 0;
+                    if (newEntity)
+                        logMessage.Id = t.ObjectGetNewIdentity<long>("Mining");
+
+                    t.ObjectInsert("LogMessage", new DBreezeObject<NodeLogMessage>
+                    {
+                        NewEntity = newEntity,
+                        Entity = logMessage,
+                        Indexes = new List<DBreezeIndex>
+                        {
+                            new DBreezeIndex(1, logMessage.Id) { PrimaryIndex = true },
+                            new DBreezeIndex(2, logMessage.Timestamp),
+                            new DBreezeIndex(3, logMessage.FullNodeName),
+                        }
+                    }, false);
+
+                    t.TextInsert("TS_LogMessage", logMessage.Id.ToBytes(), logMessage.FullNodeName);
+
+                    t.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public void Persist(BlockchainMining miningEntry)
         {
             try
@@ -160,6 +195,31 @@ namespace Stratis.CoinmasterClient.Database
             }
 
             return count.ToString();
+        }
+
+        public List<NodeLogMessage> GetLogMessages(string fullNodeName)
+        {
+            List<NodeLogMessage> logMessages = new List<NodeLogMessage>();
+            try
+            {
+                using (var t = Engine.GetTransaction())
+                {
+                    foreach (byte[] doc in t.TextSearch("TS_LogMessage").BlockAnd(fullNodeName).GetDocumentIDs())
+                    {
+                        DBreezeObject<NodeLogMessage> obj = t.Select<byte[], byte[]>("LogMessage", 1.ToIndex(doc)).ObjectGet<NodeLogMessage>();
+                        if (obj != null)
+                        {
+                            logMessages.Add(obj.Entity);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return logMessages;
         }
 
         public int GetMinedBlockCount(string fullNodeName)

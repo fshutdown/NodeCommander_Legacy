@@ -79,7 +79,7 @@ namespace Stratis.CoinmasterClient.Client
         {
             //Configure processors
             agent.Processors.Add(MessageType.AgentRegistration, new AgentRegistrationProcessor(agent));
-            agent.Processors.Add(MessageType.NodeStatistics, new NodeStatsProcessor(agent));
+            agent.Processors.Add(MessageType.NodeStatistics, new NodeStatusProcessor(agent));
             agent.Processors.Add(MessageType.ResourceFromAgent, new ResourceFromAgentProcessor(agent));
             agent.Processors.Add(MessageType.AgentHealthcheck, new AgentHealthcheckProcessor(agent));
 

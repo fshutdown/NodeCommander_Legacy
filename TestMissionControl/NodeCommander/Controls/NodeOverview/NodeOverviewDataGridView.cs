@@ -18,7 +18,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
     public class NodeOverviewDataGridView : DataGridView
     {
         private DataView dataView;
-        public event Action<DataView> dataGridViewNodes_Filter;
+        public event Action<DataView> Filter;
         public NodeOverviewDataGridViewMapper Mapper;
 
         public NodeOverviewDataGridView()
@@ -27,24 +27,30 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
             this.CellFormatting += dataGridView_CellFormatting;
         }
 
-        public void UpdateNodes(AgentConnection agentConnection, NodeNetwork managedNodes, DatabaseConnection database)
+        public void UpdateNodes(NodeNetwork managedNodes, DatabaseConnection database)
         {
             Mapper.MergeDataRows(managedNodes);
             Mapper.UpdateDataTable(database, managedNodes);
             if (this.DataSource == null) ConfigureDataGridView();
 
+            if (SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = SelectedRows[0];
+                DataGridViewRowStateChangedEventArgs e = new DataGridViewRowStateChangedEventArgs(selectedRow, DataGridViewElementStates.None);
+                this.OnRowStateChanged(selectedRow.Index, e);
+            }
         }
 
         private void ConfigureDataGridView()
         {
-            dataView = new DataView(Mapper.NodesDataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
-            dataGridViewNodes_Filter?.Invoke(dataView);
+            dataView = new DataView(Mapper.DataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
+            Filter?.Invoke(dataView);
 
             this.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             this.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             this.AutoGenerateColumns = false;
 
-            foreach (DataColumn column in Mapper.NodesDataTable.Columns)
+            foreach (DataColumn column in Mapper.DataTable.Columns)
             {
                 this.Columns[column.ColumnName].Width = (int)column.ExtendedProperties["Width"];
                 this.Columns[column.ColumnName].HeaderText = (string)column.ExtendedProperties["HeaderText"];

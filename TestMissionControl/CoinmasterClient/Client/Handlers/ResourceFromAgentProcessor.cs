@@ -43,8 +43,6 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             foreach (Resource resource in ResourceList)
             {
                 if (resource.Length == 0) continue;
-                string resourcePath = Path.Combine(ClientConfigReader.NodeCommanderDataDirectory, "Data", resource.ResourceId.ToString());
-
                 if (resource.ResourceName == ResourceType.NodeCommanderLog)
                 {
                     string lines = Encoding.Default.GetString(resource.Data);
@@ -52,13 +50,26 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                     {
                         string[] fields = line.Split(new string[] { "||" }, StringSplitOptions.None);
 
+                        NodeLogMessage logMessage = new NodeLogMessage()
+                        {
+                            FullNodeName = resource.FullNodeName,
+                            Timestamp = DateTime.ParseExact(fields[0], "yyyy-MM-dd HH:mm:ss.ffff", null),
+                            Thread = int.Parse(fields[1]),
+                            Level = fields[2],
+                            CallSite = fields[3],
+                            Message = fields[4],
+                            Exception = fields[5],
+                            Stacktrace = fields[6]
+                        };
+                        Client.Session.Database.Persist(logMessage);
+
                         if (fields.Length == 5 && fields[3] == "Stratis.Bitcoin.Features.Miner.PowMining.GenerateBlocks")
                         {
                             Regex miningRegex = new Regex("([0-9]+)-([0-9a-f]+)");
                             Match match = miningRegex.Match(fields[4]);
 
                             BlockchainMining miningEntry = new BlockchainMining();
-                            miningEntry.Timestamp = DateTime.ParseExact(fields[0], "yyyy-MM-dd HH:mm:ss.ffff", null);
+                            miningEntry.Timestamp = logMessage.Timestamp;
                             miningEntry.FullNodeName = resource.FullNodeName;
                             miningEntry.BlockNumber = int.Parse(match.Groups[1].Value);
                             miningEntry.BlockHash = match.Groups[2].Value;
@@ -71,7 +82,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                             Match match = reorgRegex.Match(fields[4]);
 
                             BlockchainReorg reorgEntry = new BlockchainReorg();
-                            reorgEntry.Timestamp = DateTime.ParseExact(fields[0], "yyyy-MM-dd HH:mm:ss.ffff", null);
+                            reorgEntry.Timestamp = logMessage.Timestamp;
                             reorgEntry.FullNodeName = resource.FullNodeName;
                             reorgEntry.FromBlockNumber = int.Parse(match.Groups[1].Value);
                             reorgEntry.FromBlockHash = match.Groups[2].Value;
@@ -82,10 +93,6 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                         }
                     }
                 }
-
-                FileStream f = new FileStream(resourcePath, FileMode.Append);
-                f.Write(resource.Data, 0, resource.Length);
-                f.Close();
             }
         }
     }

@@ -59,7 +59,7 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.dataGridViewNodes = new Stratis.NodeCommander.Controls.NodeOverview.NodeOverviewDataGridView();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.dataGridViewNodeExceptions = new System.Windows.Forms.DataGridView();
+            this.dataGridViewNodeExceptions = new Stratis.NodeCommander.Controls.NodeExceptions.NodeExceptionsDataGridView();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
@@ -383,7 +383,7 @@
             this.dataGridViewNodes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewNodes.Size = new System.Drawing.Size(782, 398);
             this.dataGridViewNodes.TabIndex = 8;
-            this.dataGridViewNodes.dataGridViewNodes_Filter += new System.Action<System.Data.DataView>(this.dataGridViewNodes_Filter);
+            this.dataGridViewNodes.Filter += new System.Action<System.Data.DataView>(this.dataGridViewNodes_Filter);
             this.dataGridViewNodes.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dataGridViewNodes_RowStateChanged);
             // 
             // groupBox5
@@ -437,6 +437,7 @@
             this.dataGridViewNodeExceptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(782, 208);
             this.dataGridViewNodeExceptions.TabIndex = 7;
+            this.dataGridViewNodeExceptions.Filter += new System.Action<System.Data.DataView>(this.dataGridViewNodeExceptions_Filter);
             // 
             // groupBox9
             // 
@@ -1188,7 +1189,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.DataGridView dataGridViewNodeExceptions;
+        private Stratis.NodeCommander.Controls.NodeExceptions.NodeExceptionsDataGridView dataGridViewNodeExceptions;
         private System.Windows.Forms.ToolStripMenuItem monitoringToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resumeMonitoringToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suspendMonitoringToolStripMenuItem;

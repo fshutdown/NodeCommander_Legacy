@@ -13,11 +13,11 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
 {
     public class NodeOverviewDataGridViewMapper
     {
-        public DataTable NodesDataTable;
+        public DataTable DataTable;
 
         public NodeOverviewDataGridViewMapper()
         {
-            NodesDataTable = new DataTable();
+            DataTable = new DataTable();
         }
 
 
@@ -25,21 +25,21 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
         {
             //Remove nodes not managed by agent
             List<DataRow> rowsToDelete = new List<DataRow>();
-            foreach (DataRow row in NodesDataTable.Rows)
+            foreach (DataRow row in DataTable.Rows)
             {
                 BlockchainNode node = (BlockchainNode)row["Node"];
 
                 if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
                     rowsToDelete.Add(row);
             }
-            foreach (DataRow row in rowsToDelete) NodesDataTable.Rows.Remove(row);
+            foreach (DataRow row in rowsToDelete) DataTable.Rows.Remove(row);
 
             //Add and update nodes
             foreach (string nodeName in managedNodes.Nodes.Keys)
             {
                 BlockchainNode node = managedNodes.Nodes[nodeName];
 
-                var matchingNodes = from DataRow r in NodesDataTable.Rows
+                var matchingNodes = from DataRow r in DataTable.Rows
                     let nodeInDataTable = (BlockchainNode)r["Node"]
                     where nodeInDataTable.NodeEndpoint.FullNodeName == node.NodeEndpoint.FullNodeName
                     select r;
@@ -49,11 +49,11 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
                     object[] rowData = new object[2];
 
                     CreateColumnIfNotExist("Status", "", typeof(Bitmap), 16);
-                    rowData[NodesDataTable.Columns.IndexOf("Status")] = StatusIconProvider.GrayCircle;
+                    rowData[DataTable.Columns.IndexOf("Status")] = StatusIconProvider.GrayCircle;
 
                     CreateColumnIfNotExist("Node", "Node", typeof(BlockchainNode), 130);
-                    rowData[NodesDataTable.Columns.IndexOf("Node")] = node;
-                    NodesDataTable.Rows.Add(rowData);
+                    rowData[DataTable.Columns.IndexOf("Node")] = node;
+                    DataTable.Rows.Add(rowData);
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
 
             foreach (string fullNodeName in managedNodes.Nodes.Keys)
             {
-                foreach (DataRow dataRow in NodesDataTable.Rows)
+                foreach (DataRow dataRow in DataTable.Rows)
                 {
                     BlockchainNode node = managedNodes.Nodes[fullNodeName];
                     if (node.NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
@@ -126,10 +126,10 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
 
         private void CreateColumnIfNotExist(string name, string headerText, Type type, int width)
         {
-            if (NodesDataTable.Columns.Contains(name)) return;
+            if (DataTable.Columns.Contains(name)) return;
 
             DataColumn column = new DataColumn(name, type);
-            NodesDataTable.Columns.Add(column);
+            DataTable.Columns.Add(column);
             column.ExtendedProperties.Add("Width", width);
             column.ExtendedProperties.Add("HeaderText", headerText);
         }

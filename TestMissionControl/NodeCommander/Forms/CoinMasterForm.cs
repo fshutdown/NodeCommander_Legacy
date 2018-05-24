@@ -11,6 +11,7 @@ using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.Database.Model;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.Resources;
@@ -39,13 +40,9 @@ namespace Stratis.NodeCommander
         private List<BaseWorker> _workers = new List<BaseWorker>();
         private CryptoIdWorker cryptoIdWorker;
 
-
-        
-
         public CoinMasterForm()
         {
             InitializeComponent();
-
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -87,7 +84,7 @@ namespace Stratis.NodeCommander
 
         private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork updatedNodes)
         {
-            dataGridViewNodes.UpdateNodes(agentConnection, updatedNodes, clientConnectionManager.Session.Database);
+            dataGridViewNodes.UpdateNodes(updatedNodes, clientConnectionManager.Session.Database);
         }
 
 
@@ -221,7 +218,7 @@ namespace Stratis.NodeCommander
                 {
                     row["Status"] = clientConnection.State;
                     row["Info"] = message;
-                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount} / {state?.GitRepositoryInfo[0].CurrentBranchName} / {state?.GitRepositoryInfo[0].LatestLocalCommitDateTime} / {state?.GitRepositoryInfo[0].CommitDifference} / {state?.GitRepositoryInfo[0].RepositoryFullName} / {state?.GitRepositoryInfo[0].RepositoryUrl}";
+                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount}";
 
                     break;
                 }
@@ -243,6 +240,10 @@ namespace Stratis.NodeCommander
             dataGridViewNodes.DataSource = dataView;
         }
 
+        private void dataGridViewNodeExceptions_Filter(DataView dataView)
+        {
+            dataGridViewNodeExceptions.DataSource = dataView;
+        }
 
         private void dataGridViewAgents_Filter()
         {
@@ -339,12 +340,11 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private async void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
+        private void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
-            if (e.StateChanged != DataGridViewElementStates.Selected) return;
+            if (e.StateChanged != DataGridViewElementStates.Selected && e.StateChanged != DataGridViewElementStates.None) return;
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
             
-
             BlockchainNode node = (BlockchainNode)dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
             if (node == null) return;
             if (!node.NodeState.Initialized) return;
@@ -372,35 +372,8 @@ namespace Stratis.NodeCommander
                 labelPeers.Text = "No Data Dir";
             }
 
-            //---------------------
-            DataTable exceptions = new DataTable();
-            exceptions.Columns.Add("Date");
-            exceptions.Columns.Add("Thread");
-            exceptions.Columns.Add("Level");
-            exceptions.Columns.Add("Source");
-            exceptions.Columns.Add("Message");
-            exceptions.Columns.Add("ExceptionMessage");
-            exceptions.Columns.Add("Stacktrace");
-            dataGridViewNodeExceptions.DataSource = exceptions;
-
-            if (node.NodeState.NodeLogState == null) return;
-
-
-            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeState.Resources["nodeCommander.txt"].ToString());
-            FileInfo resourceFile = new FileInfo(resourcePath);
-            if (!resourceFile.Exists) return;
-
-            FileStream f = new FileStream(resourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            StreamReader reader = new StreamReader(f);
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine();
-                string[] fields = line.Split(new[] { "||" }, StringSplitOptions.None);
-
-                exceptions.Rows.Add(fields);
-            }
-
-            f.Close();
+            List<NodeLogMessage> logMessages = clientConnectionManager.Session.Database.GetLogMessages(node.NodeEndpoint.FullNodeName);
+            dataGridViewNodeExceptions.UpdateNodes(logMessages, e.StateChanged == DataGridViewElementStates.None);
         }
 
 
