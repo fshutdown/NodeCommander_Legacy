@@ -67,9 +67,10 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
             {
                 foreach (DataRow dataRow in NodesDataTable.Rows)
                 {
-                    if (managedNodes.Nodes[fullNodeName].NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
+                    BlockchainNode node = managedNodes.Nodes[fullNodeName];
+                    if (node.NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
                     {
-                        switch (managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.State)
+                        switch (node.NodeState.NodeOperationState.State)
                         {
                             case ProcessState.Unknown:
                                 dataRow["Status"] = StatusIconProvider.GrayCircle;
@@ -87,37 +88,38 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
                                 throw new ArgumentOutOfRangeException();
                         }
 
-                        dataRow["Node"] = managedNodes.Nodes[fullNodeName];
+                        dataRow["Node"] = node;
 
                         CreateColumnIfNotExist("HeaderHeight", "Header", typeof(String), 40);
-                        dataRow["HeaderHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.HeadersHeight;
+                        dataRow["HeaderHeight"] = node.NodeState.NodeLogState.HeadersHeight;
 
                         CreateColumnIfNotExist("ConsensusHeight", "Consen", typeof(String), 35);
-                        dataRow["ConsensusHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.ConsensusHeight;
+                        dataRow["ConsensusHeight"] = node.NodeState.NodeLogState.ConsensusHeight;
 
                         CreateColumnIfNotExist("BlockHeight", "Block", typeof(String), 35);
-                        dataRow["BlockHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.BlockStoreHeight;
+                        dataRow["BlockHeight"] = node.NodeState.NodeLogState.BlockStoreHeight;
 
                         CreateColumnIfNotExist("WalletHeight", "Wallet", typeof(String), 35);
-                        dataRow["WalletHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.WalletHeight;
+                        dataRow["WalletHeight"] = node.NodeState.NodeLogState.WalletHeight;
 
                         CreateColumnIfNotExist("NetworkHeight", "Network", typeof(String), 35);
-                        dataRow["NetworkHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.NetworkHeight;
+                        dataRow["NetworkHeight"] = node.NodeState.NodeOperationState.NetworkHeight;
 
                         CreateColumnIfNotExist("Mempool", "Mpool", typeof(String), 30);
-                        dataRow["Mempool"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.MempoolTransactionCount;
+                        dataRow["Mempool"] = node.NodeState.NodeOperationState.MempoolTransactionCount;
 
                         CreateColumnIfNotExist("Events", "Events", typeof(String), 60);
                         dataRow["Events"] = $"M: {database.GetMinedBlockCount(fullNodeName)} / R: {database.GetReorgCount(fullNodeName)}";
 
                         CreateColumnIfNotExist("Peers", "Peers", typeof(String), 70);
-                        dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.OutboundPeersCount}";
+                        dataRow["Peers"] = $"In:{node.NodeState.NodeOperationState.InboundPeersCount} / Out:{node.NodeState.NodeOperationState.OutboundPeersCount}";
 
                         CreateColumnIfNotExist("Uptime", "Uptime", typeof(String), 50);
-                        dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.Uptime.ToString("d'.'hh':'mm");
+                        dataRow["Uptime"] = node.NodeState.NodeOperationState.Uptime.ToString("d'.'hh':'mm");
 
                         CreateColumnIfNotExist("Branch", "Branch", typeof(String), 100);
-                        dataRow["Branch"] = $"{managedNodes.Nodes[fullNodeName].GitRepositoryInfo.CurrentBranchName} [{managedNodes.Nodes[fullNodeName].GitRepositoryInfo.CommitDifference}]";
+                        int lastComitDays = (DateTime.Now - node.GitRepositoryInfo.LatestLocalCommitDateTime).Days;
+                        dataRow["Branch"] = $"{node.GitRepositoryInfo.CurrentBranchName} [{node.GitRepositoryInfo.CommitDifference}] {lastComitDays} days ago";
                     }
                 }
             }
