@@ -29,7 +29,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
 
         public void UpdateNodes(AgentConnection agentConnection, NodeNetwork managedNodes, DatabaseConnection database)
         {
-            Mapper.MergeDataRows(agentConnection, managedNodes);
+            Mapper.MergeDataRows(managedNodes);
             Mapper.UpdateDataTable(database, managedNodes);
             if (this.DataSource == null) ConfigureDataGridView();
 

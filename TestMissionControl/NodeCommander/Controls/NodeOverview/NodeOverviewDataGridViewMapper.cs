@@ -21,7 +21,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
         }
 
 
-        public void MergeDataRows(AgentConnection agentConnection, NodeNetwork managedNodes)
+        public void MergeDataRows(NodeNetwork managedNodes)
         {
             //Remove nodes not managed by agent
             List<DataRow> rowsToDelete = new List<DataRow>();
@@ -29,7 +29,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
             {
                 BlockchainNode node = (BlockchainNode)row["Node"];
 
-                if (node.NodeConfig.Agent == agentConnection.Address && !managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
                     rowsToDelete.Add(row);
             }
             foreach (DataRow row in rowsToDelete) NodesDataTable.Rows.Remove(row);
@@ -41,8 +41,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
 
                 var matchingNodes = from DataRow r in NodesDataTable.Rows
                     let nodeInDataTable = (BlockchainNode)r["Node"]
-                    where nodeInDataTable.NodeConfig.Agent == agentConnection.Address &&
-                          nodeInDataTable.NodeEndpoint.FullNodeName == node.NodeEndpoint.FullNodeName
+                    where nodeInDataTable.NodeEndpoint.FullNodeName == node.NodeEndpoint.FullNodeName
                     select r;
 
                 if (!matchingNodes.Any())
