@@ -31,7 +31,6 @@ namespace Stratis.NodeCommander
 
         private ClientConfig clientConfig;
         private NodeNetwork managedNodes;
-        private DataView dataGridViewNodesDataView;
         private DataView dataGridViewAgentsDataView;
         private DataView dataGridViewBlockchainDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
@@ -40,17 +39,13 @@ namespace Stratis.NodeCommander
         private List<BaseWorker> _workers = new List<BaseWorker>();
         private CryptoIdWorker cryptoIdWorker;
 
-        private Bitmap redCircle;
-        private Bitmap greenCircle;
-        private Bitmap grayCircle;
+
         
 
         public CoinMasterForm()
         {
             InitializeComponent();
-            redCircle = CreateStatusButmaps(Color.Crimson);
-            greenCircle = CreateStatusButmaps(Color.Green);
-            grayCircle = CreateStatusButmaps(Color.Gray);
+
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -92,17 +87,6 @@ namespace Stratis.NodeCommander
 
         
 
-        public Bitmap CreateStatusButmaps(Color color)
-        {
-            Bitmap circleBitmap = new Bitmap(16, 16);
-            Graphics graphics = Graphics.FromImage(circleBitmap);
-            Brush backgroundBrush = new SolidBrush(color);
-            Brush foregroundBrush = new SolidBrush(Color.White);
-            graphics.FillEllipse(backgroundBrush, 1, 1, 14, 14);
-            graphics.FillEllipse(foregroundBrush, 5, 5, 7, 7);
-
-            return circleBitmap;
-        }
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
         {
@@ -246,134 +230,6 @@ namespace Stratis.NodeCommander
 
         }
 
-        private DataTable BuildNodeDataTable()
-        {
-            DataTable nodesData = new DataTable();
-
-            nodesData.Columns.Add("Status", typeof(Bitmap));
-            nodesData.Columns.Add("Node", typeof(BlockchainNode));
-            nodesData.Columns.Add("HeaderHeight");
-            nodesData.Columns.Add("ConsensusHeight");
-            nodesData.Columns.Add("BlockHeight");
-            nodesData.Columns.Add("WalletHeight");
-            nodesData.Columns.Add("NetworkHeight");
-            nodesData.Columns.Add("Mempool");
-            nodesData.Columns.Add("Peers");
-            nodesData.Columns.Add("Uptime");
-            nodesData.Columns.Add("Messages");
-            nodesData.Columns.Add("Agent");
-
-            foreach (string nodeName in managedNodes.Nodes.Keys)
-            {
-                BlockchainNode node = managedNodes.Nodes[nodeName];
-
-                object[] rowData = new object[nodesData.Columns.Count];
-                rowData[0] = grayCircle;
-                rowData[1] = node;
-                nodesData.Rows.Add(rowData);
-            }
-
-            return nodesData;
-        }
-
-        private void NodeDataUpdated(AgentConnection clientConnection, BlockchainNodeState[] nodesStates)
-        {
-            int performanceIsues = 0;
-            if (dataGridViewNodes.DataSource == null)
-            {
-                DataTable dataTable = BuildNodeDataTable();
-
-                dataGridViewNodesDataView = new DataView(dataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
-                dataGridViewNodes_Filter();
-
-                dataGridViewNodes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                dataGridViewNodes.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                dataGridViewNodes.AutoGenerateColumns = false;
-
-                dataGridViewNodes.Columns["Status"].Width = 16;
-                dataGridViewNodes.Columns["Node"].Width = 80;
-                dataGridViewNodes.Columns["Status"].HeaderText = string.Empty;
-                dataGridViewNodes.Columns["HeaderHeight"].Width = 50;
-                dataGridViewNodes.Columns["ConsensusHeight"].Width = 50;
-                dataGridViewNodes.Columns["BlockHeight"].Width = 50;
-                dataGridViewNodes.Columns["WalletHeight"].Width = 50;
-                dataGridViewNodes.Columns["NetworkHeight"].Width = 60;
-                dataGridViewNodes.Columns["Mempool"].Width = 50;
-                dataGridViewNodes.Columns["Peers"].Width = 80;
-                dataGridViewNodes.Columns["Uptime"].Width = 80;
-                dataGridViewNodes.Columns["Messages"].Width = 200;
-                dataGridViewNodes.Columns["Agent"].Width = 80;
-            }
-
-            MergeMeasuresIntoNode(managedNodes, nodesStates);
-            MergeMeasuresIntoDataTable(dataGridViewNodes, managedNodes);
-
-            if (notifyAboutPerformanceIssuesToolStripMenuItem.Checked && performanceIsues > 0)
-            {
-                string message = $"Potential performance issue";
-                ShowNotifier("Dashboard", message, NotificationType.PerformanceIssue);
-            }
-        }
-
-        private void MergeMeasuresIntoNode(NodeNetwork network, BlockchainNodeState[] nodesStates)
-        {
-            if (nodesStates == null || nodesStates.Length == 0) return;
-
-            foreach (BlockchainNodeState nodeState in nodesStates)
-            {
-                if (network.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
-                {
-                    network.Nodes[nodeState.NodeEndpoint.FullNodeName].NodeState = nodeState;
-                }
-            }
-        }
-
-        private void MergeMeasuresIntoDataTable(DataGridView grid, NodeNetwork managedNodes)
-        {
-            if (managedNodes == null) return;
-
-            DataView dataView = ((DataView)grid.DataSource);
-            DataTable table = dataView.Table;
-
-            foreach (string fullNodeName in managedNodes.Nodes.Keys)
-            {
-                foreach (DataRow dataRow in table.Rows)
-                {
-                    if (managedNodes.Nodes[fullNodeName].NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
-                    {
-                        dataRow["Node"] = managedNodes.Nodes[fullNodeName];
-                        switch (managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.State)
-                        {
-                            case ProcessState.Unknown:
-                                dataRow["Status"] = grayCircle;
-                                break;
-                            case ProcessState.Stopped:
-                                dataRow["Status"] = redCircle;
-                                break;
-                            case ProcessState.Running:
-                                dataRow["Status"] = greenCircle;
-                                break;
-                            case ProcessState.Starting:
-                                dataRow["Status"] = greenCircle;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-
-                        dataRow["HeaderHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.HeadersHeight;
-                        dataRow["ConsensusHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.ConsensusHeight;
-                        dataRow["BlockHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.BlockStoreHeight;
-                        dataRow["WalletHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeLogState.WalletHeight;
-                        dataRow["NetworkHeight"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.NetworkHeight;
-                        dataRow["Mempool"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.MempoolTransactionCount;
-                        dataRow["Peers"] = $"In:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.InboundPeersCount} / Out:{managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.OutboundPeersCount}";
-                        dataRow["Uptime"] = managedNodes.Nodes[fullNodeName].NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-                        dataRow["Messages"] = $"Mined: {clientConnectionManager.Session.Database.GetMinedBlockCount(fullNodeName)} / Reorg: {clientConnectionManager.Session.Database.GetReorgCount(fullNodeName)}";
-                        dataRow["Agent"] = $"-";
-                    }
-                }
-            }
-        }
 
 
         private void dataGridViewNodes_Filter()
@@ -396,68 +252,6 @@ namespace Stratis.NodeCommander
             dataGridViewBlockchain.DataSource = dataGridViewBlockchainDataView;
         }
 
-        private async void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
-        {
-            if (e.StateChanged != DataGridViewElementStates.Selected) return;
-            if (dataGridViewNodes.SelectedRows.Count == 0) return;
-
-            BlockchainNode node = (BlockchainNode) dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
-            if (!node.NodeState.Initialized) return;
-
-            groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
-            textBoxCodeDirectory.Text = node.NodeConfig.CodeDirectory;
-            textBoxProjectDirectory.Text = node.NodeConfig.ProjectDirectory;
-            textBoxDataDirectory.Text = node.NodeConfig.DataDir;
-            textBoxNetworkDirectory.Text = node.NodeConfig.NetworkDirectory;
-            textBoxNodeConfig.Text = node.NodeConfig.NodeConfig;
-            labelUptime.Text = node.NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-
-            if (node.NodeState.NodeDeploymentState.DirectoryExists)
-            {
-                if (node.NodeState.NodeDeploymentState.MemPoolFileExists)
-                    labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize.ToString();
-                else labelMempool.Text = "No File";
-                if (node.NodeState.NodeDeploymentState.PeersFileExists)
-                    labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileExists.ToString();
-                else labelPeers.Text = "No File";
-            }
-            else
-            {
-                labelMempool.Text = "No Data Dir";
-                labelPeers.Text = "No Data Dir";
-            }
-
-            //---------------------
-            DataTable exceptions = new DataTable();
-            exceptions.Columns.Add("Date");
-            exceptions.Columns.Add("Thread");
-            exceptions.Columns.Add("Level");
-            exceptions.Columns.Add("Source");
-            exceptions.Columns.Add("Message");
-            exceptions.Columns.Add("ExceptionMessage");
-            exceptions.Columns.Add("Stacktrace");
-            dataGridViewNodeExceptions.DataSource = exceptions;
-
-            if (node.NodeState.NodeLogState == null) return;
-
-            
-            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeState.Resources["nodeCommander.txt"].ToString());
-            FileInfo resourceFile = new FileInfo(resourcePath);
-            if (!resourceFile.Exists) return;
-
-            FileStream f = new FileStream(resourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            StreamReader reader = new StreamReader(f);
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine();
-                string[] fields = line.Split(new[] {"||"}, StringSplitOptions.None);
-
-                exceptions.Rows.Add(fields);
-            }
-
-            f.Close();
-
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -544,62 +338,68 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void dataGridViewNodes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private async void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
-            BlockchainNode node = (BlockchainNode)dataGridViewNodes.Rows[e.RowIndex].Cells["Node"].Value;
+            if (e.StateChanged != DataGridViewElementStates.Selected) return;
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            BlockchainNode node = (BlockchainNode)this.SelectedRows[0].Cells["Node"].Value;
             if (!node.NodeState.Initialized) return;
 
-            int maxHeight;
-            int headersHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.HeadersHeight, out headersHeight)) headersHeight = 0;
+            groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
+            textBoxCodeDirectory.Text = node.NodeConfig.CodeDirectory;
+            textBoxProjectDirectory.Text = node.NodeConfig.ProjectDirectory;
+            textBoxDataDirectory.Text = node.NodeConfig.DataDir;
+            textBoxNetworkDirectory.Text = node.NodeConfig.NetworkDirectory;
+            textBoxNodeConfig.Text = node.NodeConfig.NodeConfig;
+            labelUptime.Text = node.NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
 
-            int consensusHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.ConsensusHeight, out consensusHeight)) consensusHeight = 0;
-
-            int blockstoreHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.BlockStoreHeight, out blockstoreHeight)) blockstoreHeight = 0;
-
-            int walletHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
-
-            int networkHeight = node.NodeState.NodeOperationState.NetworkHeight;
-
-            maxHeight = Math.Max(headersHeight, consensusHeight);
-            maxHeight = Math.Max(maxHeight, blockstoreHeight);
-            maxHeight = Math.Max(maxHeight, walletHeight);
-            maxHeight = Math.Max(maxHeight, networkHeight);
-
-            if (walletHeight == -1) walletHeight = maxHeight;
-
-            
-            if (e.ColumnIndex == 2 && headersHeight < maxHeight)
+            if (node.NodeState.NodeDeploymentState.DirectoryExists)
             {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 3 && consensusHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 4 && blockstoreHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 5 && walletHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 6 && networkHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
+                if (node.NodeState.NodeDeploymentState.MemPoolFileExists)
+                    labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize.ToString();
+                else labelMempool.Text = "No File";
+                if (node.NodeState.NodeDeploymentState.PeersFileExists)
+                    labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileExists.ToString();
+                else labelPeers.Text = "No File";
             }
             else
             {
-                e.CellStyle.ForeColor = Color.Black;
+                labelMempool.Text = "No Data Dir";
+                labelPeers.Text = "No Data Dir";
             }
-            
+
+            //---------------------
+            DataTable exceptions = new DataTable();
+            exceptions.Columns.Add("Date");
+            exceptions.Columns.Add("Thread");
+            exceptions.Columns.Add("Level");
+            exceptions.Columns.Add("Source");
+            exceptions.Columns.Add("Message");
+            exceptions.Columns.Add("ExceptionMessage");
+            exceptions.Columns.Add("Stacktrace");
+            dataGridViewNodeExceptions.DataSource = exceptions;
+
+            if (node.NodeState.NodeLogState == null) return;
 
 
+            string resourcePath = Path.Combine(@"C:\Code\TestMissionControl\TestMissionControl\NodeCommander\bin\Debug\Data", node.NodeState.Resources["nodeCommander.txt"].ToString());
+            FileInfo resourceFile = new FileInfo(resourcePath);
+            if (!resourceFile.Exists) return;
+
+            FileStream f = new FileStream(resourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StreamReader reader = new StreamReader(f);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                string[] fields = line.Split(new[] { "||" }, StringSplitOptions.None);
+
+                exceptions.Rows.Add(fields);
+            }
+
+            f.Close();
         }
+
 
         private void button10_Click(object sender, EventArgs e)
         {
