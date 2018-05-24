@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Stratis.CoinmasterClient.Git;
+using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinmasterClient.Analysis
 {

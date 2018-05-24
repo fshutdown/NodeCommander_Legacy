@@ -79,13 +79,16 @@ namespace Stratis.NodeCommander
             clientConnectionManager = new AgentConnectionManager(managedNodes);
             
             clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<AgentConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
-            clientConnectionManager.Session.NodeStatsUpdated += (agentConnection, nodesStates) => Invoke(new Action<AgentConnection, BlockchainNodeState[]>(NodeDataUpdated), agentConnection, nodesStates);
+            clientConnectionManager.Session.NodesUpdated += (agentConnection, updatedNodes) => Invoke(new Action<AgentConnection, NodeNetwork>(NodeDataUpdated), agentConnection, updatedNodes);
             clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
 
             clientConnectionManager.ConnectToAgents(agentList);
         }
 
-        
+        private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork updatedNodes)
+        {
+            dataGridViewNodes.UpdateNodes(agentConnection, updatedNodes, clientConnectionManager.Session.Database);
+        }
 
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
@@ -230,16 +233,14 @@ namespace Stratis.NodeCommander
 
         }
 
-
-
-        private void dataGridViewNodes_Filter()
+        private void dataGridViewNodes_Filter(DataView dataView)
         {
             List<string> filterCriteria = new List<string>();
 
             if (checkBoxRunningNodesOnly.Checked) filterCriteria.Add($"[Status] = 'Running'");
 
-            dataGridViewNodesDataView.RowFilter = string.Join(" AND ", filterCriteria);
-            dataGridViewNodes.DataSource = dataGridViewNodesDataView;
+            dataView.RowFilter = string.Join(" AND ", filterCriteria);
+            dataGridViewNodes.DataSource = dataView;
         }
 
 
@@ -342,8 +343,10 @@ namespace Stratis.NodeCommander
         {
             if (e.StateChanged != DataGridViewElementStates.Selected) return;
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
+            
 
-            BlockchainNode node = (BlockchainNode)this.SelectedRows[0].Cells["Node"].Value;
+            BlockchainNode node = (BlockchainNode)dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
+            if (node == null) return;
             if (!node.NodeState.Initialized) return;
 
             groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;

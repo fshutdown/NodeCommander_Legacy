@@ -49,8 +49,21 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 Client.Session.Database.Persist(blockchainHeight);
             }
 
+            if (NodesStates == null || NodesStates.Length == 0) return;
+            foreach (BlockchainNodeState nodeState in NodesStates)
+            {
+                if (Client.Session.ManagedNodes.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
+                {
+                    Client.Session.ManagedNodes.Nodes[nodeState.NodeEndpoint.FullNodeName].NodeState = nodeState;
+                }
+                else
+                {
+                    logger.Error($"Cannot update state of node {nodeState.NodeEndpoint.FullNodeName} because it is not managed by the agent.");
+                }
+            }
 
-            Client.Session.OnNodeStatsUpdated(Client, NodesStates);
+            
+            Client.Session.OnNodesUpdated(Client, Client.Session.ManagedNodes);
         }
     }
 }

@@ -81,7 +81,6 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                             Client.Session.Database.Persist(reorgEntry);
                         }
                     }
-
                 }
 
                 FileStream f = new FileStream(resourcePath, FileMode.Append);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using Stratis.CoinmasterClient.Git;
+using Stratis.CoinmasterClient.Network;
 
 namespace Stratis.CoinMasterAgent.Git
 {

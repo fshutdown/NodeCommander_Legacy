@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Database.Model;
+using Stratis.CoinmasterClient.Git;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 
@@ -37,6 +38,18 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
+            foreach (GitRepositoryInfo gitRepositoryInfo in AgentHealthState.GitRepositoryInfo)
+            {
+                string codeDirectory = gitRepositoryInfo.RepositoryFullName;
+                foreach (BlockchainNode node in Client.Session.ManagedNodes.Nodes.Values)
+                {
+                    if (node.NodeConfig.CodeDirectory == codeDirectory)
+                    {
+                        node.GitRepositoryInfo = gitRepositoryInfo;
+                    }
+                }
+            }
+
             Client.Session.OnAgentHealthcheckStatsUpdated(Client, AgentHealthState, string.Empty);
         }
     }

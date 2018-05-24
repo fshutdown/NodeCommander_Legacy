@@ -5,6 +5,7 @@ using System.Text;
 using System.Timers;
 using NLog;
 using Stratis.CoinmasterClient.Git;
+using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent;
 
 namespace Stratis.CoinMasterAgent.Git
