@@ -6,6 +6,7 @@ using DBreeze.Objects;
 using DBreeze.Utils;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Database.Model;
+using Stratis.CoinmasterClient.Utilities;
 
 namespace Stratis.CoinmasterClient.Database
 {
@@ -13,12 +14,14 @@ namespace Stratis.CoinmasterClient.Database
     {
         public DBreezeEngine Engine = null;
         public DBreezeConfiguration EngineConfiguration = null;
+        public String DBreezeDataFolderName { get; set; }
 
         public DatabaseConnection()
         {
+            DBreezeDataFolderName = Path.Combine(ClientConfigReader.NodeCommanderDataDirectory, "dBreeze");
             EngineConfiguration = new DBreezeConfiguration()
             {
-                DBreezeDataFolderName = Path.Combine(ClientConfigReader.NodeCommanderDataDirectory, "dBreeze"),
+                DBreezeDataFolderName = DBreezeDataFolderName,
             };
             Engine = new DBreezeEngine(EngineConfiguration);
 
@@ -272,6 +275,13 @@ namespace Stratis.CoinmasterClient.Database
             return count;
         }
 
+        public string GetDatabaseFilesystemSize()
+        {
+            DirectoryInfo dBreezeDirectoryInfo = new DirectoryInfo(DBreezeDataFolderName);
+            if (!dBreezeDirectoryInfo.Exists) return "Not Created";
+
+            return Math.Round((decimal)dBreezeDirectoryInfo.GetDirectorySize() / 1024 / 1024, 1) + "Mb";
+        }
     }
 }
 

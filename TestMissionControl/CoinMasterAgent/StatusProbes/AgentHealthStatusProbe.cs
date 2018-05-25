@@ -64,7 +64,8 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             AgentHealthState.LastUpdateTimestamp = NodeStatusDispatcher.LastUpdateTimestamp;
             AgentHealthState.UpdateCount = NodeStatusDispatcher.UpdateCount;
             AgentHealthState.ThreadCount = Process.GetCurrentProcess().Threads.Count;
-            AgentHealthState.MemoryUsageMb = (int)(GC.GetTotalMemory(false) / 1024 / 1024);
+            AgentHealthState.MemoryUsageMb = (int) Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "Mb";
+            AgentHealthState.ClientCount = session.Clients.Count;
         }
     }
 }

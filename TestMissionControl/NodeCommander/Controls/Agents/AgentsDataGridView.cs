@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Windows.Forms;
+using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Client;
-using Stratis.CoinmasterClient.Database;
 using Stratis.CoinmasterClient.Database.Model;
-using Stratis.CoinmasterClient.Network;
-using Stratis.NodeCommander.Controls.NodeOverview;
+using Stratis.NodeCommander.Controls.NodeExceptions;
 
-namespace Stratis.NodeCommander.Controls.NodeExceptions
+namespace Stratis.NodeCommander.Controls.Agents
 {
-    public class NodeExceptionsDataGridView : DataGridView
+    public class AgentsDataGridView : DataGridView
     {
         private DataView dataView;
         public event Action<DataView> Filter;
-        public NodeExceptionsDataGridViewMapper Mapper;
+        public AgentsDataGridViewMapper Mapper;
 
-        public NodeExceptionsDataGridView()
+        public AgentsDataGridView()
         {
-            Mapper = new NodeExceptionsDataGridViewMapper();
+            Mapper = new AgentsDataGridViewMapper();
             this.CellFormatting += dataGridView_CellFormatting;
         }
 
-        public void UpdateNodes(List<NodeLogMessage> logMessages, bool merge)
+        public void UpdateNodes(AgentConnection agentConnection, AgentHealthState state, string message)
         {
-            Mapper.UpdateDataRows(logMessages, merge);
+            Mapper.MergeDataRows(agentConnection, state, message);
+            Mapper.UpdateDataTable(agentConnection, state, message);
             if (this.DataSource == null) ConfigureDataGridView();
 
             if (SelectedRows.Count > 0)
@@ -38,6 +37,7 @@ namespace Stratis.NodeCommander.Controls.NodeExceptions
 
         private void ConfigureDataGridView()
         {
+            if (Mapper.DataTable.Columns.Count == 0) return;
             dataView = new DataView(Mapper.DataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
             Filter?.Invoke(dataView);
 

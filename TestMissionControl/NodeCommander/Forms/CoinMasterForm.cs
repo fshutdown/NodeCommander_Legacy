@@ -32,7 +32,6 @@ namespace Stratis.NodeCommander
 
         private ClientConfig clientConfig;
         private NodeNetwork managedNodes;
-        private DataView dataGridViewAgentsDataView;
         private DataView dataGridViewBlockchainDataView;
         private Tulpep.NotificationWindow.PopupNotifier notifier;
         private AgentConnectionManager clientConnectionManager;
@@ -85,8 +84,9 @@ namespace Stratis.NodeCommander
         private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork updatedNodes)
         {
             dataGridViewNodes.UpdateNodes(updatedNodes, clientConnectionManager.Session.Database);
-        }
 
+            toolStripStatusLabelDatabase.Text = clientConnectionManager.Session.Database.GetDatabaseFilesystemSize();
+        }
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
         {
@@ -159,21 +159,6 @@ namespace Stratis.NodeCommander
 
 
 
-        private DataTable BuildAgentDataTable()
-        {
-            DataTable agentsData = new DataTable();
-            agentsData.Columns.Add("Address", typeof(AgentConnection));
-            agentsData.Columns.Add("Status");
-            agentsData.Columns.Add("Info");
-            agentsData.Columns.Add("LastUpdate");
-            
-            foreach (AgentConnection connection in clientConnectionManager.Session.Agents.Values)
-            {
-                agentsData.Rows.Add(connection, string.Empty, string.Empty);
-            }
-            
-            return agentsData;
-        }
 
         private DataTable BuildBlockchainDataTable()
         {
@@ -185,44 +170,9 @@ namespace Stratis.NodeCommander
             return blockchainData;
         }
 
-        private void AgentDataTableUpdated(AgentConnection clientConnection, AgentHealthState state, string message)
+        private void AgentDataTableUpdated(AgentConnection agentConnection, AgentHealthState state, string message)
         {
-            DataTable dataTable;
-            if (dataGridViewAgents.DataSource == null)
-            {
-                dataTable = BuildAgentDataTable();
-
-                dataGridViewAgentsDataView = new DataView(dataTable, string.Empty, string.Empty, DataViewRowState.CurrentRows);
-                dataGridViewAgents_Filter();
-
-                dataGridViewAgents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                dataGridViewAgents.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                dataGridViewAgents.AutoGenerateColumns = false;
-
-                dataGridViewAgents.Columns["Address"].Width = 10;
-                dataGridViewAgents.Columns["Status"].Width = 10;
-                dataGridViewAgents.Columns["Info"].Width = 60;
-                dataGridViewAgents.Columns["LastUpdate"].Width = 60;
-
-            }
-            else
-            {
-                dataTable = dataGridViewAgentsDataView.Table;
-            }
-
-            foreach (DataRow row in dataTable.Rows)
-            {
-                AgentConnection tableRecord = (AgentConnection) row["Address"];
-
-                if (tableRecord.Address == clientConnection.Address)
-                {
-                    row["Status"] = clientConnection.State;
-                    row["Info"] = message;
-                    row["LastUpdate"] = $"L: {state?.LastUpdateTimestamp} / C: {state?.UpdateCount}";
-
-                    break;
-                }
-            }
+            dataGridViewAgents.UpdateNodes(agentConnection, state, message);
         }
 
         private void AgentRegistrationUpdated(AgentConnection clientConnection, AgentRegistration agentRegistration)
@@ -245,10 +195,11 @@ namespace Stratis.NodeCommander
             dataGridViewNodeExceptions.DataSource = dataView;
         }
 
-        private void dataGridViewAgents_Filter()
+        private void dataGridViewAgents_Filter(DataView dataView)
         {
-            dataGridViewAgents.DataSource = dataGridViewAgentsDataView;
+            dataGridViewAgents.DataSource = dataView;
         }
+
         private void dataGridViewBlockchain_Filter()
         {
             dataGridViewBlockchain.DataSource = dataGridViewBlockchainDataView;
@@ -382,5 +333,7 @@ namespace Stratis.NodeCommander
             RemoveResourceForm removeResourceForm = new RemoveResourceForm();
             removeResourceForm.Show();
         }
+
+
     }
 }

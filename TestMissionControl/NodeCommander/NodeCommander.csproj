@@ -68,6 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
+    <Compile Include="Controls\Agents\AgentsDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Agents\AgentsDataGridViewMapper.cs" />
     <Compile Include="Controls\NodeExceptions\NodeExceptionsDataGridView.cs">
       <SubType>Component</SubType>
     </Compile>

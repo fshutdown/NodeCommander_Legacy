@@ -61,7 +61,7 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dataGridViewNodeExceptions = new Stratis.NodeCommander.Controls.NodeExceptions.NodeExceptionsDataGridView();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.dataGridViewAgents = new System.Windows.Forms.DataGridView();
+            this.dataGridViewAgents = new Stratis.NodeCommander.Controls.Agents.AgentsDataGridView();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.labelUptime = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -490,6 +490,7 @@
             this.dataGridViewAgents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewAgents.Size = new System.Drawing.Size(382, 163);
             this.dataGridViewAgents.TabIndex = 8;
+            this.dataGridViewAgents.Filter += new System.Action<System.Data.DataView>(this.dataGridViewAgents_Filter);
             // 
             // groupBox8
             // 
@@ -1210,7 +1211,7 @@
         private System.Windows.Forms.TextBox textBoxCodeDirectory;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.DataGridView dataGridViewAgents;
+        private Stratis.NodeCommander.Controls.Agents.AgentsDataGridView dataGridViewAgents;
         private System.Windows.Forms.TabPage tabPageBlockchain;
         private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.DataGridView dataGridViewBlockchain;

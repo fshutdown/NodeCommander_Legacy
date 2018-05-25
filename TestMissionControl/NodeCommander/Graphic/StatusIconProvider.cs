@@ -38,6 +38,16 @@ namespace Stratis.NodeCommander.Graphic
             }
         }
 
+        private static Bitmap orangeCircle;
+        public static Bitmap OrangeCircle
+        {
+            get
+            {
+                if (orangeCircle == null) orangeCircle = CreateStatusBitmaps(Color.Orange);
+                return orangeCircle;
+            }
+        }
+
         public static Bitmap CreateStatusBitmaps(Color color)
         {
             Bitmap circleBitmap = new Bitmap(16, 16);

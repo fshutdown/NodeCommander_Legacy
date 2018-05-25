@@ -10,11 +10,16 @@ namespace Stratis.CoinmasterClient.Analysis
 {
     public class AgentHealthState
     {
-        public Guid WorkerId { get; set; }
         public int UpdateCount { get; set; }
         public DateTime LastUpdateTimestamp { get; set; }
-        public int MemoryUsageMb { get; set; }
+        public string MemoryUsageMb { get; set; }
         public int ThreadCount { get; set; }
+        public int ClientCount { get; set; }
+
+        public string TimeSinceLastUpdate
+        {
+            get { return (DateTime.Now - LastUpdateTimestamp).Seconds + " sec ago"; }
+        }
 
         public List<GitRepositoryInfo> GitRepositoryInfo { get; set; }
 
@@ -23,9 +28,9 @@ namespace Stratis.CoinmasterClient.Analysis
             LastUpdateTimestamp = DateTime.MinValue;
         }
 
-        public AgentHealthState(Guid workerId) : this()
+        public override string ToString()
         {
-            WorkerId = workerId;
+            return TimeSinceLastUpdate;
         }
     }
 }
