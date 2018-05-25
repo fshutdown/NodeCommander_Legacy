@@ -310,12 +310,9 @@ namespace Stratis.NodeCommander
 
             if (node.NodeState.NodeDeploymentState.DirectoryExists)
             {
-                if (node.NodeState.NodeDeploymentState.MemPoolFileExists)
-                    labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize.ToString();
-                else labelMempool.Text = "No File";
-                if (node.NodeState.NodeDeploymentState.PeersFileExists)
-                    labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileExists.ToString();
-                else labelPeers.Text = "No File";
+                labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize;
+                labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileSize;
+                
             }
             else
             {

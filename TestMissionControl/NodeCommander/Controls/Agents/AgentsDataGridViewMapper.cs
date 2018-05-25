@@ -23,7 +23,6 @@ namespace Stratis.NodeCommander.Controls.Agents
             DataTable = new DataTable();
         }
 
-
         public void MergeDataRows(AgentConnection agentConnection, AgentHealthState state, string message)
         {
             if (agentConnection == null || state == null) return;
