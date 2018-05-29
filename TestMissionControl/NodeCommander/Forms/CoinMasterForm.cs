@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Analysis.SupportingTypes;
@@ -15,6 +16,7 @@ using Stratis.CoinmasterClient.Database.Model;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.Resources;
+using Stratis.CoinmasterClient.Utilities;
 using Stratis.NodeCommander.Forms;
 using Stratis.NodeCommander.Properties;
 using Stratis.NodeCommander.Workers;
@@ -42,6 +44,8 @@ namespace Stratis.NodeCommander
         public CoinMasterForm()
         {
             InitializeComponent();
+            buttonEditNodeProfile_Click(null, EventArgs.Empty);
+            ReadNodeProfiles();
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
@@ -81,11 +85,19 @@ namespace Stratis.NodeCommander
             clientConnectionManager.ConnectToAgents(agentList);
         }
 
+        private void ReadNodeProfiles()
+        {
+        }
+
         private void NodeDataUpdated(AgentConnection agentConnection, NodeNetwork updatedNodes)
         {
             dataGridViewNodes.UpdateNodes(updatedNodes, clientConnectionManager.Session.Database);
 
-            toolStripStatusLabelDatabase.Text = clientConnectionManager.Session.Database.GetDatabaseFilesystemSize();
+            toolStripStatusLabelDatabase.Text = "DB: " + clientConnectionManager.Session.Database.GetDatabaseFilesystemSize();
+
+            int totalNodes = managedNodes.Nodes.Count;
+            int runningNodes = managedNodes.Nodes.Count(n => n.Value.NodeState.Initialized && n.Value.NodeState.NodeOperationState.State == ProcessState.Running);
+            toolStripStatusLabelNodeState.Text = $"Nodes: {runningNodes} / {totalNodes}";
         }
 
         private void CryptoIdUpdated(object source, CryptoIdDataUpdateEventArgs arg1)
@@ -156,9 +168,6 @@ namespace Stratis.NodeCommander
 
             //Refresh();
         }
-
-
-
 
         private DataTable BuildBlockchainDataTable()
         {
@@ -277,19 +286,6 @@ namespace Stratis.NodeCommander
             }
         }
 
-        private void button11_Click(object sender, EventArgs e)
-        {
-            if (dataGridViewNodes.SelectedRows.Count == 0) return;
-
-            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
-            {
-                BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
-
-                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
-                dispatcher.RemoveFile(node, "$NetworkDirectory\\hello.txt");
-            }
-        }
 
         private void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
@@ -300,26 +296,32 @@ namespace Stratis.NodeCommander
             if (node == null) return;
             if (!node.NodeState.Initialized) return;
 
-            groupBox8.Text = "General - " + node.NodeEndpoint.FullNodeName;
+            linkLabelRepositoryUrl.Text = node.GitRepositoryInfo.RepositoryUrl;
+            labelCurrentBranch.Text = node.GitRepositoryInfo.CurrentBranchName;
+            labelNumberOfCommitsBehind.Text = node.GitRepositoryInfo.CommitDifference;
+            labelLastUpdateDate.Text = node.GitRepositoryInfo.LatestLocalCommitDateTime.ToString("dd MMM yyyy");
+            labelLastUpdateTime.Text = node.GitRepositoryInfo.LatestLocalCommitDateTime.ToString("HH:mm");
+            labelLastUpdateTimeAgo.Text = "(" + (DateTime.Now - node.GitRepositoryInfo.LatestLocalCommitDateTime).ToHumanReadable() + ")";
+            labelLastUpdateAuthor.Text = node.GitRepositoryInfo.LatestLocalCommitAuthor;
+            labelLastUpdateMessage.Text = node.GitRepositoryInfo.LatestLocalCommitMessage;
+            toolTipHelp.SetToolTip(this.labelLastUpdateMessage, node.GitRepositoryInfo.LatestLocalCommitMessage);
+            labelDaemonName.Text = node.NodeConfig.DaemonName;
+            labelStartupOptions.Text = node.NodeConfig.StartupSwitches;
+            labelBlockchainName.Text = node.NodeEndpoint.NodeBlockchainName;
+            labelNetworkName.Text = node.NodeEndpoint.NodeNetworkName;
+            labelDataDir.Text = node.NodeConfig.DataDir;
+            labelDataDirSize.Text = "(" + node.NodeState.NodeDeploymentState.DataDirSize + ")";
+            labelHeaderHeight.Text = node.NodeState.NodeLogState.HeadersHeight;
+            labelConsensusHeight.Text = node.NodeState.NodeLogState.ConsensusHeight;
+            labelBlockHeight.Text = node.NodeState.NodeLogState.BlockStoreHeight;
+            labelWalletHeight.Text = node.NodeState.NodeLogState.WalletHeight;
+            labelNetworkHeight.Text = node.NodeState.NodeOperationState.NetworkHeight.ToString();
+            labelOutboundPeers.Text = node.NodeState.NodeOperationState.OutboundPeersCount.ToString();
+            labelInboundPeers.Text = node.NodeState.NodeOperationState.InboundPeersCount.ToString();
+            labelBannedPeers.Text = node.NodeState.NodeOperationState.BannedPeersCount.ToString();
+
             textBoxCodeDirectory.Text = node.NodeConfig.CodeDirectory;
-            textBoxProjectDirectory.Text = node.NodeConfig.ProjectDirectory;
-            textBoxDataDirectory.Text = node.NodeConfig.DataDir;
             textBoxNetworkDirectory.Text = node.NodeConfig.NetworkDirectory;
-            textBoxNodeConfig.Text = node.NodeConfig.NodeConfig;
-            labelUptime.Text = node.NodeState.NodeOperationState.Uptime.ToString("d' days, 'hh':'mm':'ss");
-
-            if (node.NodeState.NodeDeploymentState.DirectoryExists)
-            {
-                labelMempool.Text = node.NodeState.NodeDeploymentState.MemPoolFileSize;
-                labelPeers.Text = node.NodeState.NodeDeploymentState.PeersFileSize;
-                
-            }
-            else
-            {
-                labelMempool.Text = "No Data Dir";
-                labelPeers.Text = "No Data Dir";
-            }
-
             List<NodeLogMessage> logMessages = clientConnectionManager.Session.Database.GetLogMessages(node.NodeEndpoint.FullNodeName);
             dataGridViewNodeExceptions.UpdateNodes(logMessages, e.StateChanged == DataGridViewElementStates.None);
         }
@@ -327,10 +329,47 @@ namespace Stratis.NodeCommander
 
         private void button10_Click(object sender, EventArgs e)
         {
-            RemoveResourceForm removeResourceForm = new RemoveResourceForm();
-            removeResourceForm.Show();
+            Point point = buttonClearData.PointToScreen(buttonClearData.Location);
+            contextMenuStripClearData.Show(this, point);
+
+            //RemoveResourceForm removeResourceForm = new RemoveResourceForm();
+            //removeResourceForm.Show();
+
+            /*
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
+            {
+                BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
+
+                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
+                dispatcher.RemoveFile(node, "$NetworkDirectory\\hello.txt");
+            }
+            */
+        }
+
+        private void buttonEditNodeProfile_Click(object sender, EventArgs e)
+        {
+            if (buttonEditNodeProfile.Tag.ToString() == "Edit")
+            {
+                buttonEditNodeProfile.Tag = "";
+                splitContainer3.SplitterDistance = 54;
+                panelNodeFilterEdit.Visible = false;
+            }
+            else
+            {
+                buttonEditNodeProfile.Tag = "Edit";
+                splitContainer3.SplitterDistance = 224;
+                //groupBoxNodeFilter.Size = new Size(785, 225);
+                panelNodeFilterEdit.Visible = true;
+            }
         }
 
 
+        private void button11_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

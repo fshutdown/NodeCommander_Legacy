@@ -188,6 +188,7 @@
     <Compile Include="Network\BlockchainNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\DateTimeExtensions.cs" />
     <Compile Include="Utilities\FileSystem.cs" />
   </ItemGroup>
   <ItemGroup>

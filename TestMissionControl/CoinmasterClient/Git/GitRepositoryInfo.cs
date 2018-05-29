@@ -14,6 +14,7 @@ namespace Stratis.CoinmasterClient.Git
         public DateTime LatestLocalCommitDateTime { get; set; }
         public string CommitDifference { get; set; }
         public string LatestLocalCommitAuthor { get; set; }
+        public string LatestLocalCommitMessage { get; set; }
 
         public GitRepositoryInfo()
         {
@@ -22,6 +23,7 @@ namespace Stratis.CoinmasterClient.Git
             LatestLocalCommitDateTime = DateTime.MinValue;
             LatestLocalCommitAuthor = "Unknown";
             CommitDifference = "Unknown";
+            LatestLocalCommitMessage = "Unknown";
         }
 
         public GitRepositoryInfo(string codeDirectoryFullName) : this()

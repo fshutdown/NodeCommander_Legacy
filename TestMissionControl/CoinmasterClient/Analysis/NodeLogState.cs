@@ -9,7 +9,6 @@ namespace Stratis.CoinmasterClient.Analysis
 {
     public class NodeLogState
     {
-        public Guid WorkerId { get; set; }
         public LogLevel LogLevel {get; set; }
         public int ExceptionCount { get; set; }
         public DateTime Timestamp { get; set; }
@@ -23,12 +22,6 @@ namespace Stratis.CoinmasterClient.Analysis
 
         public NodeLogState()
         {
-
-        }
-
-        public NodeLogState(Guid workerId) : this()
-        {
-            WorkerId = workerId;
             InfoMessageCount = 0;
             HeadersHeight = string.Empty;
             ConsensusHeight = string.Empty;

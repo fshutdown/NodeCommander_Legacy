@@ -74,6 +74,11 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             else node.NodeState.NodeDeploymentState.LogsDirSize = "No Dir";
             #endregion
 
+            #region Total DataDir size
+            DirectoryInfo dataDirSize = new DirectoryInfo(nodeNetworkDirectory.FullName);
+            if (dataDirSize.Exists) node.NodeState.NodeDeploymentState.DataDirSize = Math.Round(dataDirSize.GetDirectorySize() / 1024m / 1024m, 0) + "Mb";
+            else node.NodeState.NodeDeploymentState.DataDirSize = "No Dir";
+            #endregion
 
         }
         public override void Close()

@@ -12,6 +12,7 @@ namespace Stratis.CoinmasterClient.Analysis
         public string ChainDirSize { get; set; }
         public string CoinViewDirSize { get; set; }
         public string LogsDirSize { get; set; }
+        public string DataDirSize { get; set; }
 
         public NodeDeploymentState()
         {

@@ -108,6 +108,7 @@ namespace Stratis.CoinmasterClient.Config
                 Dictionary<String, String> variables = CreateEvaluationLookup(node);
                 foreach (string variableName in variables.Keys)
                 {
+                    if (string.IsNullOrEmpty(variables[variableName])) continue;
                     string newValue = Evaluate(variables[variableName], variables);
                     if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
                         

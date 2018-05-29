@@ -106,11 +106,12 @@ namespace Stratis.CoinMasterAgent.Git
             string gitCommandOutput = string.Empty;
             try
             {
-                gitCommandOutput = RunProcess("git", "log -n 1 master --format=format:\"%an||%ci\"");
+                gitCommandOutput = RunProcess("git", "log -n 1 master --format=format:\"%an||%ci||%B\"");
                 string[] gitCommandOutputParts = gitCommandOutput.Split("||");
 
                 Info.LatestLocalCommitAuthor = gitCommandOutputParts[0];
                 Info.LatestLocalCommitDateTime = DateTime.ParseExact(gitCommandOutputParts[1].Trim(), "yyyy-MM-dd HH:mm:ss K", null);
+                Info.LatestLocalCommitMessage = gitCommandOutputParts[2].Trim();
             }
             catch (Exception ex)
             {

@@ -22,10 +22,11 @@ namespace Stratis.CoinmasterClient.Analysis
         public TimeSpan Uptime { get; set; }
         public int NetworkHeight { get; set; }
         public int MempoolTransactionCount { get; set; }
+        public int BannedPeersCount { get; set; }
 
         public NodeOperationState()
         {
-
+            BannedPeersCount = 0;
         }
 
         public NodeOperationState(Guid workerId) : this()

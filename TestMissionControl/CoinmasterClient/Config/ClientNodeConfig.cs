@@ -16,12 +16,14 @@ namespace Stratis.CoinmasterClient.Config
         public string DataDir { get; set; }
         public string CodeDirectory { get; set; }
         public string ProjectDirectory { get; set; }
+        public string StartupSwitches { get; set; }
         public string Agent { get; set; }
         public bool Enabled { get; set; }
         
         public string NetworkDirectory => Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName);
 
         public string NodeConfigFullName => Path.Combine(DataDir, NodeEndpoint.NodeNetworkName, NodeEndpoint.NodeBlockchainName, NodeConfig);
+        public string DaemonName => new DirectoryInfo(ProjectDirectory).Name;
 
         public ClientNodeConfig()
         {
