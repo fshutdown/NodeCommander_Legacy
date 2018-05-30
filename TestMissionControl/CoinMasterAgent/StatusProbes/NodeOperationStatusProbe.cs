@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using NLog;
 using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Config;
+using Stratis.CoinmasterClient.NodeObjects;
 using Stratis.CoinMasterAgent.Integration;
 using Stratis.CoinMasterAgent.NodeJsonObjects;
 
@@ -60,8 +61,26 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             node.NodeState.NodeOperationState.Version = nodeStatus.Version;
             node.NodeState.NodeOperationState.Network = nodeStatus.Network;
             node.NodeState.NodeOperationState.ConsensusHeight = nodeStatus.ConsensusHeight;
-            node.NodeState.NodeOperationState.InboundPeersCount = nodeStatus.InboundPeers != null ? nodeStatus.InboundPeers.Count : 0;
-            node.NodeState.NodeOperationState.OutboundPeersCount = nodeStatus.OutboundPeers != null ? nodeStatus.OutboundPeers.Count : 0;
+
+            foreach (Peer inboundPeer in nodeStatus.InboundPeers)
+            {
+                ConnectionPeer peer = new ConnectionPeer();
+                peer.PeerType = PeerType.Inbound;
+                peer.RemoteSocketEndpoint = inboundPeer.RemoteSocketEndpoint;
+                peer.TipHeight = inboundPeer.TipHeight;
+                peer.Version = inboundPeer.Version;
+                node.NodeState.NodeOperationState.Peers.Add(peer);
+            }
+            foreach (Peer outboundPeer in nodeStatus.OutboundPeers)
+            {
+                ConnectionPeer peer = new ConnectionPeer();
+                peer.PeerType = PeerType.Inbound;
+                peer.RemoteSocketEndpoint = outboundPeer.RemoteSocketEndpoint;
+                peer.TipHeight = outboundPeer.TipHeight;
+                peer.Version = outboundPeer.Version;
+                node.NodeState.NodeOperationState.Peers.Add(peer);
+            }
+
             node.NodeState.NodeOperationState.DataDirectory = nodeStatus.DataDirectoryPath;
             node.NodeState.NodeOperationState.Uptime = nodeStatus.RunningTime;
 

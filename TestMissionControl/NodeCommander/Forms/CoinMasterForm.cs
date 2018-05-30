@@ -15,6 +15,7 @@ using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Database.Model;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.NodeResources;
 using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinmasterClient.Utilities;
 using Stratis.NodeCommander.Forms;
@@ -329,24 +330,9 @@ namespace Stratis.NodeCommander
 
         private void button10_Click(object sender, EventArgs e)
         {
-            Point point = buttonClearData.PointToScreen(buttonClearData.Location);
-            contextMenuStripClearData.Show(this, point);
-
-            //RemoveResourceForm removeResourceForm = new RemoveResourceForm();
-            //removeResourceForm.Show();
-
-            /*
-            if (dataGridViewNodes.SelectedRows.Count == 0) return;
-
-            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
-            {
-                BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
-
-                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
-                dispatcher.RemoveFile(node, "$NetworkDirectory\\hello.txt");
-            }
-            */
+            Point buttonScreenLocation = buttonClearData.FindForm().PointToClient(buttonClearData.Parent.PointToScreen(buttonClearData.Location));
+            Point contextMenuLocation = new Point(buttonScreenLocation.X, buttonScreenLocation.Y + buttonClearData.Height);
+            contextMenuStripClearData.Show(this, contextMenuLocation);
         }
 
         private void buttonEditNodeProfile_Click(object sender, EventArgs e)
@@ -366,10 +352,39 @@ namespace Stratis.NodeCommander
             }
         }
 
-
-        private void button11_Click(object sender, EventArgs e)
+        private void advancedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            RemoveResourceForm removeResourceForm = new RemoveResourceForm();
+            removeResourceForm.Show();
+        }
 
+        private void mempoolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveResourceForSelectedNodes(NodeResourceType.Mempool);
+        }
+
+        private void peersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveResourceForSelectedNodes(NodeResourceType.Peers);
+        }
+
+        private void logsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveResourceForSelectedNodes(NodeResourceType.Logs);
+        }
+
+        private void RemoveResourceForSelectedNodes(NodeResourceType resourceType)
+        {
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
+            {
+                BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
+                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
+
+                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
+                dispatcher.RemoveResource(node, resourceType);
+            }
         }
     }
 }

@@ -221,11 +221,11 @@
             this.toolStripStatusLabelDatabase = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelWorker = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStripClearData = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.mempoolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.peersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.coinViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipHelp = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -1708,7 +1708,7 @@
             // 
             // buttonDeployFiles
             // 
-            this.buttonDeployFiles.Location = new System.Drawing.Point(513, 19);
+            this.buttonDeployFiles.Location = new System.Drawing.Point(506, 21);
             this.buttonDeployFiles.Name = "buttonDeployFiles";
             this.buttonDeployFiles.Size = new System.Drawing.Size(111, 23);
             this.buttonDeployFiles.TabIndex = 9;
@@ -1718,7 +1718,7 @@
             // 
             // buttonClearData
             // 
-            this.buttonClearData.Location = new System.Drawing.Point(396, 19);
+            this.buttonClearData.Location = new System.Drawing.Point(389, 21);
             this.buttonClearData.Name = "buttonClearData";
             this.buttonClearData.Size = new System.Drawing.Size(111, 23);
             this.buttonClearData.TabIndex = 7;
@@ -2260,46 +2260,47 @@
             // contextMenuStripClearData
             // 
             this.contextMenuStripClearData.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.advancedToolStripMenuItem,
+            this.toolStripMenuItem3,
             this.mempoolToolStripMenuItem,
             this.peersToolStripMenuItem,
-            this.coinViewToolStripMenuItem,
-            this.toolStripMenuItem3,
-            this.deleteToolStripMenuItem});
+            this.logsToolStripMenuItem});
             this.contextMenuStripClearData.Name = "contextMenuStrip1";
-            this.contextMenuStripClearData.Size = new System.Drawing.Size(153, 120);
+            this.contextMenuStripClearData.Size = new System.Drawing.Size(130, 98);
             // 
-            // mempoolToolStripMenuItem
+            // advancedToolStripMenuItem
             // 
-            this.mempoolToolStripMenuItem.Checked = true;
-            this.mempoolToolStripMenuItem.CheckOnClick = true;
-            this.mempoolToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.mempoolToolStripMenuItem.Name = "mempoolToolStripMenuItem";
-            this.mempoolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.mempoolToolStripMenuItem.Text = "Mempool";
-            // 
-            // peersToolStripMenuItem
-            // 
-            this.peersToolStripMenuItem.Name = "peersToolStripMenuItem";
-            this.peersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.peersToolStripMenuItem.Text = "Peers";
-            // 
-            // coinViewToolStripMenuItem
-            // 
-            this.coinViewToolStripMenuItem.Name = "coinViewToolStripMenuItem";
-            this.coinViewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.coinViewToolStripMenuItem.Text = "CoinView";
+            this.advancedToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.advancedToolStripMenuItem.Text = "Advanced";
+            this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(126, 6);
             // 
-            // deleteToolStripMenuItem
+            // mempoolToolStripMenuItem
             // 
-            this.deleteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
+            this.mempoolToolStripMenuItem.Name = "mempoolToolStripMenuItem";
+            this.mempoolToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.mempoolToolStripMenuItem.Text = "Mempool";
+            this.mempoolToolStripMenuItem.Click += new System.EventHandler(this.mempoolToolStripMenuItem_Click);
+            // 
+            // peersToolStripMenuItem
+            // 
+            this.peersToolStripMenuItem.Name = "peersToolStripMenuItem";
+            this.peersToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.peersToolStripMenuItem.Text = "Peers";
+            this.peersToolStripMenuItem.Click += new System.EventHandler(this.peersToolStripMenuItem_Click);
+            // 
+            // logsToolStripMenuItem
+            // 
+            this.logsToolStripMenuItem.Name = "logsToolStripMenuItem";
+            this.logsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.logsToolStripMenuItem.Text = "Logs";
+            this.logsToolStripMenuItem.Click += new System.EventHandler(this.logsToolStripMenuItem_Click);
             // 
             // CoinMasterForm
             // 
@@ -2446,9 +2447,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStripClearData;
         private System.Windows.Forms.ToolStripMenuItem mempoolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem peersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem coinViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxNodeFilter;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ComboBox comboBox1;
@@ -2572,6 +2571,8 @@
         private System.Windows.Forms.ToolStripMenuItem showStacktraceToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Button buttonRemoveNode;
+        private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem logsToolStripMenuItem;
     }
 }
 

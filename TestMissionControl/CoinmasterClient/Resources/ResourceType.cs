@@ -3,6 +3,6 @@
     public enum ResourceType
     {
         NodeCommanderLog,
-        ClientToAgentDeployment
+        ClientToAgentDeployment,
     }
 }

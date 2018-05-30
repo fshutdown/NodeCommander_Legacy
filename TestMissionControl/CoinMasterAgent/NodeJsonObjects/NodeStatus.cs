@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stratis.CoinmasterClient.NodeObjects;
 
 namespace Stratis.CoinMasterAgent.NodeJsonObjects
 {
@@ -9,7 +10,6 @@ namespace Stratis.CoinMasterAgent.NodeJsonObjects
         public string RemoteSocketEndpoint { get; set; }
         public int TipHeight { get; set; }
     }
-
 
     public class NodeStatus
     {

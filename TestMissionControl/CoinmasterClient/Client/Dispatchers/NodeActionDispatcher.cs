@@ -10,6 +10,7 @@ using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.NodeResources;
 
 namespace Stratis.CoinmasterClient.Client.Dispatchers
 {
@@ -67,12 +68,13 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void RemoveFile(BlockchainNode node, string path)
+        public void RemoveResource(BlockchainNode node, NodeResourceType resourceType)
         {
             ActionRequest action = new ActionRequest(ActionType.DeleteFile);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
-            action.Parameters.Add(ActionParameters.Path, ClientConfigReader.Evaluate(path, node.NodeConfig));
+            NodeResource nodeResource = NodeResourceLocator.NodeResources[resourceType];
 
+            action.Parameters.Add(ActionParameters.Path, ClientConfigReader.Evaluate(nodeResource.ResourceLocation, node.NodeConfig));
             actionQueue.Enqueue(action);
         }
     }
