@@ -80,6 +80,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\NodeOverview\NodeOverviewDataGridViewMapper.cs" />
+    <Compile Include="Controls\PeerConnections\PeerConnectionsDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\PeerConnections\PeerConnectionsDataGridViewMapper.cs" />
     <Compile Include="Forms\CoinMasterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,7 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\MempoolTransactions\" />
-    <Folder Include="Controls\PeerConnections\" />
     <Folder Include="Workers\EventBased\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

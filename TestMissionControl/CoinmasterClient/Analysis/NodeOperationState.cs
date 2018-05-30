@@ -27,6 +27,7 @@ namespace Stratis.CoinmasterClient.Analysis
 
         public NodeOperationState()
         {
+            Peers = new List<ConnectionPeer>();
         }
 
     }
