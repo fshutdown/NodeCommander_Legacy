@@ -215,6 +215,10 @@ namespace Stratis.NodeCommander
             dataGridViewBlockchain.DataSource = dataGridViewBlockchainDataView;
         }
 
+        private void dataGridViewPeers_Filter(DataView dataView)
+        {
+            dataGridViewPeers.DataSource = dataView;
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -261,19 +265,20 @@ namespace Stratis.NodeCommander
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (dataGridViewNodes.SelectedRows.Count == 0) return;
-
-            foreach (DataGridViewRow row in dataGridViewNodes.SelectedRows)
-            {
-                BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
-                var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
-
-                NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
-                dispatcher.StartNode(node);
-            }
+            SendAction((dispatcher, node) => dispatcher.StartNode(node));
         }
 
         private void button5_Click(object sender, EventArgs e)
+        {
+            SendAction((dispatcher, node) => dispatcher.StopNode(node));
+        }
+
+        private void linkLabelPullCurrentBranch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            SendAction((dispatcher, node) => dispatcher.GitPull(node));
+        }
+
+        private void SendAction(Action<NodeActionDispatcher, BlockchainNode> action)
         {
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
 
@@ -283,10 +288,9 @@ namespace Stratis.NodeCommander
                 var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
-                dispatcher.StopNode(node);
+                action.Invoke(dispatcher, node);
             }
         }
-
 
         private void dataGridViewNodes_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
@@ -325,6 +329,7 @@ namespace Stratis.NodeCommander
             textBoxNetworkDirectory.Text = node.NodeConfig.NetworkDirectory;
             List<NodeLogMessage> logMessages = clientConnectionManager.Session.Database.GetLogMessages(node.NodeEndpoint.FullNodeName);
             dataGridViewNodeExceptions.UpdateNodes(logMessages, e.StateChanged == DataGridViewElementStates.None);
+            dataGridViewPeers.UpdateNodes(node, clientConnectionManager.Session.Database);
         }
 
 
@@ -386,5 +391,7 @@ namespace Stratis.NodeCommander
                 dispatcher.RemoveResource(node, resourceType);
             }
         }
+
+
     }
 }

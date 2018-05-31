@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Stratis.CoinmasterClient.Database;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.NodeObjects;
 using Stratis.NodeCommander.Controls.NodeOverview;
 
 namespace Stratis.NodeCommander.Controls.PeerConnections
@@ -12,18 +14,18 @@ namespace Stratis.NodeCommander.Controls.PeerConnections
     {
         private DataView dataView;
         public event Action<DataView> Filter;
-        public NodeOverviewDataGridViewMapper Mapper;
+        public PeerConnectionsDataGridViewMapper Mapper;
 
         public PeerConnectionsDataGridView()
         {
-            Mapper = new NodeOverviewDataGridViewMapper();
+            Mapper = new PeerConnectionsDataGridViewMapper();
             this.CellFormatting += dataGridView_CellFormatting;
         }
 
-        public void UpdateNodes(NodeNetwork managedNodes, DatabaseConnection database)
+        public void UpdateNodes(BlockchainNode node, DatabaseConnection database)
         {
-            Mapper.MergeDataRows(managedNodes);
-            Mapper.UpdateDataTable(database, managedNodes);
+            Mapper.MergeDataRows(node.NodeState.NodeOperationState.Peers);
+            Mapper.UpdateDataTable(database, node);
             if (this.DataSource == null) ConfigureDataGridView();
 
             if (SelectedRows.Count > 0)
@@ -53,56 +55,7 @@ namespace Stratis.NodeCommander.Controls.PeerConnections
 
         private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            BlockchainNode node = (BlockchainNode)this.Rows[e.RowIndex].Cells["Node"].Value;
-            if (!node.NodeState.Initialized) return;
 
-            int maxHeight;
-            int headersHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.HeadersHeight, out headersHeight)) headersHeight = 0;
-
-            int consensusHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.ConsensusHeight, out consensusHeight)) consensusHeight = 0;
-
-            int blockstoreHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.BlockStoreHeight, out blockstoreHeight)) blockstoreHeight = 0;
-
-            int walletHeight;
-            if (!int.TryParse(node.NodeState.NodeLogState.WalletHeight, out walletHeight)) walletHeight = -1;
-
-            int networkHeight = node.NodeState.NodeOperationState.NetworkHeight;
-
-            maxHeight = Math.Max(headersHeight, consensusHeight);
-            maxHeight = Math.Max(maxHeight, blockstoreHeight);
-            maxHeight = Math.Max(maxHeight, walletHeight);
-            maxHeight = Math.Max(maxHeight, networkHeight);
-
-            if (walletHeight == -1) walletHeight = maxHeight;
-
-
-            if (e.ColumnIndex == 2 && headersHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 3 && consensusHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 4 && blockstoreHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 5 && walletHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else if (e.ColumnIndex == 6 && networkHeight < maxHeight)
-            {
-                e.CellStyle.ForeColor = Color.Crimson;
-            }
-            else
-            {
-                e.CellStyle.ForeColor = Color.Black;
-            }
         }
     }
 }

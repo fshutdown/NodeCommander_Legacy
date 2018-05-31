@@ -77,5 +77,15 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             action.Parameters.Add(ActionParameters.Path, ClientConfigReader.Evaluate(nodeResource.ResourceLocation, node.NodeConfig));
             actionQueue.Enqueue(action);
         }
+
+        public void GitPull(BlockchainNode node)
+        {
+            ActionRequest action = new ActionRequest(ActionType.GitPull);
+            action.FullNodeName = node.NodeEndpoint.FullNodeName;
+
+            action.Parameters.Add(ActionParameters.WorkingDirectory, Path.Combine(node.NodeConfig.CodeDirectory, node.NodeConfig.ProjectDirectory));
+
+            actionQueue.Enqueue(action);
+        }
     }
 }

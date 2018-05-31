@@ -6,6 +6,7 @@ using System.Linq;
 using Stratis.CoinmasterClient.Analysis.SupportingTypes;
 using Stratis.CoinmasterClient.Database;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.NodeObjects;
 using Stratis.NodeCommander.Graphic;
 
 namespace Stratis.NodeCommander.Controls.PeerConnections
@@ -19,104 +20,64 @@ namespace Stratis.NodeCommander.Controls.PeerConnections
             DataTable = new DataTable();
         }
 
-        public void MergeDataRows(NodeNetwork managedNodes)
+        public void MergeDataRows(List<ConnectionPeer> peers)
         {
-            //Remove nodes not managed by agent
+            //Remove old peers
             List<DataRow> rowsToDelete = new List<DataRow>();
             foreach (DataRow row in DataTable.Rows)
             {
-                BlockchainNode node = (BlockchainNode)row["Node"];
+                ConnectionPeer node = (ConnectionPeer)row["Address"];
 
-                if (!managedNodes.Nodes.ContainsKey(node.NodeEndpoint.FullNodeName))
+                if (peers.All(p => p.RemoteSocketEndpoint != node.RemoteSocketEndpoint))
                     rowsToDelete.Add(row);
             }
             foreach (DataRow row in rowsToDelete) DataTable.Rows.Remove(row);
 
             //Add and update nodes
-            foreach (string nodeName in managedNodes.Nodes.Keys)
+            foreach (ConnectionPeer connectionPeer in peers)
             {
-                BlockchainNode node = managedNodes.Nodes[nodeName];
-
                 var matchingNodes = from DataRow r in DataTable.Rows
-                    let nodeInDataTable = (BlockchainNode)r["Node"]
-                    where nodeInDataTable.NodeEndpoint.FullNodeName == node.NodeEndpoint.FullNodeName
+                    let nodeInDataTable = (ConnectionPeer)r["Address"]
+                    where nodeInDataTable.RemoteSocketEndpoint == connectionPeer.RemoteSocketEndpoint
                     select r;
 
                 if (!matchingNodes.Any())
                 {
                     object[] rowData = new object[2];
 
-                    CreateColumnIfNotExist("Status", "", typeof(Bitmap), 16);
-                    rowData[DataTable.Columns.IndexOf("Status")] = StatusIconProvider.GrayCircle;
+                    CreateColumnIfNotExist("Type", "Type", typeof(String), 16);
+                    rowData[DataTable.Columns.IndexOf("Type")] = connectionPeer.PeerType;
 
-                    CreateColumnIfNotExist("Node", "Node", typeof(BlockchainNode), 130);
-                    rowData[DataTable.Columns.IndexOf("Node")] = node;
+                    CreateColumnIfNotExist("Address", "Address", typeof(ConnectionPeer), 130);
+                    rowData[DataTable.Columns.IndexOf("Address")] = connectionPeer;
                     DataTable.Rows.Add(rowData);
                 }
             }
         }
 
-        public void UpdateDataTable(DatabaseConnection database, NodeNetwork managedNodes)
+        public void UpdateDataTable(DatabaseConnection database, BlockchainNode node)
         {
-            if (managedNodes == null) return;
+            List<ConnectionPeer> peers = node.NodeState.NodeOperationState.Peers;
 
-            foreach (string fullNodeName in managedNodes.Nodes.Keys)
+            if (peers == null) return;
+
+            if (!int.TryParse(node.NodeState.NodeLogState.HeadersHeight, out int nodeHight)) nodeHight = 0;
+            int maxTip = Math.Max(peers.Max(p => p.TipHeight), nodeHight);
+
+            foreach (ConnectionPeer connectionPeer in peers)
             {
                 foreach (DataRow dataRow in DataTable.Rows)
                 {
-                    BlockchainNode node = managedNodes.Nodes[fullNodeName];
-                    if (node.NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
+                    if (((ConnectionPeer)dataRow["Address"]).RemoteSocketEndpoint == connectionPeer.RemoteSocketEndpoint)
                     {
-                        switch (node.NodeState.NodeOperationState.State)
-                        {
-                            case ProcessState.Unknown:
-                                dataRow["Status"] = StatusIconProvider.GrayCircle;
-                                break;
-                            case ProcessState.Stopped:
-                                dataRow["Status"] = StatusIconProvider.RedCircle;
-                                break;
-                            case ProcessState.Running:
-                                dataRow["Status"] = StatusIconProvider.GreenCircle;
-                                break;
-                            case ProcessState.Starting:
-                                dataRow["Status"] = StatusIconProvider.GreenCircle;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
+                        dataRow[DataTable.Columns.IndexOf("Type")] = connectionPeer.PeerType;
+                        dataRow["Address"] = connectionPeer;
 
-                        dataRow["Node"] = node;
+                        CreateColumnIfNotExist("TipHeight", "TipHeight", typeof(string), 50);
+                        dataRow["TipHeight"] = $"{connectionPeer.TipHeight} ({connectionPeer.TipHeight - maxTip})";
 
-                        CreateColumnIfNotExist("HeaderHeight", "Header", typeof(String), 40);
-                        dataRow["HeaderHeight"] = node.NodeState.NodeLogState.HeadersHeight;
-
-                        CreateColumnIfNotExist("ConsensusHeight", "Consen", typeof(String), 35);
-                        dataRow["ConsensusHeight"] = node.NodeState.NodeLogState.ConsensusHeight;
-
-                        CreateColumnIfNotExist("BlockHeight", "Block", typeof(String), 35);
-                        dataRow["BlockHeight"] = node.NodeState.NodeLogState.BlockStoreHeight;
-
-                        CreateColumnIfNotExist("WalletHeight", "Wallet", typeof(String), 35);
-                        dataRow["WalletHeight"] = node.NodeState.NodeLogState.WalletHeight;
-
-                        CreateColumnIfNotExist("NetworkHeight", "Network", typeof(String), 35);
-                        dataRow["NetworkHeight"] = node.NodeState.NodeOperationState.NetworkHeight;
-
-                        CreateColumnIfNotExist("Mempool", "Mpool", typeof(String), 30);
-                        dataRow["Mempool"] = node.NodeState.NodeOperationState.MempoolTransactionCount;
-
-                        CreateColumnIfNotExist("Events", "Events", typeof(String), 60);
-                        dataRow["Events"] = $"M: {database.GetMinedBlockCount(fullNodeName)} / R: {database.GetReorgCount(fullNodeName)}";
-
-                        CreateColumnIfNotExist("Peers", "Peers", typeof(String), 70);
-                        dataRow["Peers"] = $"In:{node.NodeState.NodeOperationState.InboundPeersCount} / Out:{node.NodeState.NodeOperationState.OutboundPeersCount}";
-
-                        CreateColumnIfNotExist("Uptime", "Uptime", typeof(String), 50);
-                        dataRow["Uptime"] = node.NodeState.NodeOperationState.Uptime.ToString("d'.'hh':'mm");
-
-                        CreateColumnIfNotExist("Branch", "Branch", typeof(String), 100);
-                        int lastComitDays = (DateTime.Now - node.GitRepositoryInfo.LatestLocalCommitDateTime).Days;
-                        dataRow["Branch"] = $"{node.GitRepositoryInfo.CurrentBranchName} [{node.GitRepositoryInfo.CommitDifference}] {lastComitDays} days ago";
+                        CreateColumnIfNotExist("Version", "Agent", typeof(string), 80);
+                        dataRow["Version"] = connectionPeer.Version;
                     }
                 }
             }

@@ -13,5 +13,10 @@ namespace Stratis.CoinmasterClient.NodeObjects
         public string RemoteSocketEndpoint { get; set; }
         public int TipHeight { get; set; }
         public bool Banned { get; set; } = false;
+
+        public override string ToString()
+        {
+            return RemoteSocketEndpoint;
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Stratis.CoinmasterClient.Messages
     {
         StartNode,
         StopNode,
-        DeleteFile
+        DeleteFile,
+        GitPull
     }
 }

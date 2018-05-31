@@ -62,6 +62,7 @@ namespace Stratis.CoinMasterAgent.StatusProbes
             node.NodeState.NodeOperationState.Network = nodeStatus.Network;
             node.NodeState.NodeOperationState.ConsensusHeight = nodeStatus.ConsensusHeight;
 
+            node.NodeState.NodeOperationState.Peers.Clear();
             foreach (Peer inboundPeer in nodeStatus.InboundPeers)
             {
                 ConnectionPeer peer = new ConnectionPeer();

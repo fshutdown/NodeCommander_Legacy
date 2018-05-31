@@ -12,6 +12,7 @@ using Stratis.CoinmasterClient.Network;
 using Stratis.CoinMasterAgent.Agent.Dispatchers;
 using Stratis.CoinMasterAgent.Agent.Handlers;
 using Stratis.CoinMasterAgent.Agent.Handlers.EventArgs;
+using Stratis.CoinMasterAgent.Git;
 
 namespace Stratis.CoinMasterAgent.Agent
 {
@@ -20,6 +21,7 @@ namespace Stratis.CoinMasterAgent.Agent
         public List<ClientConnection> Clients { get; set; }
         public List<DispatcherBase> Dispatchers { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
+        public GitRepositoryMonitor GitRepositoryMonitor { get; set; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -34,6 +36,9 @@ namespace Stratis.CoinMasterAgent.Agent
             Dispatchers.Add(new ResourceFromAgentDispatcher(this, 1000));
             
             Clients = new List<ClientConnection>();
+
+            List<String> codeDirectoryList = ManagedNodes.GetCodeDirectoryList();
+            GitRepositoryMonitor = new GitRepositoryMonitor(codeDirectoryList);
         }
 
         public void ConnectClient(ClientConnection client)
@@ -54,8 +59,16 @@ namespace Stratis.CoinMasterAgent.Agent
 
         private void NotifyDispathers()
         {
-            if (Clients.Count > 0) foreach (DispatcherBase dispatcher in Dispatchers) dispatcher.Start();
-            else foreach (DispatcherBase dispatcher in Dispatchers) dispatcher.Stop();
+            if (Clients.Count > 0)
+            {
+                foreach (DispatcherBase dispatcher in Dispatchers) dispatcher.Start();
+                GitRepositoryMonitor.Start();
+            }
+            else
+            {
+                foreach (DispatcherBase dispatcher in Dispatchers) dispatcher.Stop();
+                GitRepositoryMonitor.Stop();
+            }
         }
 
         private void InitializeClientConnection(ClientConnection client)

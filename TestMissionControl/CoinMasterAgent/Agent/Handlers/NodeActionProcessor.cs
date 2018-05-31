@@ -5,6 +5,7 @@ using NLog;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinMasterAgent.Git;
 using Stratis.CoinMasterAgent.Integration;
 
 namespace Stratis.CoinMasterAgent.Agent.Handlers
@@ -59,6 +60,17 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
                     }
 
                     break;
+                case ActionType.GitPull:
+                    try
+                    {
+                        GitPull();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, $"Cannot Pull data from GIT repository the node {ClientAction.FullNodeName}");
+                    }
+
+                    break;
                 case ActionType.DeleteFile:
                     try
                     {
@@ -72,6 +84,25 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
                     break;
             }
+        }
+
+        private void GitPull()
+        {
+            BlockchainNode node = Agent.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
+            if (node == null)
+            {
+                logger.Error($"Cannot find node {ClientAction.FullNodeName}");
+                return;
+            }
+
+            if (!Agent.Session.GitRepositoryMonitor.GitRepositories.ContainsKey(node.NodeConfig.CodeDirectory))
+            {
+                logger.Warn($"Cannot find code repository \"{node.NodeConfig.CodeDirectory}\"");
+                return;
+            }
+
+            GitRepository gitRepository = Agent.Session.GitRepositoryMonitor.GitRepositories[node.NodeConfig.CodeDirectory];
+            gitRepository.Pull();
         }
 
         private void StartNode()

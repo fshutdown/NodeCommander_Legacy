@@ -22,14 +22,12 @@ namespace Stratis.CoinMasterAgent.StatusProbes
         public AgentHealthState AgentHealthState { get; set; }
         private AgentSession session;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public GitRepositoryMonitor GitRepositoryMonitor { get; set; }
+        
 
         public AgentHealthStatusProbe(AgentSession session)
         {
             this.session = session;
-            List<String> codeDirectoryList = session.ManagedNodes.GetCodeDirectoryList();
-            GitRepositoryMonitor = new GitRepositoryMonitor(codeDirectoryList);
-            GitRepositoryMonitor.Start();
+            
         }
 
         public List<Task> UpdateJob()
@@ -49,14 +47,13 @@ namespace Stratis.CoinMasterAgent.StatusProbes
 
         public void Stop()
         {
-            GitRepositoryMonitor.Stop();
         }
 
         private void CheckGitRepositoryInformation()
         {
             List<String> codeDirectoryList = session.ManagedNodes.GetCodeDirectoryList();
-            GitRepositoryMonitor.UpdateRepositoryList(codeDirectoryList);
-            AgentHealthState.GitRepositoryInfo = GitRepositoryMonitor.GetGitRepositoryInformation();
+            session.GitRepositoryMonitor.UpdateRepositoryList(codeDirectoryList);
+            AgentHealthState.GitRepositoryInfo = session.GitRepositoryMonitor.GetGitRepositoryInformation();
         }
 
         private void CheckAgentResources()

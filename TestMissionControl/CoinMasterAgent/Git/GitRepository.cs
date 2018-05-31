@@ -39,7 +39,8 @@ namespace Stratis.CoinMasterAgent.Git
 
         public void Pull()
         {
-
+            RunProcess("git", "pull");
+            RefreshGitRepositoryInfo();
         }
 
         public void Patch()
