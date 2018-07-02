@@ -84,6 +84,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\PeerConnections\PeerConnectionsDataGridViewMapper.cs" />
+    <Compile Include="Controls\StackTraceRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\CoinMasterForm.cs">
       <SubType>Form</SubType>
     </Compile>

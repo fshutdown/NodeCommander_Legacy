@@ -59,7 +59,7 @@ namespace Stratis.NodeCommander.Controls.PeerConnections
         {
             List<ConnectionPeer> peers = node.NodeState.NodeOperationState.Peers;
 
-            if (peers == null) return;
+            if (peers == null || !peers.Any()) return;
 
             if (!int.TryParse(node.NodeState.NodeLogState.HeadersHeight, out int nodeHight)) nodeHight = 0;
             int maxTip = Math.Max(peers.Max(p => p.TipHeight), nodeHight);

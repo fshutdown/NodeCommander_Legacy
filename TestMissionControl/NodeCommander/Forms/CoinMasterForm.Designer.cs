@@ -84,8 +84,8 @@ namespace Stratis.NodeCommander
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deployFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.groupBoxNodeExceptions = new System.Windows.Forms.GroupBox();
+            this.stackTraceRichTextBox = new Stratis.NodeCommander.Controls.StackTraceRichTextBox();
             this.dataGridViewNodeExceptions = new Stratis.NodeCommander.Controls.NodeExceptions.NodeExceptionsDataGridView();
             this.contextMenuStripExceptionList = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.showStacktraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -256,7 +256,7 @@ namespace Stratis.NodeCommander
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodes)).BeginInit();
             this.contextMenuStripNodeList.SuspendLayout();
-            this.groupBox5.SuspendLayout();
+            this.groupBoxNodeExceptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodeExceptions)).BeginInit();
             this.contextMenuStripExceptionList.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -386,7 +386,7 @@ namespace Stratis.NodeCommander
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.groupBox5);
+            this.splitContainer2.Panel2.Controls.Add(this.groupBoxNodeExceptions);
             this.splitContainer2.Size = new System.Drawing.Size(902, 825);
             this.splitContainer2.SplitterDistance = 490;
             this.splitContainer2.TabIndex = 0;
@@ -697,27 +697,28 @@ namespace Stratis.NodeCommander
             this.deployFilesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.deployFilesToolStripMenuItem.Text = "Deploy Files";
             // 
-            // groupBox5
+            // groupBoxNodeExceptions
             // 
-            this.groupBox5.Controls.Add(this.richTextBox1);
-            this.groupBox5.Controls.Add(this.dataGridViewNodeExceptions);
-            this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox5.Location = new System.Drawing.Point(0, 0);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(902, 331);
-            this.groupBox5.TabIndex = 0;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Node Exceptions";
+            this.groupBoxNodeExceptions.Controls.Add(this.stackTraceRichTextBox);
+            this.groupBoxNodeExceptions.Controls.Add(this.dataGridViewNodeExceptions);
+            this.groupBoxNodeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxNodeExceptions.Location = new System.Drawing.Point(0, 0);
+            this.groupBoxNodeExceptions.Name = "groupBoxNodeExceptions";
+            this.groupBoxNodeExceptions.Size = new System.Drawing.Size(902, 331);
+            this.groupBoxNodeExceptions.TabIndex = 0;
+            this.groupBoxNodeExceptions.TabStop = false;
+            this.groupBoxNodeExceptions.Text = "Node Exceptions";
             // 
-            // richTextBox1
+            // stackTraceRichTextBox
             // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.stackTraceRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.Location = new System.Drawing.Point(3, 200);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(896, 125);
-            this.richTextBox1.TabIndex = 8;
-            this.richTextBox1.Text = "";
+            this.stackTraceRichTextBox.BackColor = System.Drawing.Color.SeaShell;
+            this.stackTraceRichTextBox.Location = new System.Drawing.Point(3, 200);
+            this.stackTraceRichTextBox.Name = "stackTraceRichTextBox";
+            this.stackTraceRichTextBox.Size = new System.Drawing.Size(896, 125);
+            this.stackTraceRichTextBox.TabIndex = 8;
+            this.stackTraceRichTextBox.Text = "";
             // 
             // dataGridViewNodeExceptions
             // 
@@ -746,7 +747,7 @@ namespace Stratis.NodeCommander
             dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewNodeExceptions.DefaultCellStyle = dataGridViewCellStyle5;
-            this.dataGridViewNodeExceptions.Location = new System.Drawing.Point(3, 16);
+            this.dataGridViewNodeExceptions.Location = new System.Drawing.Point(3, 19);
             this.dataGridViewNodeExceptions.MultiSelect = false;
             this.dataGridViewNodeExceptions.Name = "dataGridViewNodeExceptions";
             this.dataGridViewNodeExceptions.ReadOnly = true;
@@ -760,9 +761,11 @@ namespace Stratis.NodeCommander
             this.dataGridViewNodeExceptions.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridViewNodeExceptions.RowHeadersVisible = false;
             this.dataGridViewNodeExceptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(896, 178);
+            this.dataGridViewNodeExceptions.Size = new System.Drawing.Size(896, 179);
             this.dataGridViewNodeExceptions.TabIndex = 7;
             this.dataGridViewNodeExceptions.Filter += new System.Action<System.Data.DataView>(this.dataGridViewNodeExceptions_Filter);
+            this.dataGridViewNodeExceptions.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dataGridViewNodeExceptions_RowStateChanged);
+            this.dataGridViewNodeExceptions.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dataGridViewNodeExceptions_KeyUp);
             // 
             // contextMenuStripExceptionList
             // 
@@ -2409,7 +2412,7 @@ namespace Stratis.NodeCommander
             this.groupBox6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodes)).EndInit();
             this.contextMenuStripNodeList.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
+            this.groupBoxNodeExceptions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewNodeExceptions)).EndInit();
             this.contextMenuStripExceptionList.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
@@ -2488,7 +2491,7 @@ namespace Stratis.NodeCommander
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelWorker;
         private System.Windows.Forms.SplitContainer splitContainerOuter;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBoxNodeExceptions;
         private Stratis.NodeCommander.Controls.NodeExceptions.NodeExceptionsDataGridView dataGridViewNodeExceptions;
         private System.Windows.Forms.ToolStripMenuItem monitoringToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resumeMonitoringToolStripMenuItem;
@@ -2535,7 +2538,6 @@ namespace Stratis.NodeCommander
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPageOverview;
         private System.Windows.Forms.TabPage tabPageGit;
@@ -2645,6 +2647,7 @@ namespace Stratis.NodeCommander
         private System.Windows.Forms.ToolStripMenuItem logsToolStripMenuItem;
         private Controls.PeerConnections.PeerConnectionsDataGridView dataGridViewPeers;
         private DataGridView dataGridViewMempool;
+        private Controls.StackTraceRichTextBox stackTraceRichTextBox;
     }
 }
 

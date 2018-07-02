@@ -392,6 +392,18 @@ namespace Stratis.NodeCommander
             }
         }
 
+        private void dataGridViewNodeExceptions_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                dataGridViewNodeExceptions.Size = new Size(dataGridViewNodeExceptions.Size.Width, groupBoxNodeExceptions.Height - 25);
+                stackTraceRichTextBox.Visible = false;
+            }
+        }
 
+        private void dataGridViewNodeExceptions_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
+        {
+
+        }
     }
 }
