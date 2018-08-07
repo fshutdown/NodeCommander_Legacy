@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Stratis.CoinmasterClient.Network
 {
     public class NodeEndpointName
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public NetworkType Network { get; set; }
         public String NodeBlockchainName { get; set; }
         public String NodeNetworkName { get; set; }

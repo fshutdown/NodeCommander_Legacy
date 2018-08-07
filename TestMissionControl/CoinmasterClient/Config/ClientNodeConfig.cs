@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Network;
+using Stratis.CoinmasterClient.Resources;
 
 namespace Stratis.CoinmasterClient.Config
 {
     public class ClientNodeConfig
     {
+        public bool Enabled { get; set; }
         public NodeEndpointName NodeEndpoint { get; set; }
         public string DisplayName { get; set; }
         public string NodeConfig { get; set; }
@@ -20,8 +22,9 @@ namespace Stratis.CoinmasterClient.Config
         public string StartupSwitches { get; set; }
         public string CompilerSwitches { get; set; }
         public string Agent { get; set; }
-        public bool Enabled { get; set; }
         
+        public List<Resource> FileDeploy { get; set; }
+
         [JsonIgnore]
         public string NetworkDirectory => Path.Combine(DataDir, NodeEndpoint.NodeBlockchainName, NodeEndpoint.NodeNetworkName);
         [JsonIgnore]
@@ -32,6 +35,7 @@ namespace Stratis.CoinmasterClient.Config
 
         public ClientNodeConfig()
         {
+            FileDeploy = new List<Resource>();
         }
 
         public ClientNodeConfig(string nodeFullName) : this()

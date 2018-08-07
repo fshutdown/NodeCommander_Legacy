@@ -77,10 +77,10 @@ namespace Stratis.NodeCommander
             clientConfig = reader.ReadConfig();
             List<String> agentList = clientConfig.GetAgentList();
             this.managedNodes = new NodeNetwork();
-            foreach (string fullNodeName in clientConfig.NodeItems.Keys)
+            foreach (var node in clientConfig.NodeItems)
             {
-                BlockchainNode blockchainNode = new BlockchainNode(clientConfig.NodeItems[fullNodeName]);
-                this.managedNodes.Nodes.Add(fullNodeName, blockchainNode);
+                BlockchainNode blockchainNode = new BlockchainNode(node);
+                this.managedNodes.Nodes.Add(node.NodeEndpoint.FullNodeName, blockchainNode);
             }
 
             clientConnectionManager = new AgentConnectionManager(managedNodes);

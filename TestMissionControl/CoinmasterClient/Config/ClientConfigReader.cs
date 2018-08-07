@@ -13,12 +13,9 @@ namespace Stratis.CoinmasterClient.Config
 {
     public class ClientConfigReader
     {
-        public static string ConfigFileName = "nodes.conf";
+        public static string ConfigFileName = "nodes.json";
 
         private FileInfo nodeConfigFile;
-        private Regex sectionNameRegex = new Regex("^\\[([A-Z0-9 _.-]+)\\]\\s*#?.*", RegexOptions.IgnoreCase);
-        private Regex commentRegEx = new Regex("\\s*#.*", RegexOptions.IgnoreCase);
-        private Regex parameterRegEx = new Regex("([A-Z0-9]+)=(.*)\\s*#?.*", RegexOptions.IgnoreCase);
 
         public ClientConfigReader()
         {
@@ -28,83 +25,13 @@ namespace Stratis.CoinmasterClient.Config
 
         public ClientConfig ReadConfig()
         {
-            ClientConfig config = new ClientConfig();
-
             nodeConfigFile = new FileInfo(ConfigFileName);
-            StreamReader configReader = new StreamReader(nodeConfigFile.FullName);
+            string jsonString = File.ReadAllText(nodeConfigFile.FullName);
 
-            string sectionName = string.Empty;
-            int lineNumber = 1;
-            while (!configReader.EndOfStream)
-            {
-                string line = configReader.ReadLine();
-                if (line.Trim() == String.Empty)
-                {
-                    lineNumber++;
-                    continue;
-                }
-
-                if (sectionNameRegex.IsMatch(line))
-                {
-                    sectionName = sectionNameRegex.Match(line).Groups[1].Value;
-                } else if (commentRegEx.IsMatch(line))
-                {
-                    //ignore comments
-                } else if (parameterRegEx.IsMatch(line))
-                {
-                    try
-                    {
-                        string key = parameterRegEx.Match(line).Groups[1].Value;
-                        string value = parameterRegEx.Match(line).Groups[2].Value;
-
-                        if (sectionName == "Global" && key.ToLower() == "deploy")
-                        {
-                            Resource resource = CreateDeploymentResource("Global", value);
-                            config.FileDeploy.Add(resource);
-                        }
-                        else if (sectionName == "Global" && key.ToLower() != "deploy")
-                        {
-                            SetProperty(config, key, value);
-                        }
-                        else
-                        {
-                            ClientNodeConfig nodeConfig;
-                            if (!config.NodeItems.ContainsKey(sectionName))
-                            {
-                                nodeConfig = new ClientNodeConfig(sectionName);
-                                config.NodeItems.Add(sectionName, nodeConfig);
-                            }
-                            else
-                            {
-                                nodeConfig = config.NodeItems[sectionName];
-                            }
-
-                            if (key.ToLower() == "deploy")
-                            {
-                                Resource resource = CreateDeploymentResource(sectionName, value);
-                                config.FileDeploy.Add(resource);
-                            }
-                            else
-                            {
-                                SetProperty(nodeConfig, key, value);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ArgumentException($"Error reading node configuration file at line {lineNumber}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Incorrect configuration option at line: {lineNumber} (--> \"{line}\")");
-                }
-
-                lineNumber++;
-            }
+            ClientConfig config = JsonConvert.DeserializeObject<ClientConfig>(jsonString);
 
             //Enumerate variables to resolve any parameter values
-            foreach (ClientNodeConfig node in config.NodeItems.Values)
+            foreach (ClientNodeConfig node in config.NodeItems)
             {
                 Dictionary<String, String> variables = CreateEvaluationLookup(node);
                 foreach (string variableName in variables.Keys)
@@ -112,7 +39,7 @@ namespace Stratis.CoinmasterClient.Config
                     if (string.IsNullOrEmpty(variables[variableName])) continue;
                     string newValue = Evaluate(variables[variableName], variables);
                     if (newValue.StartsWith(".")) newValue = Path.Combine(node.NetworkDirectory, newValue.Substring(1).Trim('\\'));
-                        
+
                     if (newValue != variables[variableName])
                     {
                         SetProperty(node, variableName, newValue);
@@ -120,8 +47,7 @@ namespace Stratis.CoinmasterClient.Config
                     }
                 }
 
-                var resourceList = config.FileDeploy.Where(d => d.FullNodeName == node.NodeEndpoint.FullNodeName);
-                foreach (Resource resource in resourceList)
+                foreach (Resource resource in node.FileDeploy)
                 {
                     resource.ClientPath = Evaluate(resource.ClientPath, variables);
                     resource.AgentPath = Evaluate(resource.AgentPath, variables);
@@ -129,36 +55,15 @@ namespace Stratis.CoinmasterClient.Config
                 }
             }
 
-            File.WriteAllText("nodes.json", JsonConvert.SerializeObject(config));
-            
+            //Set the resource scope
+            foreach (ClientNodeConfig node in config.NodeItems)
+            foreach (Resource resource in node.FileDeploy)
+                resource.Scope = ResourceScope.Node;
+
+            foreach (Resource resource in config.GlobalFileDeploy)
+                resource.Scope = ResourceScope.Global;
+
             return config;
-        }
-
-        private Resource CreateDeploymentResource(string sectionName, string value)
-        {
-            string[] fileDeploymentParts = value.Split(new[] { "=>" }, StringSplitOptions.None);
-            if (fileDeploymentParts.Length != 2) throw new ArgumentException("Incorrect format of the file deployment configuration");
-            string source = fileDeploymentParts[0].Trim();
-            string destination = fileDeploymentParts[1].Trim();
-
-            ResourceScope scope;
-            String fullNodeName = null;
-            if (sectionName.Equals("global", StringComparison.InvariantCultureIgnoreCase))
-            {
-                scope = ResourceScope.Global;
-            }
-            else
-            {
-                scope = ResourceScope.Node;
-                fullNodeName = sectionName;
-            }
-
-            Resource resource = new Resource(ResourceType.ClientToAgentDeployment, scope, fullNodeName)
-            {
-                ClientPath = source,
-                AgentPath = destination
-            };
-            return resource;
         }
 
         private void SetProperty(object target, string propertyName, string value)
