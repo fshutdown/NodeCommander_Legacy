@@ -110,14 +110,15 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             string compilerSwitches = ClientAction.Parameters[ActionParameters.CompilerSwitches];
             string runtimeSwitches = ClientAction.Parameters[ActionParameters.RuntimeSwitches];
 
-            bool isTestNet = Boolean.Parse(ClientAction.Parameters[ActionParameters.IsTestNet]);
+            NetworkType network;
+            NetworkType.TryParse(ClientAction.Parameters[ActionParameters.Network], out network);
             string dataDir = ClientAction.Parameters[ActionParameters.DataDir];
             string workingDirectory = ClientAction.Parameters[ActionParameters.WorkingDirectory];
 
-            string testnetSwitch = isTestNet ? " -testnet" : "";
+            string networkSwitch = $"-{network}";
 
             ProcessStartInfo startInfo = new ProcessStartInfo("dotnet",
-                $"run {compilerSwitches}{testnetSwitch} -datadir={dataDir}{runtimeSwitches}");
+                $"run {compilerSwitches}{networkSwitch} -datadir={dataDir}{runtimeSwitches}");
             startInfo.WorkingDirectory = workingDirectory;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;

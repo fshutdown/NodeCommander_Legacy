@@ -172,6 +172,7 @@
     <Compile Include="Database\Model\NodeLogMessage.cs" />
     <Compile Include="Git\GitRepositoryInfo.cs" />
     <Compile Include="Network\BlockchainNodeState.cs" />
+    <Compile Include="Network\NetworkType.cs" />
     <Compile Include="NodeObjects\ConnectionPeer.cs" />
     <Compile Include="NodeObjects\PeerType.cs" />
     <Compile Include="NodeObjects\Transaction.cs" />

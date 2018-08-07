@@ -11,7 +11,7 @@ namespace Stratis.CoinmasterClient.Messages
         CompilerSwitches,
         RuntimeSwitches,
         Path,
-        IsTestNet,
+        Network,
         DataDir,
         WorkingDirectory,
     }

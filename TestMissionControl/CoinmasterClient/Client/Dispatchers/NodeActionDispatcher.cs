@@ -51,9 +51,9 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             ActionRequest action = new ActionRequest(ActionType.StartNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
 
-            action.Parameters.Add(ActionParameters.CompilerSwitches, "--no-build");
-            action.Parameters.Add(ActionParameters.RuntimeSwitches, "");
-            action.Parameters.Add(ActionParameters.IsTestNet, node.NodeEndpoint.IsTestnet.ToString());
+            action.Parameters.Add(ActionParameters.CompilerSwitches, node.NodeConfig.CompilerSwitches);
+            action.Parameters.Add(ActionParameters.RuntimeSwitches, node.NodeConfig.StartupSwitches);
+            action.Parameters.Add(ActionParameters.Network, node.NodeEndpoint.Network.ToString());
             action.Parameters.Add(ActionParameters.DataDir, node.NodeConfig.DataDir);
             action.Parameters.Add(ActionParameters.WorkingDirectory, Path.Combine(node.NodeConfig.CodeDirectory, node.NodeConfig.ProjectDirectory));
 

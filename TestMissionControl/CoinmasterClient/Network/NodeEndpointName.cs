@@ -3,33 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Stratis.CoinmasterClient.Network
 {
     public class NodeEndpointName
     {
-        public String NodeNetworkName { get; set; }
+        public NetworkType Network { get; set; }
         public String NodeBlockchainName { get; set; }
+        public String NodeNetworkName { get; set; }
         public String NodeName { get; set; }
 
+        [JsonIgnore]
         public string FullBlockchainName
         {
             get
             {
-                return $"{NodeNetworkName}.{NodeBlockchainName}";
+                return $"{NodeBlockchainName}.{NodeNetworkName}";
             }
         }
 
+        [JsonIgnore]
         public string FullNodeName
         {
             get
             {
                 if (string.IsNullOrEmpty(NodeName))
                     throw new Exception("Incorrect node name");
-                return $"{NodeNetworkName}.{NodeBlockchainName}.{NodeName}";
+                return $"{NodeBlockchainName}.{NodeNetworkName}.{NodeName}";
             }
         }
-        
+
         public NodeEndpointName()
         {
 
@@ -41,25 +45,23 @@ namespace Stratis.CoinmasterClient.Network
             if (nodeNameParts.Length != 3) throw new ArgumentException($"Incorrect format of the node name {fullNodeName}");
 
             NodeName = nodeNameParts[2];
-            NodeNetworkName = nodeNameParts[0];
-            NodeBlockchainName = nodeNameParts[1];
+            NodeBlockchainName = nodeNameParts[0];
+            NodeNetworkName = nodeNameParts[1];
         }
 
-        public NodeEndpointName(String nodeNetowrkName, string nodeBlockchainName, string nodeName) : this()
+        public NodeEndpointName(String nodeNetowrkName, string nodeNetworkName, string nodeName) : this()
         {
-            NodeNetworkName = nodeNetowrkName;
-            NodeBlockchainName = nodeBlockchainName;
+            NodeBlockchainName = nodeNetowrkName;
+            NodeNetworkName = nodeNetworkName;
             NodeName = nodeName;
         }
-        public NodeEndpointName(String nodeNetowrkName, string nodeBlockchainName) : this()
+        public NodeEndpointName(String nodeNetowrkName, string nodeNetworkName) : this()
         {
-            NodeNetworkName = nodeNetowrkName;
-            NodeBlockchainName = nodeBlockchainName;
+            NodeBlockchainName = nodeNetowrkName;
+            NodeNetworkName = nodeNetworkName;
             NodeName = null;
         }
 
-        public bool IsTestnet { get { return NodeBlockchainName.ToLower().Contains("test"); } }
-        
         public override string ToString()
         {
             return FullNodeName;

@@ -326,8 +326,8 @@ namespace Stratis.NodeCommander
             toolTipHelp.SetToolTip(this.labelLastUpdateMessage, node.GitRepositoryInfo.LatestLocalCommitMessage);
             labelDaemonName.Text = node.NodeConfig.DaemonName;
             labelStartupOptions.Text = node.NodeConfig.StartupSwitches;
-            labelBlockchainName.Text = node.NodeEndpoint.NodeBlockchainName;
-            labelNetworkName.Text = node.NodeEndpoint.NodeNetworkName;
+            labelBlockchainName.Text = node.NodeEndpoint.NodeNetworkName;
+            labelNetworkName.Text = node.NodeEndpoint.NodeBlockchainName;
             labelDataDir.Text = node.NodeConfig.DataDir;
             labelDataDirSize.Text = "(" + node.NodeState.NodeDeploymentState.DataDirSize + ")";
             labelHeaderHeight.Text = node.NodeState.NodeLogState.HeadersHeight;

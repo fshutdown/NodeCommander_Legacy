@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.Resources;
@@ -128,6 +129,8 @@ namespace Stratis.CoinmasterClient.Config
                 }
             }
 
+            File.WriteAllText("nodes.json", JsonConvert.SerializeObject(config));
+            
             return config;
         }
 

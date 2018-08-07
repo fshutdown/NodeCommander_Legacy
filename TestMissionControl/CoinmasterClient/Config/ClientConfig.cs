@@ -11,9 +11,9 @@ namespace Stratis.CoinmasterClient.Config
 {
     public class ClientConfig
     {
-        public Dictionary<String, ClientNodeConfig> NodeItems { get; set; }
+        public String AgentPrefix { get; set; } = "NodeCommander";
         public List<Resource> FileDeploy { get; private set; }
-        public String AgentPrefix { get; set; }
+        public Dictionary<String, ClientNodeConfig> NodeItems { get; set; }
 
         public ClientConfig()
         {
