@@ -19,7 +19,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public List<Resource> ResourceList { get; set; }
 
-        public ResourceFromAgentProcessor(AgentConnection client) : base(client)
+        public ResourceFromAgentProcessor(AgentConnection agent) : base(agent)
         {
         }
 
@@ -31,11 +31,11 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Cannot deserialize Resource List message from agent {Client.Address}");
+                logger.Error(ex, $"Cannot deserialize Resource List message from agent {Agent.Address}");
                 return;
             }
 
-            logger.Info($"Received Resource List from agent {Client.Address}");
+            logger.Info($"Received Resource List from agent {Agent.Address}");
         }
 
         public override void Process()
@@ -61,7 +61,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                             Exception = fields[5],
                             Stacktrace = fields[6]
                         };
-                        Client.Session.Database.Persist(logMessage);
+                        Agent.Session.Database.Persist(logMessage);
 
                         if (fields.Length == 5 && fields[3] == "Stratis.Bitcoin.Features.Miner.PowMining.GenerateBlocks")
                         {
@@ -74,7 +74,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                             miningEntry.BlockNumber = int.Parse(match.Groups[1].Value);
                             miningEntry.BlockHash = match.Groups[2].Value;
 
-                            Client.Session.Database.Persist(miningEntry);
+                            Agent.Session.Database.Persist(miningEntry);
                         }
                         else if (fields.Length == 5 && fields[3] == "Stratis.Bitcoin.Features.Consensus.ConsensusLoop.RewindCoinViewLockedAsync")
                         {
@@ -89,7 +89,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                             reorgEntry.ToBlockNumber = int.Parse(match.Groups[3].Value);
                             reorgEntry.ToBlockHash = match.Groups[4].Value;
 
-                            Client.Session.Database.Persist(reorgEntry);
+                            Agent.Session.Database.Persist(reorgEntry);
                         }
                     }
                 }

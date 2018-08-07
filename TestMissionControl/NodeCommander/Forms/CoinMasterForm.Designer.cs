@@ -1580,6 +1580,7 @@ namespace Stratis.NodeCommander
             this.linkLabelSwitchBranch.TabIndex = 73;
             this.linkLabelSwitchBranch.TabStop = true;
             this.linkLabelSwitchBranch.Text = "Switch Branch";
+            this.linkLabelSwitchBranch.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelSwitchBranch_LinkClicked);
             // 
             // labelLastUpdateMessage
             // 
@@ -2389,6 +2390,7 @@ namespace Stratis.NodeCommander
             this.MainMenuStrip = this.menuStripApplicationMain;
             this.Name = "CoinMasterForm";
             this.Text = "Node Commander";
+            this.Load += new System.EventHandler(this.CoinMasterForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);

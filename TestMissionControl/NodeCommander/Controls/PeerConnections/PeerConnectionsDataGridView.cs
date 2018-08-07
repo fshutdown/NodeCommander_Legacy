@@ -51,6 +51,8 @@ namespace Stratis.NodeCommander.Controls.PeerConnections
                 this.Columns[column.ColumnName].HeaderText = (string)column.ExtendedProperties["HeaderText"];
                 this.Columns[column.ColumnName].ToolTipText = (string)column.ExtendedProperties["HeaderText"];
             }
+
+            this.DataSource = dataView;
         }
 
         private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

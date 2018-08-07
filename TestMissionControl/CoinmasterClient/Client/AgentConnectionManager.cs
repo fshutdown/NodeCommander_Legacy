@@ -21,7 +21,6 @@ namespace Stratis.CoinmasterClient.Client
             Session = new ClientSession();
             Session.ManagedNodes = managedNodes;
         }
-        
 
         public AgentConnection GetAgent(string agentAddress)
         {
@@ -34,8 +33,9 @@ namespace Stratis.CoinmasterClient.Client
             foreach (string agentAddress in agentList)
             {
                 string[] addressParts = agentAddress.Split(':');
-                AgentConnection client = new AgentConnection(addressParts[0], addressParts[1]);
-                Session.AddClient(client);
+                AgentConnection agent = new AgentConnection(addressParts[0], addressParts[1]);
+                Session.AddAgent(agent);
+                Session.InitializeAgent(agent);
 
                 Timer reconnectionTimer = new Timer
                 {
@@ -44,13 +44,14 @@ namespace Stratis.CoinmasterClient.Client
                 };
                 reconnectionTimer.Elapsed += (sender, args) =>
                 {
-                    if (client.State == WebSocketState.None || client.State == WebSocketState.Aborted || client.State == WebSocketState.Closed)
+                    if (agent.State == WebSocketState.None || agent.State == WebSocketState.Aborted || agent.State == WebSocketState.Closed)
                     {
-                        Session.ConnectAgent(client);
+                        Session.ConnectAgent(agent);
                     }
                 };
                 reconnectionTimer.Start();
             }
+            Session.InitializeSession();
         }
     }
 }

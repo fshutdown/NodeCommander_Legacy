@@ -25,6 +25,12 @@ namespace Stratis.CoinmasterClient.Network
         {
             NodeEndpoint = nodeEndpoint;
             Initialized = false;
+
+            NodeProcessState = new NodeProcessState();
+            NodeDeploymentState = new NodeDeploymentState();
+            NodeOperationState = new NodeOperationState();
+            NodeLogState = new NodeLogState();
+
             Resources = new Dictionary<string, Guid>();
         }
 

@@ -67,10 +67,10 @@ namespace Stratis.NodeCommander.Controls.Agents
                             dataRow["Status"] = StatusIconProvider.GreenCircle;
                             break;
                         case WebSocketState.CloseSent:
-                            dataRow["Status"] = StatusIconProvider.OrangeCircle;
+                            dataRow["Status"] = StatusIconProvider.GrayCircle;
                             break;
                         case WebSocketState.CloseReceived:
-                            dataRow["Status"] = StatusIconProvider.OrangeCircle;
+                            dataRow["Status"] = StatusIconProvider.GrayCircle;
                             break;
                         case WebSocketState.Closed:
                             dataRow["Status"] = StatusIconProvider.GrayCircle;
@@ -95,6 +95,12 @@ namespace Stratis.NodeCommander.Controls.Agents
 
                     CreateColumnIfNotExist("Clients", "Clients", typeof(int), 40);
                     dataRow["Clients"] = state.ClientCount;
+
+                    CreateColumnIfNotExist("Info", "Info", typeof(string), 120);
+                    if (string.IsNullOrEmpty(dataRow["Info"] as String) && string.IsNullOrEmpty(message))
+                        dataRow["Info"] = agentConnection.State.ToString();
+                    else if (!string.IsNullOrEmpty(message))
+                        dataRow["Info"] = $"{agentConnection.State}: {message}";
                 }
             }
         }

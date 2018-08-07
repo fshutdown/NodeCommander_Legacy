@@ -67,7 +67,7 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
                 foreach (DataRow dataRow in DataTable.Rows)
                 {
                     BlockchainNode node = managedNodes.Nodes[fullNodeName];
-                    if (node.NodeState.Initialized && ((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
+                    if (((BlockchainNode)dataRow["Node"]).NodeEndpoint.FullNodeName.Equals(fullNodeName))
                     {
                         switch (node.NodeState.NodeOperationState.State)
                         {
@@ -84,7 +84,8 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
                                 dataRow["Status"] = StatusIconProvider.GreenCircle;
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException();
+                                dataRow["Status"] = StatusIconProvider.GrayCircle;
+                                break;
                         }
 
                         dataRow["Node"] = node;
@@ -117,8 +118,15 @@ namespace Stratis.NodeCommander.Controls.NodeOverview
                         dataRow["Uptime"] = node.NodeState.NodeOperationState.Uptime.ToString("d'.'hh':'mm");
 
                         CreateColumnIfNotExist("Branch", "Branch", typeof(String), 100);
-                        int lastComitDays = (DateTime.Now - node.GitRepositoryInfo.LatestLocalCommitDateTime).Days;
-                        dataRow["Branch"] = $"{node.GitRepositoryInfo.CurrentBranchName} [{node.GitRepositoryInfo.CommitDifference}] {lastComitDays} days ago";
+                        if (node.GitRepositoryInfo.LatestLocalCommitDateTime > DateTime.MinValue)
+                        {
+                            int lastComitDays = (DateTime.Now - node.GitRepositoryInfo.LatestLocalCommitDateTime).Days;
+                            dataRow["Branch"] = $"{node.GitRepositoryInfo.CurrentBranchName} [{node.GitRepositoryInfo.CommitDifference}] {lastComitDays} days ago";
+                        }
+                        else
+                        {
+                            dataRow["Branch"] = "-";
+                        }
                     }
                 }
             }

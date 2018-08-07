@@ -56,7 +56,6 @@ namespace Stratis.NodeCommander.Controls.Agents
         private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             //NodeLogMessage message = (NodeLogMessage)this.Rows[e.RowIndex].Cells["Message"].Value;
-            
         }
     }
 }

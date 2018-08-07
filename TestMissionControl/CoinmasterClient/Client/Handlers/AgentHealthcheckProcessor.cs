@@ -17,7 +17,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         public AgentHealthState AgentHealthState { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public AgentHealthcheckProcessor(AgentConnection client) : base(client)
+        public AgentHealthcheckProcessor(AgentConnection agent) : base(agent)
         {
         }
 
@@ -29,11 +29,11 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Cannot deserialize Agent Health State message from agent {Client.Address}");
+                logger.Error(ex, $"Cannot deserialize Agent Health State message from agent {Agent.Address}");
                 return;
             }
 
-            logger.Info($"Received AgentHealthState from agent {Client.Address}");
+            logger.Info($"Received AgentHealthState from agent {Agent.Address}");
         }
 
         public override void Process()
@@ -41,7 +41,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             foreach (GitRepositoryInfo gitRepositoryInfo in AgentHealthState.GitRepositoryInfo)
             {
                 string codeDirectory = gitRepositoryInfo.RepositoryFullName;
-                foreach (BlockchainNode node in Client.Session.ManagedNodes.Nodes.Values)
+                foreach (BlockchainNode node in Agent.Session.ManagedNodes.Nodes.Values)
                 {
                     if (node.NodeConfig.CodeDirectory == codeDirectory)
                     {
@@ -50,7 +50,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 }
             }
 
-            Client.Session.OnAgentHealthcheckStatsUpdated(Client, AgentHealthState, string.Empty);
+            Agent.Session.OnAgentHealthcheckStatsUpdated(Agent, AgentHealthState, string.Empty);
         }
     }
 }

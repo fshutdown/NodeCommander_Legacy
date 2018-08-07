@@ -53,16 +53,26 @@ namespace Stratis.CoinmasterClient.Client
             Agents = new Dictionary<String, AgentConnection>();
         }
 
-        public void AddClient(AgentConnection client)
+        public void AddAgent(AgentConnection agent)
         {
-            client.Session = this;
-            client.OnOpen += () => ConnectionOpen(client);
-            client.OnClose += () => ConnectionClose(client);
-            client.OnConnectionError += (message) => ConnectionError(client, message);
-            client.OnMessage += (payload) => MessageReceived(client, payload);
+            agent.Session = this;
+            agent.OnOpen += () => ConnectionOpen(agent);
+            agent.OnClose += () => ConnectionClose(agent);
+            agent.OnConnectionError += (message) => ConnectionError(agent, message);
+            agent.OnMessage += (payload) => MessageReceived(agent, payload);
 
-            if (!Agents.ContainsKey(client.Address))
-                Agents.Add(client.Address, client);
+            if (!Agents.ContainsKey(agent.Address))
+                Agents.Add(agent.Address, agent);
+        }
+
+        public void InitializeSession()
+        {
+            OnNodesUpdated(null, ManagedNodes);
+        }
+
+        public void InitializeAgent(AgentConnection agent)
+        {
+            OnAgentHealthcheckStatsUpdated(agent, new AgentHealthState(), "Connecting...");
         }
 
         public void ConnectAgent(AgentConnection agent)
@@ -103,20 +113,20 @@ namespace Stratis.CoinmasterClient.Client
             foreach (DispatcherBase dispatcher in agent.Dispatchers.Values) dispatcher.Start();
 
             logger.Info($"Connection opened for agent {agent.Address}");
-            OnAgentHealthcheckStatsUpdated(agent, null, string.Empty);
+            OnAgentHealthcheckStatsUpdated(agent, new AgentHealthState(), string.Empty);
         }
 
 
         private void ConnectionError(AgentConnection agent, string message)
         {
             logger.Info($"Failed to connect to agent {agent.Address}");
-            OnAgentHealthcheckStatsUpdated(agent, null, message);
+            OnAgentHealthcheckStatsUpdated(agent, new AgentHealthState(), message);
         }
 
         private void ConnectionClose(AgentConnection agent)
         {
             logger.Info($"The connection is no longer available");
-            OnAgentHealthcheckStatsUpdated(agent, null, string.Empty);
+            OnAgentHealthcheckStatsUpdated(agent, new AgentHealthState(), string.Empty);
 
             agent.Disconnect();
 

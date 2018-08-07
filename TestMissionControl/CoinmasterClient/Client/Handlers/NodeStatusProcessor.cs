@@ -15,7 +15,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         public BlockchainNodeState[] NodesStates { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeStatusProcessor(AgentConnection client) : base(client)
+        public NodeStatusProcessor(AgentConnection agent) : base(agent)
         {
         }
 
@@ -27,11 +27,11 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Cannot deserialize Client Registration message from agent {Client.Address}");
+                logger.Error(ex, $"Cannot deserialize Client Registration message from agent {Agent.Address}");
                 return;
             }
 
-            logger.Info($"Received node data from agent {Client.Address}");
+            logger.Info($"Received node data from agent {Agent.Address}");
         }
 
         public override void Process()
@@ -46,15 +46,15 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 blockchainHeight.BlockStoreHeight = state.NodeLogState.BlockStoreHeight;
                 //blockchainHeight.WalletsHeight = node.NodeLogState.WalletHeight;
 
-                Client.Session.Database.Persist(blockchainHeight);
+                Agent.Session.Database.Persist(blockchainHeight);
             }
 
             if (NodesStates == null || NodesStates.Length == 0) return;
             foreach (BlockchainNodeState nodeState in NodesStates)
             {
-                if (Client.Session.ManagedNodes.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
+                if (Agent.Session.ManagedNodes.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
                 {
-                    Client.Session.ManagedNodes.Nodes[nodeState.NodeEndpoint.FullNodeName].NodeState = nodeState;
+                    Agent.Session.ManagedNodes.Nodes[nodeState.NodeEndpoint.FullNodeName].NodeState = nodeState;
                 }
                 else
                 {
@@ -63,7 +63,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
             }
 
             
-            Client.Session.OnNodesUpdated(Client, Client.Session.ManagedNodes);
+            Agent.Session.OnNodesUpdated(Agent, Agent.Session.ManagedNodes);
         }
     }
 }

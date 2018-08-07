@@ -13,6 +13,7 @@ using Stratis.CoinmasterClient.Client;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Database.Model;
+using Stratis.CoinmasterClient.Git;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
 using Stratis.CoinmasterClient.NodeResources;
@@ -20,6 +21,7 @@ using Stratis.CoinmasterClient.Resources;
 using Stratis.CoinmasterClient.Utilities;
 using Stratis.NodeCommander.Forms;
 using Stratis.NodeCommander.Properties;
+using Stratis.NodeCommander.Tools;
 using Stratis.NodeCommander.Workers;
 using Stratis.NodeCommander.Workers.DataStreams;
 
@@ -45,13 +47,17 @@ namespace Stratis.NodeCommander
         public CoinMasterForm()
         {
             InitializeComponent();
+        }
+
+        private void CoinMasterForm_Load(object sender, EventArgs e)
+        {
             buttonEditNodeProfile_Click(null, EventArgs.Empty);
             ReadNodeProfiles();
 
             //Create pop-up
             notifier = new Tulpep.NotificationWindow.PopupNotifier();
             notifier.Delay = 10000;
-            notifier.Click += (sender, eventArgs) =>
+            notifier.Click += (notifierSender, eventArgs) =>
             {
                 Visible = true;
                 BringToFront();
@@ -63,8 +69,8 @@ namespace Stratis.NodeCommander
             cryptoIdWorker.DataUpdate += (source, args) => Invoke(new Action<object, CryptoIdDataUpdateEventArgs>(CryptoIdUpdated), source, args);
             _workers.Add(cryptoIdWorker);
 
-            //Start all workers
-            foreach (BaseWorker worker in _workers) worker.Start();
+            //Start all worker
+            // foreach (BaseWorker worker in _workers) worker.Start();
 
 
             ClientConfigReader reader = new ClientConfigReader();
@@ -78,7 +84,7 @@ namespace Stratis.NodeCommander
             }
 
             clientConnectionManager = new AgentConnectionManager(managedNodes);
-            
+
             clientConnectionManager.Session.AgentHealthcheckStatsUpdated += (agentConnection, state, message) => Invoke(new Action<AgentConnection, AgentHealthState, String>(AgentDataTableUpdated), agentConnection, state, message);
             clientConnectionManager.Session.NodesUpdated += (agentConnection, updatedNodes) => Invoke(new Action<AgentConnection, NodeNetwork>(NodeDataUpdated), agentConnection, updatedNodes);
             clientConnectionManager.Session.AgentRegistrationUpdated += (agentConnection, agentRegistration) => Invoke(new Action<AgentConnection, AgentRegistration>(AgentRegistrationUpdated), agentConnection, agentRegistration);
@@ -296,10 +302,18 @@ namespace Stratis.NodeCommander
         {
             if (e.StateChanged != DataGridViewElementStates.Selected && e.StateChanged != DataGridViewElementStates.None) return;
             if (dataGridViewNodes.SelectedRows.Count == 0) return;
-            
+
             BlockchainNode node = (BlockchainNode)dataGridViewNodes.SelectedRows[0].Cells["Node"].Value;
             if (node == null) return;
-            if (!node.NodeState.Initialized) return;
+
+            if (!node.NodeState.Initialized)
+            {
+                tabPageOverview.Enabled = false;
+            }
+            else
+            {
+                tabPageOverview.Enabled = true;
+            }
 
             linkLabelRepositoryUrl.Text = node.GitRepositoryInfo.RepositoryUrl;
             labelCurrentBranch.Text = node.GitRepositoryInfo.CurrentBranchName;
@@ -346,12 +360,14 @@ namespace Stratis.NodeCommander
             {
                 buttonEditNodeProfile.Tag = "";
                 splitContainer3.SplitterDistance = 54;
+                groupBoxNodeFilter.Size = new Size(groupBoxNodeFilter.Size.Width, 54);
                 panelNodeFilterEdit.Visible = false;
             }
             else
             {
                 buttonEditNodeProfile.Tag = "Edit";
                 splitContainer3.SplitterDistance = 224;
+                groupBoxNodeFilter.Size = new Size(groupBoxNodeFilter.Size.Width, 225);
                 //groupBoxNodeFilter.Size = new Size(785, 225);
                 panelNodeFilterEdit.Visible = true;
             }
@@ -404,6 +420,21 @@ namespace Stratis.NodeCommander
         private void dataGridViewNodeExceptions_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
 
+        }
+
+        private void linkLabelSwitchBranch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (dataGridViewNodes.SelectedRows.Count == 0) return;
+            if (dataGridViewNodes.SelectedRows.Count > 1)
+            {
+                MessageBox.Show("No more than 1 node can be celected for this operation", "Bulk Operation",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            DataGridViewRow row = dataGridViewNodes.SelectedRows[0];
+
+            BlockchainNode node = (BlockchainNode)row.Cells["Node"].Value;
+            //ToDo: Create pop-up to select branch and send command to agent
         }
     }
 }
