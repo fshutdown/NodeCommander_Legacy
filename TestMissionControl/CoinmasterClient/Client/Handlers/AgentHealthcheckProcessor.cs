@@ -14,7 +14,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 {
     public class AgentHealthcheckProcessor : RequestProcessorBase
     {
-        public AgentHealthState AgentHealthState { get; set; }
+        public AgentHealthMessage AgentHealthMessage { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public AgentHealthcheckProcessor(AgentConnection agent) : base(agent)
@@ -25,7 +25,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         {
             try
             {
-                AgentHealthState = Message.GetPayload<AgentHealthState>();
+                AgentHealthMessage = Message.GetPayload<AgentHealthMessage>();
             }
             catch (Exception ex)
             {
@@ -38,7 +38,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
-            foreach (GitRepositoryInfo gitRepositoryInfo in AgentHealthState.GitRepositoryInfo)
+            foreach (GitRepositoryInfo gitRepositoryInfo in AgentHealthMessage.AgentHealthState.GitRepositoryInfo)
             {
                 string codeDirectory = gitRepositoryInfo.RepositoryFullName;
                 foreach (BlockchainNode node in Agent.Session.ManagedNodes.Nodes.Values)
@@ -50,7 +50,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 }
             }
 
-            Agent.Session.OnAgentHealthcheckStatsUpdated(Agent, AgentHealthState, string.Empty);
+            Agent.Session.OnAgentHealthcheckStatsUpdated(Agent, AgentHealthMessage.AgentHealthState, string.Empty);
         }
     }
 }

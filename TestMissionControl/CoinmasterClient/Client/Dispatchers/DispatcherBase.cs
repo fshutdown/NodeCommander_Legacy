@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
+using Stratis.CoinmasterClient.Messages;
 
 namespace Stratis.CoinmasterClient.Client.Dispatchers
 {
@@ -10,6 +12,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         public delegate Task UpdateHandler(DispatcherBase sender, UpdateEventArgs args);
         public event UpdateHandler Updated;
         public AgentConnection Client { get; set; }
+        
 
         protected Timer _jobScheduler;
         protected double _interval;
@@ -76,9 +79,10 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
 
             _jobScheduler.Start();
         }
-        
+
         protected void OnUpdate(DispatcherBase sender, UpdateEventArgs args)
         {
+            Client.Session.ResponseCallbacks.Add(args.CorrelationId, args.Data.OnDispatherResponseReceived);
             Updated?.Invoke(sender, args);
         }
     }

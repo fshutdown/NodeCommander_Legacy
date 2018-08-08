@@ -19,6 +19,8 @@ namespace Stratis.CoinMasterAgent.Agent
     public class AgentSession
     {
         public List<ClientConnection> Clients { get; set; }
+        public Dictionary<Guid, ResponseHandler.DispatherCallback> ResponseCallbacks = new Dictionary<Guid, ResponseHandler.DispatherCallback>();
+
         public List<DispatcherBase> Dispatchers { get; set; }
         public NodeNetwork ManagedNodes { get; set; }
         public GitRepositoryMonitor GitRepositoryMonitor { get; set; }

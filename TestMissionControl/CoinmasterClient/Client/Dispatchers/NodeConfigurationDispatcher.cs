@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
@@ -31,14 +32,25 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
         {
             logger.Debug($"Preparing Node Configuration message");
 
+            logger.Debug("Waiting for the client to perform registration");
+            while (Client.ConnectionState != ConnectionState.Registered)
+            {
+                Thread.Sleep(100);
+            }
+            logger.Debug("Completed client registration on the agent");
+
             List<ClientNodeConfig> nodeConfigurationList = (from n in Client.Session.ManagedNodes.Nodes.Values
                 where (n.NodeConfig.Agent == Client.Address) && n.NodeConfig.Enabled
                 select n.NodeConfig).ToList();
 
+            NodeConfigurationMessage nodeConfiguration = new NodeConfigurationMessage();
+            nodeConfiguration.NodeConfigurationList = nodeConfigurationList.ToArray<ClientNodeConfig>();
+
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.NodeConfiguration,
-                Data = nodeConfigurationList.ToArray<ClientNodeConfig>(),
+                CorrelationId = nodeConfiguration.CorrelationId,
+                Data = nodeConfiguration,
             };
             OnUpdate(this, args);
 

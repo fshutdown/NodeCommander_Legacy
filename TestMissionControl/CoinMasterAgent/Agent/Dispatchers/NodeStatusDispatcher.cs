@@ -64,11 +64,15 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
             BlockchainNodeState[] nodesStatistics = (from n in Session.ManagedNodes.Nodes
                 select n.Value.NodeState).ToArray();
 
+            BlockchainNodeStateMessage blockchainNodeStateMessage = new BlockchainNodeStateMessage();
+            blockchainNodeStateMessage.NodesStatistics = nodesStatistics;
+
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.NodeStatistics,
                 Scope = ResourceScope.Global,
-                Data = nodesStatistics
+                CorrelationId = blockchainNodeStateMessage.CorrelationId,
+                Data = blockchainNodeStateMessage
             };
             OnUpdate(this, args);
         }

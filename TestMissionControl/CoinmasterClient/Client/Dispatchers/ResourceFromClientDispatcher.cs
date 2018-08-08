@@ -58,6 +58,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
                     UpdateEventArgs args = new UpdateEventArgs()
                     {
                         MessageType = MessageType.ResourceFromClient,
+                        CorrelationId = resource.CorrelationId,
                         Data = resource,
                     };
                     OnUpdate(this, args);

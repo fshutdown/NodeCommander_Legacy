@@ -15,7 +15,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         public ActionRequest ClientAction;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeActionProcessor(ClientConnection agent) : base(agent)
+        public NodeActionProcessor(ClientConnection client) : base(client)
         {
         }
 
@@ -27,11 +27,11 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize ActionRequest message");
+                logger.Error(ex, $"{Client.SocketConnection.ConnectionInfo.Id} Cannot deserialize ActionRequest message");
                 return;
             }
 
-            logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id} Received action {ClientAction.ToString()}");
+            logger.Info($"{Client.SocketConnection.ConnectionInfo.Id} Received action {ClientAction.ToString()}");
         }
 
         public override void Process()
@@ -88,20 +88,20 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
         private void GitPull()
         {
-            BlockchainNode node = Agent.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
+            BlockchainNode node = Client.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
             if (node == null)
             {
                 logger.Error($"Cannot find node {ClientAction.FullNodeName}");
                 return;
             }
 
-            if (!Agent.Session.GitRepositoryMonitor.GitRepositories.ContainsKey(node.NodeConfig.CodeDirectory))
+            if (!Client.Session.GitRepositoryMonitor.GitRepositories.ContainsKey(node.NodeConfig.CodeDirectory))
             {
                 logger.Warn($"Cannot find code repository \"{node.NodeConfig.CodeDirectory}\"");
                 return;
             }
 
-            GitRepository gitRepository = Agent.Session.GitRepositoryMonitor.GitRepositories[node.NodeConfig.CodeDirectory];
+            GitRepository gitRepository = Client.Session.GitRepositoryMonitor.GitRepositories[node.NodeConfig.CodeDirectory];
             gitRepository.Pull();
         }
 
@@ -120,17 +120,22 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             ProcessStartInfo startInfo = new ProcessStartInfo("dotnet",
                 $"run {compilerSwitches}{networkSwitch} -datadir={dataDir}{runtimeSwitches}");
             startInfo.WorkingDirectory = workingDirectory;
-            startInfo.RedirectStandardError = true;
-            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = false;
+            startInfo.RedirectStandardOutput = false;
             Process process = new Process();
             process.StartInfo = startInfo;
-
             process.Start();
+
+            BlockchainNode node = Client.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
+            string pidFilePath = Path.Combine(node.NodeConfig.NetworkDirectory, "PID");
+            if (File.Exists(pidFilePath)) File.Delete(pidFilePath);
+
+            File.WriteAllText(pidFilePath, process.Id.ToString());
         }
 
         private void StopNode()
         {
-            BlockchainNode node = Agent.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
+            BlockchainNode node = Client.Session.ManagedNodes.GetNode(ClientAction.FullNodeName);
             if (node == null)
             {
                 logger.Error($"Cannot find node {ClientAction.FullNodeName}");

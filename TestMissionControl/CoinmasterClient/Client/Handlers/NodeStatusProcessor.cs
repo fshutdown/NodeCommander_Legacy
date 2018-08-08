@@ -12,7 +12,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 {
     public class NodeStatusProcessor : RequestProcessorBase
     {
-        public BlockchainNodeState[] NodesStates { get; set; }
+        public BlockchainNodeStateMessage BlockchainNodeStateMessage { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public NodeStatusProcessor(AgentConnection agent) : base(agent)
@@ -23,7 +23,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         {
             try
             {
-                NodesStates = Message.GetPayload<BlockchainNodeState[]>();
+                BlockchainNodeStateMessage = Message.GetPayload<BlockchainNodeStateMessage>();
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
-            foreach (BlockchainNodeState state in NodesStates)
+            foreach (BlockchainNodeState state in BlockchainNodeStateMessage.NodesStatistics)
             {
                 BlockchainHeight blockchainHeight = new BlockchainHeight();
                 blockchainHeight.FullNodeName = state.NodeEndpoint.FullNodeName;
@@ -49,8 +49,8 @@ namespace Stratis.CoinmasterClient.Client.Handlers
                 Agent.Session.Database.Persist(blockchainHeight);
             }
 
-            if (NodesStates == null || NodesStates.Length == 0) return;
-            foreach (BlockchainNodeState nodeState in NodesStates)
+            if (BlockchainNodeStateMessage == null || BlockchainNodeStateMessage.NodesStatistics.Length == 0) return;
+            foreach (BlockchainNodeState nodeState in BlockchainNodeStateMessage.NodesStatistics)
             {
                 if (Agent.Session.ManagedNodes.Nodes.ContainsKey(nodeState.NodeEndpoint.FullNodeName))
                 {

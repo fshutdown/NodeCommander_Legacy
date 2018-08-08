@@ -35,11 +35,13 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.ClientRegistration,
+                CorrelationId = clientRegistration.CorrelationId,
                 Data = clientRegistration,
             };
             OnUpdate(this, args);
 
             Enabled = false;
+            Client.ConnectionState = ConnectionState.Registered;
         }
     }
 }

@@ -81,6 +81,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
         
         protected void OnUpdate(DispatcherBase sender, UpdateEventArgs args)
         {
+            Session.ResponseCallbacks.Add(args.CorrelationId, args.Data.OnDispatherResponseReceived);
             Updated?.Invoke(sender, args);
         }
     }

@@ -43,12 +43,24 @@ namespace Stratis.NodeCommander
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CoinMasterForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -190,14 +202,14 @@ namespace Stratis.NodeCommander
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.tabPageControlPanel = new System.Windows.Forms.TabPage();
+            this.tabPageScripts = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.tabPageBlockchain = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.dataGridViewBlockchain = new System.Windows.Forms.DataGridView();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPageWalletManagement = new System.Windows.Forms.TabPage();
             this.contextMenuStripPeers = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -235,6 +247,46 @@ namespace Stratis.NodeCommander
             this.peersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipHelp = new System.Windows.Forms.ToolTip(this.components);
+            this.tabPageResources = new System.Windows.Forms.TabPage();
+            this.tabPageScript = new System.Windows.Forms.TabPage();
+            this.dataGridViewResources = new System.Windows.Forms.DataGridView();
+            this.stackTraceRichTextBox1 = new Stratis.NodeCommander.Controls.StackTraceRichTextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.WalletName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Network = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MnemonicPhrase = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Password = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPageTransactionTracker = new System.Windows.Forms.TabPage();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.stackTraceRichTextBox2 = new Stratis.NodeCommander.Controls.StackTraceRichTextBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.stackTraceRichTextBox3 = new Stratis.NodeCommander.Controls.StackTraceRichTextBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.Node = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NodeBlockHeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InNodeMempool = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.InNodeBlock = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.TransactionType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Blockchain = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TransactionId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OriginNode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OriginWallet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OriginAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DestinationWallet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DestinationNode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DestinationAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InMempool = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.InBlock = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.BlockHeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPageNetworkVisualiser = new System.Windows.Forms.TabPage();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.tabPageStatistics = new System.Windows.Forms.TabPage();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageNodes.SuspendLayout();
@@ -278,15 +330,26 @@ namespace Stratis.NodeCommander
             this.contextMenuStripAgents.SuspendLayout();
             this.tabPageGitExpert.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.tabPageControlPanel.SuspendLayout();
+            this.tabPageScripts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPageBlockchain.SuspendLayout();
             this.groupBox10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBlockchain)).BeginInit();
+            this.tabPageWalletManagement.SuspendLayout();
             this.contextMenuStripPeers.SuspendLayout();
             this.menuStripApplicationMain.SuspendLayout();
             this.statusStripApplicationMain.SuspendLayout();
             this.contextMenuStripClearData.SuspendLayout();
+            this.tabPageResources.SuspendLayout();
+            this.tabPageScript.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewResources)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabPageTransactionTracker.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.groupBox5.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -334,9 +397,12 @@ namespace Stratis.NodeCommander
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageNodes);
             this.tabControl1.Controls.Add(this.tabPageGitExpert);
-            this.tabControl1.Controls.Add(this.tabPageControlPanel);
+            this.tabControl1.Controls.Add(this.tabPageScripts);
             this.tabControl1.Controls.Add(this.tabPageBlockchain);
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPageWalletManagement);
+            this.tabControl1.Controls.Add(this.tabPageTransactionTracker);
+            this.tabControl1.Controls.Add(this.tabPageStatistics);
+            this.tabControl1.Controls.Add(this.tabPageNetworkVisualiser);
             this.tabControl1.Location = new System.Drawing.Point(0, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -788,6 +854,8 @@ namespace Stratis.NodeCommander
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl2.Controls.Add(this.tabPageOverview);
             this.tabControl2.Controls.Add(this.tabPageGit);
+            this.tabControl2.Controls.Add(this.tabPageScript);
+            this.tabControl2.Controls.Add(this.tabPageResources);
             this.tabControl2.Controls.Add(this.tabPageNodeConfig);
             this.tabControl2.Location = new System.Drawing.Point(2, 3);
             this.tabControl2.Name = "tabControl2";
@@ -1861,37 +1929,37 @@ namespace Stratis.NodeCommander
             this.dataGridViewAgents.AllowUserToDeleteRows = false;
             this.dataGridViewAgents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dataGridViewAgents.BackgroundColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewAgents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle16.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewAgents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle16;
             this.dataGridViewAgents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewAgents.ContextMenuStrip = this.contextMenuStripAgents;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewAgents.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewAgents.DefaultCellStyle = dataGridViewCellStyle17;
             this.dataGridViewAgents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewAgents.Location = new System.Drawing.Point(3, 16);
             this.dataGridViewAgents.MultiSelect = false;
             this.dataGridViewAgents.Name = "dataGridViewAgents";
             this.dataGridViewAgents.ReadOnly = true;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewAgents.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewAgents.RowHeadersDefaultCellStyle = dataGridViewCellStyle18;
             this.dataGridViewAgents.RowHeadersVisible = false;
             this.dataGridViewAgents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewAgents.Size = new System.Drawing.Size(641, 98);
@@ -1980,16 +2048,16 @@ namespace Stratis.NodeCommander
             this.label3.TabIndex = 0;
             this.label3.Text = "Pull Request Id:";
             // 
-            // tabPageControlPanel
+            // tabPageScripts
             // 
-            this.tabPageControlPanel.Controls.Add(this.groupBox2);
-            this.tabPageControlPanel.Location = new System.Drawing.Point(4, 22);
-            this.tabPageControlPanel.Name = "tabPageControlPanel";
-            this.tabPageControlPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageControlPanel.Size = new System.Drawing.Size(1564, 831);
-            this.tabPageControlPanel.TabIndex = 2;
-            this.tabPageControlPanel.Text = "Control Panel";
-            this.tabPageControlPanel.UseVisualStyleBackColor = true;
+            this.tabPageScripts.Controls.Add(this.groupBox2);
+            this.tabPageScripts.Location = new System.Drawing.Point(4, 22);
+            this.tabPageScripts.Name = "tabPageScripts";
+            this.tabPageScripts.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageScripts.Size = new System.Drawing.Size(1564, 831);
+            this.tabPageScripts.TabIndex = 2;
+            this.tabPageScripts.Text = "Scripts";
+            this.tabPageScripts.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -1997,7 +2065,7 @@ namespace Stratis.NodeCommander
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.button1);
-            this.groupBox2.Location = new System.Drawing.Point(646, 337);
+            this.groupBox2.Location = new System.Drawing.Point(257, 488);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(272, 61);
             this.groupBox2.TabIndex = 44;
@@ -2048,50 +2116,51 @@ namespace Stratis.NodeCommander
             this.dataGridViewBlockchain.AllowUserToDeleteRows = false;
             this.dataGridViewBlockchain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dataGridViewBlockchain.BackgroundColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle16.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewBlockchain.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewBlockchain.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
             this.dataGridViewBlockchain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewBlockchain.DefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle20.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle20.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewBlockchain.DefaultCellStyle = dataGridViewCellStyle20;
             this.dataGridViewBlockchain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewBlockchain.Location = new System.Drawing.Point(3, 16);
             this.dataGridViewBlockchain.MultiSelect = false;
             this.dataGridViewBlockchain.Name = "dataGridViewBlockchain";
             this.dataGridViewBlockchain.ReadOnly = true;
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewBlockchain.RowHeadersDefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle21.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle21.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle21.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle21.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewBlockchain.RowHeadersDefaultCellStyle = dataGridViewCellStyle21;
             this.dataGridViewBlockchain.RowHeadersVisible = false;
             this.dataGridViewBlockchain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewBlockchain.Size = new System.Drawing.Size(574, 303);
             this.dataGridViewBlockchain.TabIndex = 9;
             // 
-            // tabPage1
+            // tabPageWalletManagement
             // 
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1564, 831);
-            this.tabPage1.TabIndex = 4;
-            this.tabPage1.Text = "Wallet Management";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPageWalletManagement.Controls.Add(this.dataGridView1);
+            this.tabPageWalletManagement.Location = new System.Drawing.Point(4, 22);
+            this.tabPageWalletManagement.Name = "tabPageWalletManagement";
+            this.tabPageWalletManagement.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageWalletManagement.Size = new System.Drawing.Size(1564, 831);
+            this.tabPageWalletManagement.TabIndex = 4;
+            this.tabPageWalletManagement.Text = "Wallet Management";
+            this.tabPageWalletManagement.UseVisualStyleBackColor = true;
             // 
             // contextMenuStripPeers
             // 
@@ -2378,6 +2447,494 @@ namespace Stratis.NodeCommander
             this.logsToolStripMenuItem.Text = "Logs";
             this.logsToolStripMenuItem.Click += new System.EventHandler(this.logsToolStripMenuItem_Click);
             // 
+            // tabPageResources
+            // 
+            this.tabPageResources.Controls.Add(this.dataGridViewResources);
+            this.tabPageResources.Location = new System.Drawing.Point(4, 22);
+            this.tabPageResources.Name = "tabPageResources";
+            this.tabPageResources.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageResources.Size = new System.Drawing.Size(642, 670);
+            this.tabPageResources.TabIndex = 3;
+            this.tabPageResources.Text = "Resources";
+            this.tabPageResources.UseVisualStyleBackColor = true;
+            // 
+            // tabPageScript
+            // 
+            this.tabPageScript.Controls.Add(this.comboBox2);
+            this.tabPageScript.Controls.Add(this.label11);
+            this.tabPageScript.Controls.Add(this.stackTraceRichTextBox1);
+            this.tabPageScript.Location = new System.Drawing.Point(4, 22);
+            this.tabPageScript.Name = "tabPageScript";
+            this.tabPageScript.Size = new System.Drawing.Size(642, 670);
+            this.tabPageScript.TabIndex = 4;
+            this.tabPageScript.Text = "Script";
+            this.tabPageScript.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewResources
+            // 
+            this.dataGridViewResources.AllowUserToAddRows = false;
+            this.dataGridViewResources.AllowUserToDeleteRows = false;
+            this.dataGridViewResources.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridViewResources.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewResources.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            this.dataGridViewResources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewResources.DefaultCellStyle = dataGridViewCellStyle14;
+            this.dataGridViewResources.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewResources.Location = new System.Drawing.Point(3, 3);
+            this.dataGridViewResources.MultiSelect = false;
+            this.dataGridViewResources.Name = "dataGridViewResources";
+            this.dataGridViewResources.ReadOnly = true;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewResources.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
+            this.dataGridViewResources.RowHeadersVisible = false;
+            this.dataGridViewResources.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewResources.Size = new System.Drawing.Size(636, 664);
+            this.dataGridViewResources.TabIndex = 10;
+            // 
+            // stackTraceRichTextBox1
+            // 
+            this.stackTraceRichTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.stackTraceRichTextBox1.BackColor = System.Drawing.Color.White;
+            this.stackTraceRichTextBox1.Location = new System.Drawing.Point(3, 63);
+            this.stackTraceRichTextBox1.Name = "stackTraceRichTextBox1";
+            this.stackTraceRichTextBox1.Size = new System.Drawing.Size(636, 604);
+            this.stackTraceRichTextBox1.TabIndex = 9;
+            this.stackTraceRichTextBox1.Text = "";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 11);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(41, 13);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "label11";
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle22.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle22.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle22.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle22.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.WalletName,
+            this.Network,
+            this.MnemonicPhrase,
+            this.Password,
+            this.Date});
+            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle23.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle23.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle23.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle23.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle23.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle23.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle23;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView1.MultiSelect = false;
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle24.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle24.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle24.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle24.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle24;
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(1558, 825);
+            this.dataGridView1.TabIndex = 10;
+            // 
+            // WalletName
+            // 
+            this.WalletName.HeaderText = "Wallet Name";
+            this.WalletName.Name = "WalletName";
+            this.WalletName.ReadOnly = true;
+            this.WalletName.Width = 93;
+            // 
+            // Network
+            // 
+            this.Network.HeaderText = "Network";
+            this.Network.Name = "Network";
+            this.Network.ReadOnly = true;
+            this.Network.Width = 72;
+            // 
+            // MnemonicPhrase
+            // 
+            this.MnemonicPhrase.HeaderText = "Mnemonic Phrase";
+            this.MnemonicPhrase.Name = "MnemonicPhrase";
+            this.MnemonicPhrase.ReadOnly = true;
+            this.MnemonicPhrase.Width = 107;
+            // 
+            // Password
+            // 
+            this.Password.HeaderText = "Password";
+            this.Password.Name = "Password";
+            this.Password.ReadOnly = true;
+            this.Password.Width = 78;
+            // 
+            // Date
+            // 
+            this.Date.HeaderText = "Date";
+            this.Date.Name = "Date";
+            this.Date.ReadOnly = true;
+            this.Date.Width = 55;
+            // 
+            // tabPageTransactionTracker
+            // 
+            this.tabPageTransactionTracker.Controls.Add(this.groupBox8);
+            this.tabPageTransactionTracker.Controls.Add(this.groupBox7);
+            this.tabPageTransactionTracker.Controls.Add(this.groupBox5);
+            this.tabPageTransactionTracker.Controls.Add(this.dataGridView2);
+            this.tabPageTransactionTracker.Location = new System.Drawing.Point(4, 22);
+            this.tabPageTransactionTracker.Name = "tabPageTransactionTracker";
+            this.tabPageTransactionTracker.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageTransactionTracker.Size = new System.Drawing.Size(1564, 831);
+            this.tabPageTransactionTracker.TabIndex = 5;
+            this.tabPageTransactionTracker.Text = "Transaction Tracker";
+            this.tabPageTransactionTracker.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AllowUserToDeleteRows = false;
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle28;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.TransactionType,
+            this.dataGridViewTextBoxColumn1,
+            this.Blockchain,
+            this.TransactionId,
+            this.OriginNode,
+            this.OriginWallet,
+            this.OriginAddress,
+            this.DestinationWallet,
+            this.DestinationNode,
+            this.DestinationAddress,
+            this.Amount,
+            this.InMempool,
+            this.InBlock,
+            this.BlockHeight});
+            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle29.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle29.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle29.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle29.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle29.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle29;
+            this.dataGridView2.Location = new System.Drawing.Point(3, 16);
+            this.dataGridView2.MultiSelect = false;
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.ReadOnly = true;
+            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle30.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle30.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle30.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle30.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle30.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle30.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView2.RowHeadersDefaultCellStyle = dataGridViewCellStyle30;
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(1553, 402);
+            this.dataGridView2.TabIndex = 10;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.stackTraceRichTextBox2);
+            this.groupBox5.Location = new System.Drawing.Point(8, 517);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(1215, 308);
+            this.groupBox5.TabIndex = 11;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "RAW Transaction";
+            // 
+            // stackTraceRichTextBox2
+            // 
+            this.stackTraceRichTextBox2.BackColor = System.Drawing.Color.White;
+            this.stackTraceRichTextBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stackTraceRichTextBox2.Location = new System.Drawing.Point(3, 16);
+            this.stackTraceRichTextBox2.Name = "stackTraceRichTextBox2";
+            this.stackTraceRichTextBox2.Size = new System.Drawing.Size(1209, 289);
+            this.stackTraceRichTextBox2.TabIndex = 10;
+            this.stackTraceRichTextBox2.Text = "";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.stackTraceRichTextBox3);
+            this.groupBox7.Location = new System.Drawing.Point(8, 424);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(1548, 87);
+            this.groupBox7.TabIndex = 12;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Transaction HEX";
+            // 
+            // stackTraceRichTextBox3
+            // 
+            this.stackTraceRichTextBox3.BackColor = System.Drawing.Color.White;
+            this.stackTraceRichTextBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stackTraceRichTextBox3.Location = new System.Drawing.Point(3, 16);
+            this.stackTraceRichTextBox3.Name = "stackTraceRichTextBox3";
+            this.stackTraceRichTextBox3.Size = new System.Drawing.Size(1542, 68);
+            this.stackTraceRichTextBox3.TabIndex = 10;
+            this.stackTraceRichTextBox3.Text = "";
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.dataGridView3);
+            this.groupBox8.Location = new System.Drawing.Point(1229, 517);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(327, 308);
+            this.groupBox8.TabIndex = 13;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Propagation Report";
+            // 
+            // dataGridView3
+            // 
+            this.dataGridView3.AllowUserToAddRows = false;
+            this.dataGridView3.AllowUserToDeleteRows = false;
+            this.dataGridView3.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView3.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle25.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle25.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle25.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle25.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle25.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView3.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle25;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Node,
+            this.NodeBlockHeight,
+            this.InNodeMempool,
+            this.InNodeBlock});
+            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle26.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle26.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView3.DefaultCellStyle = dataGridViewCellStyle26;
+            this.dataGridView3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView3.Location = new System.Drawing.Point(3, 16);
+            this.dataGridView3.MultiSelect = false;
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.ReadOnly = true;
+            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle27.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle27.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle27.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle27.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle27.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView3.RowHeadersDefaultCellStyle = dataGridViewCellStyle27;
+            this.dataGridView3.RowHeadersVisible = false;
+            this.dataGridView3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView3.Size = new System.Drawing.Size(321, 289);
+            this.dataGridView3.TabIndex = 10;
+            // 
+            // Node
+            // 
+            this.Node.HeaderText = "Node";
+            this.Node.Name = "Node";
+            this.Node.ReadOnly = true;
+            this.Node.Width = 58;
+            // 
+            // NodeBlockHeight
+            // 
+            this.NodeBlockHeight.HeaderText = "Block Height";
+            this.NodeBlockHeight.Name = "NodeBlockHeight";
+            this.NodeBlockHeight.ReadOnly = true;
+            this.NodeBlockHeight.Width = 93;
+            // 
+            // InNodeMempool
+            // 
+            this.InNodeMempool.HeaderText = "In Mempool";
+            this.InNodeMempool.Name = "InNodeMempool";
+            this.InNodeMempool.ReadOnly = true;
+            this.InNodeMempool.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.InNodeMempool.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.InNodeMempool.Width = 87;
+            // 
+            // InNodeBlock
+            // 
+            this.InNodeBlock.HeaderText = "In Block";
+            this.InNodeBlock.Name = "InNodeBlock";
+            this.InNodeBlock.ReadOnly = true;
+            this.InNodeBlock.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.InNodeBlock.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.InNodeBlock.Width = 71;
+            // 
+            // TransactionType
+            // 
+            this.TransactionType.HeaderText = "Transaction Type";
+            this.TransactionType.Name = "TransactionType";
+            this.TransactionType.ReadOnly = true;
+            this.TransactionType.Width = 105;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "Network";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Width = 72;
+            // 
+            // Blockchain
+            // 
+            this.Blockchain.HeaderText = "Blockchain";
+            this.Blockchain.Name = "Blockchain";
+            this.Blockchain.ReadOnly = true;
+            this.Blockchain.Width = 85;
+            // 
+            // TransactionId
+            // 
+            this.TransactionId.HeaderText = "Transaction Id";
+            this.TransactionId.Name = "TransactionId";
+            this.TransactionId.ReadOnly = true;
+            this.TransactionId.Width = 92;
+            // 
+            // OriginNode
+            // 
+            this.OriginNode.HeaderText = "Origin Node";
+            this.OriginNode.Name = "OriginNode";
+            this.OriginNode.ReadOnly = true;
+            this.OriginNode.Width = 81;
+            // 
+            // OriginWallet
+            // 
+            this.OriginWallet.HeaderText = "Origin Wallet";
+            this.OriginWallet.Name = "OriginWallet";
+            this.OriginWallet.ReadOnly = true;
+            this.OriginWallet.Width = 85;
+            // 
+            // OriginAddress
+            // 
+            this.OriginAddress.HeaderText = "Origin Address";
+            this.OriginAddress.Name = "OriginAddress";
+            this.OriginAddress.ReadOnly = true;
+            this.OriginAddress.Width = 92;
+            // 
+            // DestinationWallet
+            // 
+            this.DestinationWallet.HeaderText = "Destination Wallet";
+            this.DestinationWallet.Name = "DestinationWallet";
+            this.DestinationWallet.ReadOnly = true;
+            this.DestinationWallet.Width = 108;
+            // 
+            // DestinationNode
+            // 
+            this.DestinationNode.HeaderText = "Destination Node";
+            this.DestinationNode.Name = "DestinationNode";
+            this.DestinationNode.ReadOnly = true;
+            this.DestinationNode.Width = 105;
+            // 
+            // DestinationAddress
+            // 
+            this.DestinationAddress.HeaderText = "Destination Address";
+            this.DestinationAddress.Name = "DestinationAddress";
+            this.DestinationAddress.ReadOnly = true;
+            this.DestinationAddress.Width = 115;
+            // 
+            // Amount
+            // 
+            this.Amount.HeaderText = "Amount";
+            this.Amount.Name = "Amount";
+            this.Amount.ReadOnly = true;
+            this.Amount.Width = 68;
+            // 
+            // InMempool
+            // 
+            this.InMempool.HeaderText = "In Mempool";
+            this.InMempool.Name = "InMempool";
+            this.InMempool.ReadOnly = true;
+            this.InMempool.Width = 61;
+            // 
+            // InBlock
+            // 
+            this.InBlock.HeaderText = "In Block";
+            this.InBlock.Name = "InBlock";
+            this.InBlock.ReadOnly = true;
+            this.InBlock.Width = 47;
+            // 
+            // BlockHeight
+            // 
+            this.BlockHeight.HeaderText = "BlockHeight";
+            this.BlockHeight.Name = "BlockHeight";
+            this.BlockHeight.ReadOnly = true;
+            this.BlockHeight.Width = 90;
+            // 
+            // tabPageNetworkVisualiser
+            // 
+            this.tabPageNetworkVisualiser.Location = new System.Drawing.Point(4, 22);
+            this.tabPageNetworkVisualiser.Name = "tabPageNetworkVisualiser";
+            this.tabPageNetworkVisualiser.Size = new System.Drawing.Size(1564, 831);
+            this.tabPageNetworkVisualiser.TabIndex = 6;
+            this.tabPageNetworkVisualiser.Text = "Network Visualiser";
+            this.tabPageNetworkVisualiser.UseVisualStyleBackColor = true;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(50, 5);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 11;
+            // 
+            // tabPageStatistics
+            // 
+            this.tabPageStatistics.Location = new System.Drawing.Point(4, 22);
+            this.tabPageStatistics.Name = "tabPageStatistics";
+            this.tabPageStatistics.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageStatistics.Size = new System.Drawing.Size(1564, 831);
+            this.tabPageStatistics.TabIndex = 7;
+            this.tabPageStatistics.Text = "Statistics";
+            this.tabPageStatistics.UseVisualStyleBackColor = true;
+            // 
             // CoinMasterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2447,17 +3004,29 @@ namespace Stratis.NodeCommander
             this.tabPageGitExpert.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.tabPageControlPanel.ResumeLayout(false);
+            this.tabPageScripts.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.tabPageBlockchain.ResumeLayout(false);
             this.groupBox10.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBlockchain)).EndInit();
+            this.tabPageWalletManagement.ResumeLayout(false);
             this.contextMenuStripPeers.ResumeLayout(false);
             this.menuStripApplicationMain.ResumeLayout(false);
             this.menuStripApplicationMain.PerformLayout();
             this.statusStripApplicationMain.ResumeLayout(false);
             this.statusStripApplicationMain.PerformLayout();
             this.contextMenuStripClearData.ResumeLayout(false);
+            this.tabPageResources.ResumeLayout(false);
+            this.tabPageScript.ResumeLayout(false);
+            this.tabPageScript.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewResources)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabPageTransactionTracker.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2486,7 +3055,7 @@ namespace Stratis.NodeCommander
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button buttonStopNode;
         private System.Windows.Forms.Button buttonStartNode;
-        private System.Windows.Forms.TabPage tabPageControlPanel;
+        private System.Windows.Forms.TabPage tabPageScripts;
         private System.Windows.Forms.StatusStrip statusStripApplicationMain;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelDatabase;
@@ -2643,13 +3212,53 @@ namespace Stratis.NodeCommander
         private System.Windows.Forms.ToolStripMenuItem unbanNodeToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripMemoryPool;
         private System.Windows.Forms.ToolStripMenuItem showStacktraceToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPageWalletManagement;
         private System.Windows.Forms.Button buttonRemoveNode;
         private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logsToolStripMenuItem;
         private Controls.PeerConnections.PeerConnectionsDataGridView dataGridViewPeers;
         private DataGridView dataGridViewMempool;
         private Controls.StackTraceRichTextBox stackTraceRichTextBox;
+        private TabPage tabPageScript;
+        private Label label11;
+        private Controls.StackTraceRichTextBox stackTraceRichTextBox1;
+        private TabPage tabPageResources;
+        private DataGridView dataGridViewResources;
+        private DataGridView dataGridView1;
+        private DataGridViewTextBoxColumn WalletName;
+        private DataGridViewTextBoxColumn Network;
+        private DataGridViewTextBoxColumn MnemonicPhrase;
+        private DataGridViewTextBoxColumn Password;
+        private DataGridViewTextBoxColumn Date;
+        private TabPage tabPageTransactionTracker;
+        private GroupBox groupBox8;
+        private DataGridView dataGridView3;
+        private DataGridViewTextBoxColumn Node;
+        private DataGridViewTextBoxColumn NodeBlockHeight;
+        private DataGridViewCheckBoxColumn InNodeMempool;
+        private DataGridViewCheckBoxColumn InNodeBlock;
+        private GroupBox groupBox7;
+        private Controls.StackTraceRichTextBox stackTraceRichTextBox3;
+        private GroupBox groupBox5;
+        private Controls.StackTraceRichTextBox stackTraceRichTextBox2;
+        private DataGridView dataGridView2;
+        private DataGridViewTextBoxColumn TransactionType;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn Blockchain;
+        private DataGridViewTextBoxColumn TransactionId;
+        private DataGridViewTextBoxColumn OriginNode;
+        private DataGridViewTextBoxColumn OriginWallet;
+        private DataGridViewTextBoxColumn OriginAddress;
+        private DataGridViewTextBoxColumn DestinationWallet;
+        private DataGridViewTextBoxColumn DestinationNode;
+        private DataGridViewTextBoxColumn DestinationAddress;
+        private DataGridViewTextBoxColumn Amount;
+        private DataGridViewCheckBoxColumn InMempool;
+        private DataGridViewCheckBoxColumn InBlock;
+        private DataGridViewTextBoxColumn BlockHeight;
+        private TabPage tabPageNetworkVisualiser;
+        private ComboBox comboBox2;
+        private TabPage tabPageStatistics;
     }
 }
 

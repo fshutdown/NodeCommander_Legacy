@@ -47,20 +47,20 @@ namespace Stratis.CoinmasterClient.Network
             if (nodeNameParts.Length != 3) throw new ArgumentException($"Incorrect format of the node name {fullNodeName}");
 
             NodeName = nodeNameParts[2];
-            NodeBlockchainName = nodeNameParts[0];
             NodeNetworkName = nodeNameParts[1];
+            NodeBlockchainName = nodeNameParts[0];
         }
 
-        public NodeEndpointName(String nodeNetowrkName, string nodeNetworkName, string nodeName) : this()
+        public NodeEndpointName(String blockchainName, string networkName, string nodeName) : this()
         {
-            NodeBlockchainName = nodeNetowrkName;
-            NodeNetworkName = nodeNetworkName;
+            NodeBlockchainName = blockchainName;
+            NodeNetworkName = networkName;
             NodeName = nodeName;
         }
-        public NodeEndpointName(String nodeNetowrkName, string nodeNetworkName) : this()
+        public NodeEndpointName(String blockchainName, string networkName) : this()
         {
-            NodeBlockchainName = nodeNetowrkName;
-            NodeNetworkName = nodeNetworkName;
+            NodeBlockchainName = blockchainName;
+            NodeNetworkName = networkName;
             NodeName = null;
         }
 

@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stratis.CoinmasterClient.Analysis;
 using Stratis.CoinmasterClient.Client.Dispatchers;
 using Stratis.CoinmasterClient.Client.Handlers;
 
 namespace Stratis.CoinmasterClient.Messages
 {
-    public class AgentRegistration : IMessage
+    public class AgentHealthMessage : IMessage
     {
         public event ResponseHandler.DispatherCallback DispatherResponseReceived;
-        public ClientConnection Client { get; set; }
+        public AgentHealthState AgentHealthState { get; set; }
 
         public Guid CorrelationId { get; set; }
 
-        public AgentRegistration()
+        public AgentHealthMessage()
         {
             CorrelationId = Guid.NewGuid();
         } 

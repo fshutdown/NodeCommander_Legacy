@@ -9,7 +9,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public ClientRegistrationRequest ClientRegistration { get; set; }
 
-        public ClientRegistrationProcessor(ClientConnection agent) : base(agent)
+        public ClientRegistrationProcessor(ClientConnection client) : base(client)
         {
         }
 
@@ -18,20 +18,20 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             try
             {
                 ClientRegistration = Message.GetPayload<ClientRegistrationRequest>();
-                Agent.ClientRegistration = ClientRegistration;
+                Client.ClientRegistration = ClientRegistration;
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize ClientRegistration message");
+                logger.Error(ex, $"{Client.SocketConnection.ConnectionInfo.Id} Cannot deserialize ClientRegistration message");
                 return;
             }
 
-            logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id} Received action {ClientRegistration.ToString()}");
+            logger.Info($"{Client.SocketConnection.ConnectionInfo.Id} Received action {ClientRegistration.ToString()}");
         }
 
         public override void Process()
         {
-            logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id}: Received Client Registration message for {ClientRegistration.User} on {ClientRegistration.Platform}/{ClientRegistration.WorkstationName} (update every {ClientRegistration.UpdateFrequency / 1000} sec)");
+            logger.Info($"{Client.SocketConnection.ConnectionInfo.Id}: Received Client Registration message for {ClientRegistration.User} on {ClientRegistration.Platform}/{ClientRegistration.WorkstationName} (update every {ClientRegistration.UpdateFrequency / 1000} sec)");
         }
     }
 }

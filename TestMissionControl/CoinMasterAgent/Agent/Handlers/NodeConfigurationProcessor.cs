@@ -8,10 +8,10 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 {
     public sealed class NodeConfigurationProcessor: RequestProcessorBase
     {
-        public ClientNodeConfig[] NodeConfigurationList { get; set; }
+        public NodeConfigurationMessage NodeConfigurationMessage { get; set; }
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public NodeConfigurationProcessor(ClientConnection agent) : base(agent)
+        public NodeConfigurationProcessor(ClientConnection client) : base(client)
         {
         }
 
@@ -19,41 +19,41 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         {
             try
             {
-                NodeConfigurationList = Message.GetPayload<ClientNodeConfig[]>();
+                NodeConfigurationMessage = Message.GetPayload<NodeConfigurationMessage>();
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize NodeList message");
+                logger.Error(ex, $"{Client.SocketConnection.ConnectionInfo.Id} Cannot deserialize NodeList message");
             }
         }
 
         public override void Process()
         {
-            logger.Info($"{Agent.SocketConnection.ConnectionInfo.Id} Processing {NodeConfigurationList.Length} nodes configuration");
+            logger.Info($"{Client.SocketConnection.ConnectionInfo.Id} Processing {NodeConfigurationMessage.NodeConfigurationList.Length} nodes configuration");
 
-            if (Agent.Session.ManagedNodes == null) Agent.Session.ManagedNodes = new NodeNetwork();
+            if (Client.Session.ManagedNodes == null) Client.Session.ManagedNodes = new NodeNetwork();
 
-            if (Agent.ClientRegistration.ClientRole == ClientRoleType.Primary)
+            if (Client.ClientRegistration.ClientRole == ClientRoleType.Primary)
             {
-                foreach (BlockchainNode node in Agent.Session.ManagedNodes.Nodes.Values)
+                foreach (BlockchainNode node in Client.Session.ManagedNodes.Nodes.Values)
                     node.NodeState.OrphanNode = true;
 
-                foreach (ClientNodeConfig nodeConfig in NodeConfigurationList)
+                foreach (ClientNodeConfig nodeConfig in NodeConfigurationMessage.NodeConfigurationList)
                 {
                     BlockchainNode node;
-                    if (!Agent.Session.ManagedNodes.Nodes.ContainsKey(nodeConfig.NodeEndpoint.FullNodeName))
+                    if (!Client.Session.ManagedNodes.Nodes.ContainsKey(nodeConfig.NodeEndpoint.FullNodeName))
                     {
                         node = new BlockchainNode(nodeConfig);
-                        Agent.Session.ManagedNodes.Nodes.Add(nodeConfig.NodeEndpoint.FullNodeName, node);
+                        Client.Session.ManagedNodes.Nodes.Add(nodeConfig.NodeEndpoint.FullNodeName, node);
                     }
                     else
                     {
-                        node = Agent.Session.ManagedNodes.Nodes[nodeConfig.NodeEndpoint.FullNodeName];
+                        node = Client.Session.ManagedNodes.Nodes[nodeConfig.NodeEndpoint.FullNodeName];
                     }
                     node.NodeState.OrphanNode = false;
                 }
             }
-            else if (Agent.ClientRegistration.ClientRole == ClientRoleType.WatchOnly)
+            else if (Client.ClientRegistration.ClientRole == ClientRoleType.WatchOnly)
             {
 
             }

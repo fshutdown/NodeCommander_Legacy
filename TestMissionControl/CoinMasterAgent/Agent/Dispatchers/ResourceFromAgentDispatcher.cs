@@ -32,7 +32,7 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
                     logResource.AgentPath = logFilePath;
 
                     AddResource(logResource);
-                    node.NodeState.Resources.Add("nodeCommander.txt", logResource.ResourceId);
+                    node.NodeState.Resources.Add("nodeCommander.txt", logResource.CorrelationId);
                 }
             }
         }
@@ -49,13 +49,18 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 
         public override void SendData()
         {
-            logger.Debug($"Uploading {GetResources().Count} resources");
+            List<Resource> resources = GetResources();
+            ResourceListMessage resourceListMessage = new ResourceListMessage();
+            resourceListMessage.Resources = resources;
+
+            logger.Debug($"Uploading {resources.Count} resources");
 
             ReadData();
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.ResourceFromAgent,
-                Data = GetResources(),
+                Data = resourceListMessage,
+                CorrelationId = resourceListMessage.CorrelationId,
                 Scope = ResourceScope.Global
             };
             OnUpdate(this, args);

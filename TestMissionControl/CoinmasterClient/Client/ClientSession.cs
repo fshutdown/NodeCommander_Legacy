@@ -20,6 +20,8 @@ namespace Stratis.CoinmasterClient.Client
     public class ClientSession
     {
         public Dictionary<String, AgentConnection> Agents { get; set; }
+        public Dictionary<Guid, ResponseHandler.DispatherCallback> ResponseCallbacks = new Dictionary<Guid, ResponseHandler.DispatherCallback>();
+
         public NodeNetwork ManagedNodes { get; set; }
 
         public event Action<AgentConnection, AgentHealthState, String> AgentHealthcheckStatsUpdated;

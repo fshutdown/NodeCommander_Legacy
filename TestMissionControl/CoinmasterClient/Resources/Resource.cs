@@ -1,13 +1,18 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Stratis.CoinmasterClient.Client.Dispatchers;
+using Stratis.CoinmasterClient.Client.Handlers;
+using Stratis.CoinmasterClient.Messages;
 
 namespace Stratis.CoinmasterClient.Resources
 {
-    public class Resource
+    public class Resource : IMessage
     {
+        public event ResponseHandler.DispatherCallback DispatherResponseReceived;
+
         [JsonIgnore]
-        public Guid ResourceId { get; set; }
+        public Guid CorrelationId { get; set; }
 
         [JsonIgnore]
         public ResourceScope Scope { get; set; }
@@ -29,7 +34,7 @@ namespace Stratis.CoinmasterClient.Resources
 
         public Resource()
         {
-            ResourceId = Guid.NewGuid();
+            CorrelationId = Guid.NewGuid();
             EndOfData = false;
         }
 
@@ -38,6 +43,11 @@ namespace Stratis.CoinmasterClient.Resources
             ResourceName = resourceName;
             Scope = scope;
             FullNodeName = fullNodeName;
+        }
+
+        public void OnDispatherResponseReceived(DispatherResponse response)
+        {
+            DispatherResponseReceived?.Invoke(response);
         }
     }
 }

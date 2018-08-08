@@ -32,7 +32,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
             RequestProcessorCompletedEventArgs args = new RequestProcessorCompletedEventArgs()
             {
-                Client = Agent
+                Agent = Agent
             };
             OnCompleted(args);
         }

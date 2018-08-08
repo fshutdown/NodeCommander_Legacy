@@ -31,6 +31,7 @@ namespace Stratis.CoinmasterClient.Client
         public Action OnClose { get; internal set; }
         public Action<String> OnConnectionError { get; internal set; }
         public Action<String> OnMessage { get; internal set; }
+        public ConnectionState ConnectionState { get; set; }
 
         private const int ReceiveChunkSize = 1024;
         private const int SendChunkSize = 1024;
@@ -50,6 +51,7 @@ namespace Stratis.CoinmasterClient.Client
 
         public async void Connect()
         {
+            ConnectionState = ConnectionState.Disconnected;
             SocketConnection = new ClientWebSocket();
             SocketConnection.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
 
@@ -59,6 +61,7 @@ namespace Stratis.CoinmasterClient.Client
                 
                 StartListen();
                 OnOpen();
+                ConnectionState = ConnectionState.Connected;
             }
             catch (Exception ex)
             {
@@ -111,10 +114,10 @@ namespace Stratis.CoinmasterClient.Client
 
         public async Task SendObject(DispatcherBase sender, UpdateEventArgs args)
         {
-            await SendObject(args.MessageType, args.Data);
+            await SendObject(args.MessageType, args.CorrelationId, args.Data);
         }
 
-        public async Task SendObject(MessageType messageType, object data)
+        public async Task SendObject(MessageType messageType, Guid correlationId, object data)
         {
             if (SocketConnection.State == WebSocketState.Closed)
             {
@@ -131,6 +134,7 @@ namespace Stratis.CoinmasterClient.Client
 
                 MessageEnvelope envelope = new MessageEnvelope();
                 envelope.MessageType = messageType;
+                envelope.CorrelationId = correlationId;
                 envelope.PayloadObject = data;
 
                 payload = JsonConvert.SerializeObject(envelope);
@@ -184,6 +188,7 @@ namespace Stratis.CoinmasterClient.Client
         {
             try
             {
+                ConnectionState = ConnectionState.Disconnected;
                 SocketConnection.CloseAsync(WebSocketCloseStatus.NormalClosure, String.Empty, _cancellationToken);
             }
             catch (Exception ex)

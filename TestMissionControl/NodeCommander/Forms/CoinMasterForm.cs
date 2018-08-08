@@ -271,17 +271,35 @@ namespace Stratis.NodeCommander
 
         private void button4_Click(object sender, EventArgs e)
         {
-            SendAction((dispatcher, node) => dispatcher.StartNode(node));
+            SendAction((dispatcher, node) => dispatcher.StartNode(node, response =>
+            {
+                if (!response.IsSuccess)
+                {
+                    MessageBox.Show(response.MessageHeader, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }));
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            SendAction((dispatcher, node) => dispatcher.StopNode(node));
+            SendAction((dispatcher, node) => dispatcher.StopNode(node, response =>
+            {
+                if (!response.IsSuccess)
+                {
+                    MessageBox.Show(response.MessageHeader, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }));
         }
 
         private void linkLabelPullCurrentBranch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            SendAction((dispatcher, node) => dispatcher.GitPull(node));
+            SendAction((dispatcher, node) => dispatcher.GitPull(node, response =>
+            {
+                if (!response.IsSuccess)
+                {
+                    MessageBox.Show(response.MessageHeader, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }));
         }
 
         private void SendAction(Action<NodeActionDispatcher, BlockchainNode> action)
@@ -404,7 +422,13 @@ namespace Stratis.NodeCommander
                 var agent = clientConnectionManager.GetAgent(node.NodeConfig.Agent);
 
                 NodeActionDispatcher dispatcher = (NodeActionDispatcher)agent.Dispatchers[MessageType.ActionRequest];
-                dispatcher.RemoveResource(node, resourceType);
+                dispatcher.RemoveResource(node, resourceType, response =>
+                {
+                    if (!response.IsSuccess)
+                    {
+                        MessageBox.Show(response.MessageHeader, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
             }
         }
 

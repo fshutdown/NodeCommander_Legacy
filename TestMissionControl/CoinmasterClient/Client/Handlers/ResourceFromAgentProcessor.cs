@@ -17,7 +17,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
     public class ResourceFromAgentProcessor : RequestProcessorBase
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public List<Resource> ResourceList { get; set; }
+        public ResourceListMessage ResourceListMessage { get; set; }
 
         public ResourceFromAgentProcessor(AgentConnection agent) : base(agent)
         {
@@ -27,7 +27,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
         {
             try
             {
-                ResourceList = Message.GetPayload<List<Resource>>();
+                ResourceListMessage = Message.GetPayload<ResourceListMessage>();
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace Stratis.CoinmasterClient.Client.Handlers
 
         public override void Process()
         {
-            foreach (Resource resource in ResourceList)
+            foreach (Resource resource in ResourceListMessage.Resources)
             {
                 if (resource.Length == 0) continue;
                 if (resource.ResourceName == ResourceType.NodeCommanderLog)

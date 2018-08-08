@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Stratis.CoinmasterClient.Client.Dispatchers.EventArgs;
+using Stratis.CoinmasterClient.Client.Handlers;
 using Stratis.CoinmasterClient.Config;
 using Stratis.CoinmasterClient.Messages;
 using Stratis.CoinmasterClient.Network;
@@ -40,15 +41,18 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
                 UpdateEventArgs args = new UpdateEventArgs()
                 {
                     MessageType = MessageType.ActionRequest,
+                    CorrelationId = actionRequest.CorrelationId,
                     Data = actionRequest,
                 };
                 OnUpdate(this, args);
             }
         }
 
-        public void StartNode(BlockchainNode node)
+        public void StartNode(BlockchainNode node, ResponseHandler.DispatherCallback dispatherCallback)
         {
             ActionRequest action = new ActionRequest(ActionType.StartNode);
+            action.DispatherResponseReceived += dispatherCallback;
+
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
 
             action.Parameters.Add(ActionParameters.CompilerSwitches, node.NodeConfig.CompilerSwitches);
@@ -60,7 +64,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void StopNode(BlockchainNode node)
+        public void StopNode(BlockchainNode node, ResponseHandler.DispatherCallback dispatherCallback)
         {
             ActionRequest action = new ActionRequest(ActionType.StopNode);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
@@ -68,7 +72,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void RemoveResource(BlockchainNode node, NodeResourceType resourceType)
+        public void RemoveResource(BlockchainNode node, NodeResourceType resourceType, ResponseHandler.DispatherCallback dispatherCallback)
         {
             ActionRequest action = new ActionRequest(ActionType.DeleteFile);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;
@@ -78,7 +82,7 @@ namespace Stratis.CoinmasterClient.Client.Dispatchers
             actionQueue.Enqueue(action);
         }
 
-        public void GitPull(BlockchainNode node)
+        public void GitPull(BlockchainNode node, ResponseHandler.DispatherCallback dispatherCallback)
         {
             ActionRequest action = new ActionRequest(ActionType.GitPull);
             action.FullNodeName = node.NodeEndpoint.FullNodeName;

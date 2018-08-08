@@ -14,7 +14,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
 
         private Resource deployFile { get; set; }
 
-        public ResourceFromClientProcessor(ClientConnection agent) : base(agent)
+        public ResourceFromClientProcessor(ClientConnection client) : base(client)
         {
         }
 
@@ -26,7 +26,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot deserialize DeployFile message");
+                logger.Error(ex, $"{Client.SocketConnection.ConnectionInfo.Id} Cannot deserialize DeployFile message");
             }
         }
 
@@ -34,7 +34,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
         {
             try
             {
-                string deploymentKey = Agent.SocketConnection.ConnectionInfo.Id + deployFile.AgentPath;
+                string deploymentKey = Client.SocketConnection.ConnectionInfo.Id + deployFile.AgentPath;
 
                 FileDeploymentObject fileDeployment;
                 if (activeDeplopyments.ContainsKey(deploymentKey))
@@ -43,7 +43,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
                 }
                 else
                 {
-                    fileDeployment = new FileDeploymentObject(Agent);
+                    fileDeployment = new FileDeploymentObject(Client);
                     activeDeplopyments.Add(deploymentKey, fileDeployment);
                 }
 
@@ -54,7 +54,7 @@ namespace Stratis.CoinMasterAgent.Agent.Handlers
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{Agent.SocketConnection.ConnectionInfo.Id} Cannot process DeployFile message");
+                logger.Error(ex, $"{Client.SocketConnection.ConnectionInfo.Id} Cannot process DeployFile message");
             }
         }
     }

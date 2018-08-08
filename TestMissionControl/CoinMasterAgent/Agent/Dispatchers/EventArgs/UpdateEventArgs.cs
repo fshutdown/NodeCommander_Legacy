@@ -7,7 +7,8 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers.EventArgs
     public class UpdateEventArgs
     {
         public MessageType MessageType { get; set; }
-        public object Data { get; set; }
+        public Guid CorrelationId { get; set; }
+        public IMessage Data { get; set; }
         public ResourceScope Scope { get; set; }
         public String FullNodeName { get; set; }
         public ClientConnection Agent { get; set; }

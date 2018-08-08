@@ -43,11 +43,15 @@ namespace Stratis.CoinMasterAgent.Agent.Dispatchers
 
             Task.WaitAll(updateTasks.ToArray());
 
+            AgentHealthMessage agentHealthMessage = new AgentHealthMessage();
+            agentHealthMessage.AgentHealthState = agentHealthStatusProbe.AgentHealthState;
+
             UpdateEventArgs args = new UpdateEventArgs()
             {
                 MessageType = MessageType.AgentHealthcheck,
                 Scope = ResourceScope.Global,
-                Data = agentHealthStatusProbe.AgentHealthState
+                CorrelationId = agentHealthMessage.CorrelationId,
+                Data = agentHealthMessage
             };
             OnUpdate(this, args);
         }
